@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
+import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/screens/authentication/sign_up_screen.dart';
 import 'package:recovery_app/services/auth_services.dart';
 
@@ -143,7 +144,7 @@ class _LoginState extends State<Login> {
                 InkWell(
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (c) => SignUpScreen()));
+                        MaterialPageRoute(builder: (c) => const OtpLogin()));
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

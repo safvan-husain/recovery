@@ -36,14 +36,13 @@ dependencies:
   xml: ^6.3.0
   flutter_launcher_icons: ^0.13.1
   path: ^1.8.3
-  spreadsheet_decoder: ^2.2.0
   excel: ^4.0.0
   dio: ^5.4.0
   font_awesome_flutter: ^10.6.0
   uuid: ^4.2.2
   delightful_toast: ^1.1.0
-  flutter_image_uploading: ^0.0.2
   cloudinary_public: ^0.23.1
+  image_picker: ^0.8.9
 
 dev_dependencies:
   flutter_test:

@@ -1,12 +1,23 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/services/auth_services.dart';
+import 'package:recovery_app/services/image_file_reciever.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final String agencyName;
+  final String agencyId;
+  final String phoneNumber;
+  const SignUpScreen({
+    super.key,
+    required this.agencyName,
+    required this.agencyId,
+    required this.phoneNumber,
+  });
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -15,6 +26,9 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool isPasswordHide = true;
   bool isCPasswordHide = true;
+  bool _isLoading = false;
+  File? panCard;
+  File? adharCard;
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -26,201 +40,248 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // const SizedBox(height: 30),
-                // Text(
-                //   'Welcome 👋',
-                //   style: GoogleFonts.outfit(
-                //     textStyle: const TextStyle(
-                //       fontSize: 22,
-                //       fontWeight: FontWeight.w600,
-                //       color: Color(0xff2c65d8),
-                //     ),
-                //   ),
-                // ),
-                const SizedBox(height: 10),
-                Text(
-                  'Provide your details here',
-                  style: GoogleFonts.outfit(
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff23202a),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _inputFieald(
-                  controller: _userNameController,
-                  icon: FontAwesomeIcons.user,
-                  label: 'Full Name',
-                ),
-                _inputFieald(
-                  controller: _emailController,
-                  icon: Icons.mail_outline,
-                  label: 'Email ID',
-                ),
-                _inputFieald(
-                  controller: _addressController,
-                  icon: FontAwesomeIcons.addressCard,
-                  label: 'Address',
-                ),
-                _inputFieald(
-                  controller: _passwordController,
-                  label: "Password",
-                  icon: Icons.lock_outline,
-                  isSensitive: passwordObscure,
-                ),
-                _inputFieald(
-                  controller: _confirmController,
-                  label: "Confirm Password",
-                  icon: Icons.lock_outline,
-                  isSensitive: passwordObscure,
-                ),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  width: MediaQuery.of(context).size.width,
-                  height: 60,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.all(5),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: Colors.blue, width: 1.0)),
-                          child: Text(
-                            "Pick Pan Card",
-                            style: GoogleFonts.poppins(),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.all(5),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: Colors.blue, width: 1.0)),
-                          child: Text(
-                            "Pick Adhar Card",
-                            style: GoogleFonts.poppins(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height - 50),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Checkbox(
-                      value: true,
-                      onChanged: (value) {},
+                    const SizedBox(height: 20),
+                    Text(
+                      'Provide your details here for veification\n from ${widget.agencyName}',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff23202a),
+                      ),
                     ),
-                    const Text('Remember'),
+                    const SizedBox(height: 10),
+                    _inputFieald(
+                      controller: _userNameController,
+                      icon: FontAwesomeIcons.user,
+                      label: 'Full Name',
+                    ),
+                    _inputFieald(
+                      controller: _emailController,
+                      icon: Icons.mail_outline,
+                      label: 'Email ID',
+                    ),
+                    _inputFieald(
+                      controller: _addressController,
+                      icon: FontAwesomeIcons.addressCard,
+                      label: 'Address',
+                    ),
+                    _inputFieald(
+                      controller: _passwordController,
+                      label: "Password",
+                      icon: Icons.lock_outline,
+                      isSensitive: passwordObscure,
+                    ),
+                    _inputFieald(
+                      controller: _confirmController,
+                      label: "Confirm Password",
+                      icon: Icons.lock_outline,
+                      isSensitive: passwordObscure,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      width: MediaQuery.of(context).size.width,
+                      height: 60,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                var file = await ImageFile.pick(context);
+                                setState(() {
+                                  panCard = file;
+                                });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                margin: const EdgeInsets.all(5),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 5),
+                                decoration: BoxDecoration(
+                                    color: panCard == null
+                                        ? Colors.white
+                                        : Colors.greenAccent,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.blue, width: 1.0)),
+                                child: Text(
+                                  panCard == null
+                                      ? "Pick Pan Card"
+                                      : "Pan Card ✔️",
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                var file = await ImageFile.pick(context);
+                                setState(() {
+                                  adharCard = file;
+                                });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                margin: const EdgeInsets.all(5),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                    color: adharCard == null
+                                        ? Colors.white
+                                        : Colors.greenAccent,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.blue, width: 1.0)),
+                                child: Text(
+                                  adharCard == null
+                                      ? "Pick Adhar Card"
+                                      : "Adhar Card ✔️",
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: true,
+                          onChanged: (value) {},
+                        ),
+                        const Text('Remember'),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_emailController.text.isEmpty ||
+                            _passwordController.text.isEmpty ||
+                            _userNameController.text.isEmpty ||
+                            _addressController.text.isEmpty) {
+                          showSnackbar(
+                            "Every fieald required",
+                            context,
+                            FontAwesomeIcons.fill,
+                            Colors.redAccent,
+                          );
+                          return;
+                        }
+                        if (_passwordController.text !=
+                            _confirmController.text) {
+                          showSnackbar(
+                            "Password mismatch",
+                            context,
+                            FontAwesomeIcons.cancel,
+                            Colors.redAccent,
+                          );
+                          return;
+                        }
+                        if (panCard == null || adharCard == null) {
+                          showSnackbar(
+                            "Please provide Pan and Adhar cards",
+                            context,
+                            FontAwesomeIcons.cancel,
+                            Colors.redAccent,
+                          );
+                          return;
+                        }
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        await AuthServices.registerUser(
+                          userName: _userNameController.text,
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                          context: context,
+                          panCard: panCard!,
+                          adharCard: adharCard!,
+                          agencyId: widget.agencyId,
+                          address: _addressController.text,
+                          phone: widget.phoneNumber,
+                        );
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      },
+                      style: ButtonStyle(
+                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 70,
+                          ), // Adjust the padding here
+                        ),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xff2c65d8)),
+                        shape: MaterialStateProperty.all<OutlinedBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        'Sign Up',
+                        maxLines: 1,
+                        style: GoogleFonts.outfit(
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Already have an account?"),
+                          SizedBox(width: 5),
+                          Text(
+                            'Log In',
+                            style: TextStyle(
+                              color: Color(0xff2c65d8),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_emailController.text.isEmpty ||
-                        _passwordController.text.isEmpty ||
-                        _userNameController.text.isEmpty ||
-                        _passwordController.text.isEmpty ||
-                        _confirmController.text.isEmpty) {
-                      showSnackbar(
-                        "Every fieald required",
-                        context,
-                        FontAwesomeIcons.fill,
-                        Colors.redAccent,
-                      );
-                      return;
-                    }
-                    if (_passwordController.text != _confirmController.text) {
-                      showSnackbar(
-                        "Password mismatch",
-                        context,
-                        FontAwesomeIcons.cancel,
-                        Colors.redAccent,
-                      );
-                      return;
-                    }
-                    AuthServices.registerUser(
-                      userName: _userNameController.text,
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                      context: context,
-                    );
-                  },
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                      const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 70,
-                      ), // Adjust the padding here
-                    ),
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color(0xff2c65d8)),
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    'Sign Up',
-                    maxLines: 1,
-                    style: GoogleFonts.outfit(
-                      textStyle: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Already have an account?"),
-                      SizedBox(width: 5),
-                      Text(
-                        'Log In',
-                        style: TextStyle(
-                          color: Color(0xff2c65d8),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
           ),
-        ),
+          if (_isLoading) ...[
+            ModalBarrier(
+              dismissible: false,
+              color: Colors.black.withOpacity(0.3),
+            ),
+            const Center(
+              child: CircularProgressIndicator(),
+            )
+          ],
+        ],
       ),
     );
   }

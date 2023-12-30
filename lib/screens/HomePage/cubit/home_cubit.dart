@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import 'package:recovery_app/models/detail_model.dart';
+import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/services/excel_store.dart';
 import 'package:recovery_app/services/home_service.dart';
 import 'dart:io';
@@ -18,6 +19,10 @@ class HomeCubit extends HydratedCubit<HomeState> {
   HomeCubit() : super(HomeState.initial());
 
   final HomeServices _homeServices = HomeServices();
+
+  void setUser(UserModel user) {
+    emit(state.copywith(user: user));
+  }
 
   void getVehichelOwners() async {
     // emit(HomeState(
@@ -51,7 +56,7 @@ class HomeCubit extends HydratedCubit<HomeState> {
         getVehichelOwners();
       } else {
         emit(
-          state.copyWith(downloadProgress: p),
+          state.copywith(downloadProgress: p),
         );
       }
     });

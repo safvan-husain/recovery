@@ -2,17 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/screens/BottomNav/bottom_nav.dart';
+import 'package:recovery_app/screens/authentication/sign_up_screen.dart';
+import 'package:recovery_app/services/auth_services.dart';
 
 class AgencyCodeScreen extends StatefulWidget {
-  const AgencyCodeScreen({super.key});
+  final String phoneNumber;
+  const AgencyCodeScreen({super.key, required this.phoneNumber});
 
   @override
   State<AgencyCodeScreen> createState() => _AgencyCodeScreenState();
 }
 
 class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
-  String? agencyName;
-  bool _isLoading = false;
+  Map<String, dynamic>? agency;
+  bool _isLoading = true;
+  late Future<List<Map<String, dynamic>>> futureAgencyList;
+  @override
+  void initState() {
+    futureAgencyList = AuthServices.getAgencyList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -37,8 +47,82 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
                   height: 10,
                   width: double.infinity,
                 ),
-                if (agencyName == null)
-                  ..._enterPinScreen
+                if (agency == null)
+                  FutureBuilder(
+                    future: futureAgencyList,
+                    builder: (context, snp) {
+                      if (snp.connectionState != ConnectionState.done) {
+                        return const Center(
+                            // child: CircularProgressIndicator(),
+                            );
+                      }
+                      if (!snp.hasData) {
+                        return const Center(
+                          child: Text("an Error occured"),
+                        );
+                      }
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      });
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              "Choose the agency you want to work with",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border:
+                                  Border.all(color: Colors.grey, width: 1.0),
+                            ),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: MediaQuery.of(context).size.width,
+                              ),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: snp.data!.length,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        agency = snp.data![index];
+                                      });
+                                    },
+                                    child: Card(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          snp.data![index]["agency_name"],
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  )
                 else
                   ..._agencyConfirmScreen,
               ],
@@ -55,39 +139,6 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
           ),
       ],
     );
-  }
-
-  List<Widget> get _enterPinScreen {
-    return [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Text(
-          'Enter 4 digit pin denoting your agency to complete the sign up process',
-          style: GoogleFonts.outfit(
-            textStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: Color(0xff23202a),
-            ),
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-      const SizedBox(height: 20),
-      OtpTextField(
-        numberOfFields: 4,
-        borderColor: Color(0xFF512DA8),
-        enabledBorderColor: Color.fromARGB(255, 182, 152, 251),
-        //set to true to show as box or false to show as dash
-        showFieldAsBox: true,
-        //runs when a code is typed in
-        onCodeChanged: (String code) {
-          //handle validation or checks here
-        },
-        //runs when every textfield is filled
-        onSubmit: getAgencyName, // end onSubmit
-      )
-    ];
   }
 
   List<Widget> get _agencyConfirmScreen {
@@ -127,7 +178,7 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
             Padding(
               padding: const EdgeInsets.all(15),
               child: Text(
-                agencyName!,
+                agency!["agency_name"]!,
                 style: GoogleFonts.oswald(
                   fontSize: 20,
                   color: Colors.black,
@@ -141,7 +192,7 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
                 InkWell(
                   onTap: () {
                     setState(() {
-                      agencyName = null;
+                      agency = null;
                     });
                   },
                   child: Container(
@@ -166,7 +217,11 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BottomNavView()),
+                          builder: (context) => SignUpScreen(
+                                agencyName: agency!["agency_name"],
+                                agencyId: agency!['id'],
+                                phoneNumber: widget.phoneNumber,
+                              )),
                     );
                   },
                   child: Container(
@@ -191,19 +246,5 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
         ),
       )
     ];
-  }
-
-  void getAgencyName(String verification) async {
-    setState(() {
-      _isLoading = true;
-    });
-    await Future.delayed(Duration(seconds: 3), () {
-      setState(() {
-        agencyName = "Starkin Solution pvt lmtd";
-      });
-      setState(() {
-        _isLoading = false;
-      });
-    });
   }
 }

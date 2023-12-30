@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/models/user_model.dart';
+import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/resources/text_fiealds.dart';
 import 'package:recovery_app/screens/BottomNav/bottom_nav.dart';
+import 'package:recovery_app/screens/authentication/agency_code_screen.dart';
 import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/sign_up_screen.dart';
+import 'package:recovery_app/screens/common_widgets/count_down_ui.dart';
 import 'package:recovery_app/services/auth_services.dart';
 
 class OtpLogin extends StatefulWidget {
@@ -15,9 +19,42 @@ class OtpLogin extends StatefulWidget {
   State<OtpLogin> createState() => _OtpLoginState();
 }
 
-class _OtpLoginState extends State<OtpLogin> {
-  final TextEditingController _emailController = TextEditingController();
+class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
+  final TextEditingController _emailController =
+      TextEditingController(text: "8766865570");
   String? otp;
+  UserModel? user;
+  var isCountComplete = false;
+  late AnimationController _controller;
+  int levelClock = 10; // Set your countdown time here
+
+  void _startCountDown() {
+    _controller = AnimationController(
+        vsync: this, duration: Duration(seconds: levelClock));
+    _controller.forward();
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          isCountComplete = true;
+        });
+      }
+    });
+  }
+
+  void _restartCountdown() {
+    setState(() {
+      isCountComplete = false;
+    });
+    _controller.reset();
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var isOtpGenerated = otp != null;
@@ -69,17 +106,22 @@ class _OtpLoginState extends State<OtpLogin> {
                     const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () async {
-                        // if (_emailController.text.isEmpty ||
-                        //     _passwordController.text.isEmpty ||
-                        //     _userNameController.text.isEmpty ||
-                        //     _passwordController.text.isEmpty) {
-                        //   showSnackbar("Every fieald required", context);
-                        //   return;
-                        // }
-                        otp = await AuthServices.verifyPhone(
+                        if (_emailController.text.isEmpty) {
+                          showSnackbar(
+                            "Phone number is required",
+                            context,
+                            Icons.warning,
+                          );
+                          return;
+                        }
+                        var result = await AuthServices.verifyPhone(
                           phone: _emailController.text,
                           context: context,
                         );
+                        otp = result.$1;
+                        user = result.$2;
+                        setState(() {});
+                        _startCountDown();
                       },
                       style: ButtonStyle(
                         textStyle: MaterialStateProperty.all<TextStyle>(
@@ -126,8 +168,8 @@ class _OtpLoginState extends State<OtpLogin> {
                     ),
                     InkWell(
                       child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 5),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.blue),
                           borderRadius: BorderRadius.circular(15),
@@ -151,27 +193,27 @@ class _OtpLoginState extends State<OtpLogin> {
                       },
                     ),
                     const SizedBox(height: 40),
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (c) => SignUpScreen()));
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Don't have an account?"),
-                          SizedBox(width: 5),
-                          Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Color(0xff2c65d8),
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 1,
-                          ),
-                        ],
-                      ),
-                    )
+                    // InkWell(
+                    //   onTap: () {
+                    //     Navigator.of(context).push(MaterialPageRoute(
+                    //         builder: (c) => const SignUpScreen()));
+                    //   },
+                    //   child: const Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Text("Don't have an account?"),
+                    //       SizedBox(width: 5),
+                    //       Text(
+                    //         'Sign Up',
+                    //         style: TextStyle(
+                    //           color: Color(0xff2c65d8),
+                    //           fontWeight: FontWeight.w600,
+                    //         ),
+                    //         maxLines: 1,
+                    //       ),
+                    //     ],
+                    //   ),
+                    // )
                   ] else
                     ..._enterPinScreen,
                   const SizedBox(height: 40),
@@ -200,7 +242,7 @@ class _OtpLoginState extends State<OtpLogin> {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Text(
-          'Enter the otp send to +91000000000',
+          'Enter the otp send to +91 ${_emailController.text}',
           style: GoogleFonts.outfit(
             textStyle: const TextStyle(
               fontSize: 16,
@@ -211,11 +253,33 @@ class _OtpLoginState extends State<OtpLogin> {
           textAlign: TextAlign.center,
         ),
       ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              otp = null;
+            });
+          },
+          child: Text(
+            'Wrong Number?',
+            style: GoogleFonts.outfit(
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.red,
+              ),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
       const SizedBox(height: 20),
       OtpTextField(
+        clearText: true,
         numberOfFields: 4,
-        borderColor: Color(0xFF512DA8),
-        enabledBorderColor: Color.fromARGB(255, 182, 152, 251),
+        borderColor: const Color(0xFF512DA8),
+        enabledBorderColor: const Color.fromARGB(255, 182, 152, 251),
         //set to true to show as box or false to show as dash
         showFieldAsBox: true,
         //runs when a code is typed in
@@ -225,78 +289,71 @@ class _OtpLoginState extends State<OtpLogin> {
         //runs when every textfield is filled
         onSubmit: (v) {
           if (v == otp) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const BottomNavView()),
-            );
+            if (user != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const BottomNavView()),
+              );
+              showSnackbar(
+                  "Welcome back ${user!.agent_name}", context, Icons.warning);
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AgencyCodeScreen(
+                          phoneNumber: _emailController.text,
+                        )),
+              );
+            }
+          } else {
+            showSnackbar("OTP is incorrect", context, Icons.warning);
           }
         }, // end onSubmit
       ),
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Did not recieve the OTP?',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w400,
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        child: GestureDetector(
+          onTap: () async {
+            if (_emailController.text.isEmpty) {
+              showSnackbar(
+                "Phone number is required",
+                context,
+                Icons.warning,
+              );
+              Navigator.of(context).pop();
+              return;
+            }
+            var result = await AuthServices.verifyPhone(
+              phone: _emailController.text,
+              context: context,
+            );
+            otp = result.$1;
+            user = result.$2;
+            setState(() {});
+            _restartCountdown();
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Resend OTP?',
+                style: TextStyle(
+                  color:
+                      isCountComplete ? const Color(0xff2c65d8) : Colors.grey,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
-            ),
-            Text(
-              'Resend OTP?',
-              style: TextStyle(
-                color: Color(0xff2c65d8),
-                fontWeight: FontWeight.w400,
+              Countdown(
+                animation: StepTween(
+                  begin: levelClock,
+                  end: 0,
+                ).animate(_controller),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       const SizedBox(height: 20),
-      ElevatedButton(
-        onPressed: () {
-          // if (_emailController.text.isEmpty ||
-          //     _passwordController.text.isEmpty ||
-          //     _userNameController.text.isEmpty ||
-          //     _passwordController.text.isEmpty) {
-          //   showSnackbar("Every fieald required", context);
-          //   return;
-          // }
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const BottomNavView()),
-          );
-        },
-        style: ButtonStyle(
-          textStyle: MaterialStateProperty.all<TextStyle>(
-            const TextStyle(color: Colors.white),
-          ),
-          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-            const EdgeInsets.symmetric(
-                vertical: 16, horizontal: 100), // Adjust the padding here
-          ),
-          backgroundColor:
-              MaterialStateProperty.all<Color>(const Color(0xff2c65d8)),
-          shape: MaterialStateProperty.all<OutlinedBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-        ),
-        child: Text(
-          'Verify Phone',
-          maxLines: 1,
-          style: GoogleFonts.outfit(
-            textStyle: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
     ];
   }
 }

@@ -10,14 +10,17 @@ enum ChangeType {
 
 class HomeState {
   final List<DetailsModel> vehichalOwnerList;
+  final UserModel? user;
   final List<String> couselImages;
   final ChangeType changeType;
   final double? downloadProgress;
+
   HomeState({
     required this.vehichalOwnerList,
     required this.couselImages,
     required this.changeType,
     this.downloadProgress,
+    this.user,
   });
 
   factory HomeState.initial() {
@@ -28,17 +31,18 @@ class HomeState {
     );
   }
 
-  HomeState copywith({
-    List<DetailsModel>? vehichalOwnerList,
-    List<String>? couselImages,
-    ChangeType? changeType,
-    double? downloadProgress,
-  }) {
+  HomeState copywith(
+      {List<DetailsModel>? vehichalOwnerList,
+      List<String>? couselImages,
+      ChangeType? changeType,
+      double? downloadProgress,
+      UserModel? user}) {
     return HomeState(
       vehichalOwnerList: vehichalOwnerList ?? this.vehichalOwnerList,
       couselImages: couselImages ?? this.couselImages,
       changeType: changeType ?? this.changeType,
       downloadProgress: downloadProgress ?? this.downloadProgress,
+      user: user ?? this.user,
     );
   }
 
@@ -68,18 +72,4 @@ class HomeState {
 
   factory HomeState.fromJson(String source) =>
       HomeState.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  HomeState copyWith({
-    List<DetailsModel>? vehichalOwnerList,
-    List<String>? couselImages,
-    ChangeType? changeType,
-    double? downloadProgress,
-  }) {
-    return HomeState(
-      vehichalOwnerList: vehichalOwnerList ?? this.vehichalOwnerList,
-      couselImages: couselImages ?? this.couselImages,
-      changeType: changeType ?? this.changeType,
-      downloadProgress: downloadProgress ?? this.downloadProgress,
-    );
-  }
 }

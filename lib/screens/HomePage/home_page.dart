@@ -1,8 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:developer';
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:custom_search_bar/custom_search_bar.dart';
@@ -11,19 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:recovery_app/models/detail_model.dart';
-import 'package:recovery_app/resources/drop_down.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/screens/HomePage/notification_screen.dart';
 import 'package:recovery_app/screens/HomePage/widgets/bottom_sheet.dart';
 import 'package:recovery_app/screens/HomePage/widgets/vehical_owner_tile.dart';
-import 'package:recovery_app/screens/catagories_sc/categories_sc.dart';
-import 'package:recovery_app/services/excel_store.dart';
 
-import 'package:recovery_app/services/home_service.dart';
-
-import '../category_list_sc/category_list_sc.dart';
 import '../../resources/color_manager.dart';
 
 class HomePage extends StatefulWidget {
@@ -99,7 +90,24 @@ class _HomePageState extends State<HomePage> {
                 color: filterdItems.isEmpty ? Colors.grey : Colors.blue,
               ),
             ),
-          )
+          ),
+          const SizedBox(width: 10),
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (c) => const NotificationScreen(),
+                ),
+              );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(
+                FontAwesomeIcons.solidBell,
+                color: Color.fromARGB(255, 0, 0, 0),
+              ),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -112,24 +120,10 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Text(
-                  //   "Categories",
-                  //   style: TextStyle(color: ColorManager.primary, fontSize: 20),
-                  // ),
-                  TextButton(
-                      onPressed: () {
-                        PersistentNavBarNavigator.pushNewScreen(
-                          context,
-                          screen: CategoriesScView(),
-                          withNavBar: true, // OPTIONAL VALUE. True by default.
-                          pageTransitionAnimation:
-                              PageTransitionAnimation.cupertino,
-                        );
-                      },
-                      child: Text(
-                        "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
-                        style: TextStyle(color: Colors.grey, fontSize: 15),
-                      ))
+                  Text(
+                    "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
+                    style: TextStyle(color: Colors.grey, fontSize: 15),
+                  )
                 ],
               ),
               // _getCategoryTabs(),
