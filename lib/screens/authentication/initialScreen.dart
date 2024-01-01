@@ -19,6 +19,9 @@ class _InitialScreenState extends State<InitialScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userJson = prefs.getString('user');
     if (userJson != null && userJson.isNotEmpty) {
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(context, '/otp-login');
+      }
       //TODO: when user exist in shared pref.
     } else {
       await Future.delayed(const Duration(seconds: 1));

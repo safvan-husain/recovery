@@ -8,12 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:recovery_app/models/detail_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/HomePage/notification_screen.dart';
 import 'package:recovery_app/screens/HomePage/widgets/bottom_sheet.dart';
 import 'package:recovery_app/screens/HomePage/widgets/vehical_owner_tile.dart';
+import 'package:recovery_app/screens/search/search_screen.dart';
+import 'package:recovery_app/screens/title_configure/title_configure_screen.dart';
+import 'package:recovery_app/services/excel_store.dart';
 
 import '../../resources/color_manager.dart';
 
@@ -33,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   String? currentCatValue = "USED LCV";
   @override
   void initState() {
-    // context.read<HomeCubit>().getVehichelOwners();
+    context.read<HomeCubit>().homeInitialization();
     context.read<HomeCubit>().getCrouselImages();
     // ExcelStore.downloadAndStore(context.read<HomeCubit>().getVehichelOwners);
     super.initState();
@@ -120,9 +124,15 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
-                    style: TextStyle(color: Colors.grey, fontSize: 15),
+                  InkWell(
+                    onTap: () {
+                      // context.read<HomeCubit>().downloadData();
+                      ExcelStore.test();
+                    },
+                    child: Text(
+                      "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
+                      style: TextStyle(color: Colors.grey, fontSize: 15),
+                    ),
                   )
                 ],
               ),
@@ -139,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                                 alignment: Alignment.center,
                                 children: [
                                   CircularProgressIndicator(
-                                    value: (state.downloadProgress ?? 0) / 10,
+                                    value: (state.downloadProgress ?? 0) / 100,
                                   ),
                                   if (state.downloadProgress != null)
                                     Align(
@@ -151,15 +161,41 @@ class _HomePageState extends State<HomePage> {
                               )
                             : ElevatedButton(
                                 onPressed: () async {
-                                  showSnackbar(
-                                    "Started to download data",
-                                    context,
-                                    Icons.downloading,
-                                  );
-                                  context.read<HomeCubit>().downloadData();
+                                  if (state.files.isEmpty) {
+                                    showSnackbar(
+                                      "Started to download data",
+                                      context,
+                                      Icons.downloading,
+                                    );
+                                    context.read<HomeCubit>().downloadData();
+                                  } else {
+                                    //TODO: loading.
+                                    List<List<String?>> titlesOfSheets =
+                                        await ExcelStore.getAllListSheetTitles(
+                                            context
+                                                .read<HomeCubit>()
+                                                .state
+                                                .files);
+                                    if (context.mounted) {
+                                      PersistentNavBarNavigator.pushNewScreen(
+                                        context,
+                                        screen: TitleConfigure(
+                                          titlesOfSheets: titlesOfSheets,
+                                        ),
+                                        withNavBar:
+                                            false, // OPTIONAL VALUE. True by default.
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.cupertino,
+                                      );
+                                    }
+
+                                    //TODO: configute logic.
+                                  }
                                 },
                                 child: Text(
-                                  "Download",
+                                  state.files.isEmpty
+                                      ? "Download"
+                                      : "Configure",
                                   style:
                                       GoogleFonts.poppins(color: Colors.white),
                                 ),
@@ -198,46 +234,54 @@ class _HomePageState extends State<HomePage> {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return InkWell(
-          onTap: () => showSearchForCustomiseSearchDelegate<DetailsModel>(
-            context: context,
-            delegate: SearchScreen(
-              items: filterdItems.isNotEmpty
-                  ? filterdItems
-                  : state.vehichalOwnerList,
-              filter: (item) => [item.name, item.engineNo, item.vehicalNo],
-              itemBuilder: (item) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: VehichelOwnerTile(detailsModel: item),
-                );
-              },
-              appBarBuilder:
-                  (controller, onSubmitted, textInputAction, focusNode) {
-                return PreferredSize(
-                  preferredSize: Size(double.infinity, 80),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: SearchBar(
-                      elevation: MaterialStatePropertyAll(0),
-                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10))),
-                      controller: controller,
-                      hintText: "Search",
-                      hintStyle: MaterialStatePropertyAll(
-                          TextStyle(color: ColorManager.grey)),
-                      onSubmitted: onSubmitted,
-                      leading: IconButton(
-                          onPressed: () => onSubmitted,
-                          icon: Icon(
-                            Icons.search,
-                            color: ColorManager.grey,
-                          )),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          // onTap: () => showSearchForCustomiseSearchDelegate<DetailsModel>(
+          //   context: context,
+          //   delegate: SearchScreen(
+          //     items: filterdItems.isNotEmpty
+          //         ? filterdItems
+          //         : state.vehichalOwnerList,
+          //     filter: (item) => [item.name, item.engineNo, item.vehicalNo],
+          //     itemBuilder: (item) {
+          //       return Padding(
+          //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          //         child: VehichelOwnerTile(detailsModel: item),
+          //       );
+          //     },
+          //     appBarBuilder:
+          //         (controller, onSubmitted, textInputAction, focusNode) {
+          //       return PreferredSize(
+          //         preferredSize: Size(double.infinity, 80),
+          //         child: Padding(
+          //           padding: const EdgeInsets.only(top: 20.0),
+          //           child: SearchBar(
+          //             elevation: MaterialStatePropertyAll(0),
+          //             shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+          //                 borderRadius: BorderRadius.circular(10))),
+          //             controller: controller,
+          //             hintText: "Search",
+          //             hintStyle: MaterialStatePropertyAll(
+          //                 TextStyle(color: ColorManager.grey)),
+          //             onSubmitted: onSubmitted,
+          //             leading: IconButton(
+          //                 onPressed: () => onSubmitted,
+          //                 icon: Icon(
+          //                   Icons.search,
+          //                   color: ColorManager.grey,
+          //                 )),
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
+          onTap: () {
+            PersistentNavBarNavigator.pushNewScreen(
+              context,
+              screen: SearchScreen1(),
+              withNavBar: false, // OPTIONAL VALUE. True by default.
+              pageTransitionAnimation: PageTransitionAnimation.cupertino,
+            );
+          },
           child: Container(
             alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: 10),

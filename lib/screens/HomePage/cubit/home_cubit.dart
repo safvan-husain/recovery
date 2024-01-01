@@ -15,7 +15,7 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 part 'home_state.dart';
 
-class HomeCubit extends HydratedCubit<HomeState> {
+class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeState.initial());
 
   final HomeServices _homeServices = HomeServices();
@@ -35,8 +35,10 @@ class HomeCubit extends HydratedCubit<HomeState> {
     ));
   }
 
-  void searchWithCamera(File file, void Function(String s) onSucess) async {
-    onSucess(await _readTheText(file));
+  void homeInitialization() async {
+    emit(state.copywith(files: await ExcelStore.getFiles()));
+    getVehichelOwners();
+    //TODO: needd optimization here.
   }
 
   void getCrouselImages() {
@@ -48,12 +50,12 @@ class HomeCubit extends HydratedCubit<HomeState> {
 
   void downloadData() async {
     emit(state.copywith(changeType: ChangeType.loading));
-    StreamController<double> downloadProgress = await ExcelStore.downloadFile(
-      "https://www.recovery.starkinsolutions.com//uploads/bank_proof/c2v1tY7GAq/Repo%20List%20%20July-22%20(6).xlsx",
-    );
+    print(state.user!.agencyId!); //TODO: agencyId is hard coded.
+    StreamController<double> downloadProgress = StreamController<double>();
+    ExcelStore.downloadFile("2", downloadProgress);
     downloadProgress.stream.listen((p) {
       if (p >= 100) {
-        getVehichelOwners();
+        homeInitialization();
       } else {
         emit(
           state.copywith(downloadProgress: p),
@@ -61,51 +63,6 @@ class HomeCubit extends HydratedCubit<HomeState> {
       }
     });
   }
-
-  @override
-  HomeState? fromJson(Map<String, dynamic> json) {
-    return HomeState.fromMap(json);
-  }
-
-  @override
-  Map<String, dynamic>? toJson(HomeState state) {
-    return state.toMap();
-  }
-}
-
-Future<String> _readTheText(File imageFile) async {
-  String number = '';
-  // final File imageFile = await getImageFile();
-  final GoogleVisionImage visionImage = GoogleVisionImage.fromFile(imageFile);
-  final TextRecognizer textRecognizer = GoogleVision.instance.textRecognizer();
-  final VisionText visionText = await textRecognizer.processImage(visionImage);
-  if (visionText.text != null) {
-    String text = visionText.text!;
-    for (TextBlock block in visionText.blocks) {
-      final Rect boundingBox = block.boundingBox!;
-      final List<Offset> cornerPoints = block.cornerPoints;
-      final String text = block.text!;
-      final List<RecognizedLanguage> languages = block.recognizedLanguages;
-
-      for (TextLine line in block.lines) {
-        // Same getters as TextBlock
-        for (TextElement element in line.elements) {
-          if (element.text != null) {
-            number = "$number ${element.text!}";
-            log(element.text!);
-          } else {
-            throw ('element text is null');
-          }
-
-          // Same getters as TextBlock
-        }
-      }
-    }
-  } else {
-    throw ('vision text not found');
-  }
-  textRecognizer.close();
-  return number;
 }
 
 Future<File> getImageFile() async {

@@ -35,6 +35,8 @@ class AuthServices {
           );
           if (re.statusCode == 200) {
             if (context.mounted) {
+              // if (context.mounted) context.read<HomeCubit>().setUser(user);
+              // await Storage.storeUser(user);
               showSnackbar(
                 "Welcome back user",
                 context,

@@ -14,11 +14,13 @@ class HomeState {
   final List<String> couselImages;
   final ChangeType changeType;
   final double? downloadProgress;
+  final List<File> files;
 
   HomeState({
     required this.vehichalOwnerList,
     required this.couselImages,
     required this.changeType,
+    required this.files,
     this.downloadProgress,
     this.user,
   });
@@ -28,48 +30,25 @@ class HomeState {
       vehichalOwnerList: [],
       couselImages: [],
       changeType: ChangeType.loading,
+      files: [],
     );
   }
 
-  HomeState copywith(
-      {List<DetailsModel>? vehichalOwnerList,
-      List<String>? couselImages,
-      ChangeType? changeType,
-      double? downloadProgress,
-      UserModel? user}) {
+  HomeState copywith({
+    List<DetailsModel>? vehichalOwnerList,
+    UserModel? user,
+    List<String>? couselImages,
+    ChangeType? changeType,
+    double? downloadProgress,
+    List<File>? files,
+  }) {
     return HomeState(
       vehichalOwnerList: vehichalOwnerList ?? this.vehichalOwnerList,
+      user: user ?? this.user,
       couselImages: couselImages ?? this.couselImages,
       changeType: changeType ?? this.changeType,
       downloadProgress: downloadProgress ?? this.downloadProgress,
-      user: user ?? this.user,
+      files: files ?? this.files,
     );
   }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'vehichalOwnerList': vehichalOwnerList.map((x) => x.toMap()).toList(),
-      'couselImages': couselImages,
-      'changeType': changeType.toString(),
-    };
-  }
-
-  factory HomeState.fromMap(Map<String, dynamic> map) {
-    return HomeState(
-      vehichalOwnerList: List<DetailsModel>.from(
-        (map['vehichalOwnerList'] as List<int>).map<DetailsModel>(
-          (x) => DetailsModel.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-      couselImages: List<String>.from(
-        (map['couselImages'] as List<String>),
-      ),
-      changeType: ChangeType.vehichelOwnerListUpdated,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory HomeState.fromJson(String source) =>
-      HomeState.fromMap(json.decode(source) as Map<String, dynamic>);
 }

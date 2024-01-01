@@ -1,16 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:recovery_app/ml.dart';
 import 'package:recovery_app/screens/HomePage/home_page.dart';
 import 'package:recovery_app/screens/profile_sc/profile_sc.dart';
-import 'package:recovery_app/resources/color_manager.dart';
 import 'package:recovery_app/screens/settings_sc/settings_sc.dart';
-import 'package:delightful_toast/delight_toast.dart';
-import '../../resources/assets_manager.dart';
-import '../../services/excel_store.dart';
 
 class BottomNavView extends StatefulWidget {
   const BottomNavView({super.key});

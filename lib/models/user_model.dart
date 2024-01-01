@@ -11,6 +11,7 @@ class UserModel {
   String? avatarUrl;
   String? adharUrl;
   String? panUrl;
+  String? agencyId;
 
   UserModel({
     required this.agent_name,
@@ -20,18 +21,19 @@ class UserModel {
     this.avatarUrl,
     this.adharUrl,
     this.panUrl,
+    this.agencyId,
   });
 
   factory UserModel.fromServerJson(Map<String, dynamic> map) {
     return UserModel(
-      agent_name: map['details']['agent_name'] as String,
-      number: map['phone'] as String,
-      email: '', // Add the correct key if email is present in the JSON
-      address: map['details']['address'] as String,
-      avatarUrl: map['details']['aadhaar_card'] as String,
-      adharUrl: map['details']['aadhaar_card'] as String,
-      panUrl: map['details']['pan_card'] as String,
-    );
+        agent_name: map['details']['agent_name'] as String,
+        number: map['phone'] as String,
+        email: '', // Add the correct key if email is present in the JSON
+        address: map['details']['address'] as String,
+        avatarUrl: map['details']['aadhaar_card'] as String,
+        adharUrl: map['details']['aadhaar_card'] as String,
+        panUrl: map['details']['pan_card'] as String,
+        agencyId: map['details']['agency_id'] as String);
   }
 
   Map<String, dynamic> toMap() {
@@ -53,8 +55,7 @@ class UserModel {
       email: map['email'] as String,
       address: map['address'] as String,
       avatarUrl: map['avatarUrl'] != null ? map['avatarUrl'] as String : null,
-      adharUrl: map['adharUrl'] != null ? map['adharUrl'] as String : null,
-      panUrl: map['panUrl'] != null ? map['panUrl'] as String : null,
+      agencyId: map['agency_id'] != null ? map['agency_id'] as String : null,
     );
   }
 
