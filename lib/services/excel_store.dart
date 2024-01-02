@@ -287,6 +287,7 @@ class ExcelStore {
             var element = decodedResponse.elementAt(i);
             var url =
                 "https://www.recovery.starkinsolutions.com/${element["bank_report"]}";
+
             try {
               File file = await _localFile;
               var res = await dio.download(

@@ -18,6 +18,7 @@ import 'package:recovery_app/screens/HomePage/widgets/vehical_owner_tile.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/screens/title_configure/title_configure_screen.dart';
 import 'package:recovery_app/services/excel_store.dart';
+import 'package:recovery_app/services/json_data_services.dart';
 
 import '../../resources/color_manager.dart';
 
@@ -127,7 +128,8 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       // context.read<HomeCubit>().downloadData();
-                      ExcelStore.test();
+                      // ExcelStore.test();
+                      JsonDataServices.readJsonFromFileChunked();
                     },
                     child: Text(
                       "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
