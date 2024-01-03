@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:recovery_app/resources/route_manager.dart';
 import 'package:recovery_app/resources/theme_manager.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
@@ -14,12 +13,7 @@ import 'package:recovery_app/services/excel_store.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ExcelStore.initilize();
-  HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getApplicationDocumentsDirectory(),
-  );
+  // await ExcelStore.initilize();
 
   runApp(
     MultiBlocProvider(

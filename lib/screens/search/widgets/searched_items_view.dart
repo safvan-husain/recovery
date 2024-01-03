@@ -8,7 +8,8 @@ class SearchedItemsView extends StatelessWidget {
     required this.items,
   });
 
-  final List<FoundItem> items;
+  // final List<FoundItem> items;
+  final List items;
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +35,10 @@ class SearchedItemsView extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () async {
-                            var item = await ExcelStore.getRowItems(
-                                items.elementAt(index));
+                            // var item = await ExcelStore.getRowItems(
+                            //     items.elementAt(index));
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (c) => ItemScreen(details: item)));
+                                builder: (c) => ItemScreen(details: {})));
                           },
                           child: Card(
                             child: ListTile(

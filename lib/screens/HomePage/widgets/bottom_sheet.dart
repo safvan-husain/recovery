@@ -36,7 +36,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 getDropDown<String>(
                   areaValue,
                   hint: "Area",
-                  values: FilterValues.areaValues.toList(),
+                  values: [],
+                  // values: FilterValues.areaValues.toList(),
                   onChanged: (v) {
                     setState(() {
                       areaValue = v;
@@ -46,7 +47,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 getDropDown<String>(
                   currentValue,
                   hint: "Category",
-                  values: FilterValues.catValues.toList(),
+                  values: [],
+                  // values: FilterValues.catValues.toList(),
                   onChanged: (v) {
                     setState(() {
                       currentValue = v;
@@ -90,13 +92,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      widget.onFilter(
-                        ExcelStore.filtered(
-                          context.read<HomeCubit>().state.vehichalOwnerList,
-                          areaValue,
-                          currentValue,
-                        ),
-                      );
+                      // widget.onFilter(
+                      //   ExcelStore.filtered(
+                      //     context.read<HomeCubit>().state.vehichalOwnerList,
+                      //     areaValue,
+                      //     currentValue,
+                      //   ),
+                      // );
                       Navigator.of(context).pop();
                     },
                     child: Container(

@@ -15,12 +15,12 @@ class SearchScreen1State extends State<SearchScreen1> {
   List<String> selectedItems = [];
   bool _isConfirm = false;
   bool _isSearch = false;
-  List<FoundItem> items = [];
+  // List<FoundItem> items = [];
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
-    futureTitles = ExcelStore.getAllTitles();
+    // futureTitles = ExcelStore.getAllTitles();
     super.initState();
   }
 
@@ -60,8 +60,8 @@ class SearchScreen1State extends State<SearchScreen1> {
                         prefixIcon: Icon(Icons.search)),
                     controller: _controller,
                     onChanged: (value) async {
-                      items =
-                          await ExcelStore.searchItems(selectedItems, value);
+                      // items =
+                      //     await ExcelStore.searchItems(selectedItems, value);
                       setState(() {});
                     },
                   ),
@@ -75,7 +75,7 @@ class SearchScreen1State extends State<SearchScreen1> {
           children: [
             Container(
               child: _isSearch
-                  ? SearchedItemsView(items: items)
+                  ? SearchedItemsView(items: [])
                   : _isConfirm
                       ? ListView.builder(
                           itemCount: selectedItems.length,

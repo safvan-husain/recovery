@@ -17,6 +17,7 @@ import 'package:recovery_app/screens/HomePage/widgets/bottom_sheet.dart';
 import 'package:recovery_app/screens/HomePage/widgets/vehical_owner_tile.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/screens/title_configure/title_configure_screen.dart';
+import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/excel_store.dart';
 import 'package:recovery_app/services/json_data_services.dart';
 
@@ -128,8 +129,9 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       // context.read<HomeCubit>().downloadData();
-                      // ExcelStore.test();
-                      JsonDataServices.readJsonFromFileChunked();
+                      ExcelStore.processExcelInChunks();
+                      // JsonDataServices.readJsonFromFileChunked();
+                      // CsvFileServices.readCSVFromDocumentDir();
                     },
                     child: Text(
                       "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
@@ -172,17 +174,17 @@ class _HomePageState extends State<HomePage> {
                                     context.read<HomeCubit>().downloadData();
                                   } else {
                                     //TODO: loading.
-                                    List<List<String?>> titlesOfSheets =
-                                        await ExcelStore.getAllListSheetTitles(
-                                            context
-                                                .read<HomeCubit>()
-                                                .state
-                                                .files);
+                                    // List<List<String?>> titlesOfSheets =
+                                    //     await ExcelStore.getAllListSheetTitles(
+                                    //         context
+                                    //             .read<HomeCubit>()
+                                    //             .state
+                                    //             .files);
                                     if (context.mounted) {
                                       PersistentNavBarNavigator.pushNewScreen(
                                         context,
                                         screen: TitleConfigure(
-                                          titlesOfSheets: titlesOfSheets,
+                                          titlesOfSheets: [],
                                         ),
                                         withNavBar:
                                             false, // OPTIONAL VALUE. True by default.
