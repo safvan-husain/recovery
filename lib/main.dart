@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recovery_app/resources/route_manager.dart';
 import 'package:recovery_app/resources/theme_manager.dart';
+import 'package:recovery_app/screens/BottomNav/bottom_nav.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/initialScreen.dart';
@@ -42,7 +43,8 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const InitialScreen(),
         '/login': (context) => const Login(),
-        '/otp-login': (context) => const OtpLogin(),
+        '/otp-login': (context) => const BottomNavView(),
+        // '/otp-login': (context) => const OtpLogin(),
       },
       builder: (context, child) {
         return MediaQuery(

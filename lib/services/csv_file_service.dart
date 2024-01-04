@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -6,24 +7,23 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
-  static Future<List<List<String>>> test() async {
-    print("started processing");
-    List<List<String>> list = [];
-    try {
-      final input = await rootBundle.loadString('assets/icons/large.csv');
-      var rows = input.split("\n").map((i) => i.split(",")).toList();
-      for (var row in rows) {
-        for (var element in row) {
-          if (element.contains('KL47H061')) {
-            print(row);
+  static Stream<List<String>> search(String searchTerm) async* {
+    var term = searchTerm.trim().toLowerCase();
+    var files = await getExcelFiles();
+    for (var file in files) {
+      final lines = file.openRead().transform(utf8.decoder);
+      await for (var line in lines) {
+        var items = line.split(',');
+        for (var item in items) {
+          if (item.toLowerCase().contains(term)) {
+            yield items;
+            break;
           }
         }
+        // Process your line here
       }
-      print("proccssing complete");
-    } catch (e) {
-      print(e);
     }
-    return list;
+    print("No row found for the search term");
   }
 
   static Future<File> get _localFile async {
@@ -65,8 +65,10 @@ class CsvFileServices {
       for (var file in files) {
         String contents = await file.readAsString();
         var rows = contents.split("\n");
+        print("${file.path} have ${rows.length} rows");
         list.add(rows[1].split(","));
       }
+      print(list[0].length);
     } catch (e) {
       print("readCSVFromDocumentDir" + e.toString());
     }
@@ -75,7 +77,7 @@ class CsvFileServices {
 
   static Future<void> copyAssetToDocumentDir() async {
     // Load the file from the assets folder
-    ByteData byteData = await rootBundle.load('assets/icons/large.csv');
+    ByteData byteData = await rootBundle.load('assets/icons/larger.csv');
 
     // Create a new file in the documents directory
     File file = await _localFile;

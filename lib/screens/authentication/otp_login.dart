@@ -22,7 +22,7 @@ class OtpLogin extends StatefulWidget {
 class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
   final TextEditingController _emailController =
       TextEditingController(text: "8766865570");
-  String? otp;
+  String? otp = '0000';
   UserModel? user;
   var isCountComplete = false;
   late AnimationController _controller;
@@ -53,6 +53,12 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // _startCountDown();
+    super.initState();
   }
 
   @override

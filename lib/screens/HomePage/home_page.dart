@@ -127,11 +127,13 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: () async {
                       // context.read<HomeCubit>().downloadData();
-                      ExcelStore.processExcelInChunks();
+                      // ExcelStore.processExcelInChunks();
                       // JsonDataServices.readJsonFromFileChunked();
-                      // CsvFileServices.readCSVFromDocumentDir();
+                      // CsvFileServices.copyAssetToDocumentDir();
+                      // CsvFileServices.getExcelFiles();
+                      print(await CsvFileServices.search("SWIFT DZIRE"));
                     },
                     child: Text(
                       "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
