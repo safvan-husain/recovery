@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:aho_corasick/aho_corasick.dart';
@@ -7,23 +9,84 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
-  static Stream<List<String>> search(String searchTerm) async* {
-    var term = searchTerm.trim().toLowerCase();
-    var files = await getExcelFiles();
-    for (var file in files) {
-      final lines = file.openRead().transform(utf8.decoder);
-      await for (var line in lines) {
-        var items = line.split(',');
-        for (var item in items) {
-          if (item.toLowerCase().contains(term)) {
-            yield items;
-            break;
+  static void search(String searchTerm,
+      StreamController<Map<String, dynamic>> streamController) async {
+    try {
+      var term = searchTerm.trim().toLowerCase();
+      var files = await getExcelFiles();
+      for (var file in files) {
+        late List<String> titles;
+        final chunkStream = file.openRead().transform(utf8.decoder);
+        bool isTitleGot = false;
+        await for (var chunk in chunkStream) {
+          var lines = chunk.split("\n");
+          for (var line in lines) {
+            var items = _splitStringIgnoringQuotes(line);
+            // for (int i = 0; i < items.length; i++) {
+            //   if (items[i] == null) {
+            //     items[i] = '';
+            //   }
+            // }
+            if (!isTitleGot) {
+              titles = items;
+              isTitleGot = true;
+            }
+            if (items.length != titles.length) {
+              print(files.indexOf(file));
+              print(lines.indexOf(line));
+              print(line);
+              print(items);
+              print(titles);
+              throw ("item tiltle length mismatch: ${items.length}${titles.length}");
+            }
+            for (var item in items) {
+              if (item.toLowerCase().contains(term)) {
+                Map<String, String> map = {};
+                for (var i = 0; i < titles.length; i++) {
+                  map[titles[i]] = items[i];
+                }
+                streamController.sink.add({"item": item, "row": map});
+              }
+            }
+            // Process your line here
           }
         }
-        // Process your line here
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    print("No row found for the search term");
+  }
+
+  static List<String> _splitStringIgnoringQuotes(String input) {
+    List<String> result = [];
+    bool insideQuotes = false;
+    StringBuffer currentToken = StringBuffer();
+
+    for (int i = 0; i < input.length; i++) {
+      String char = input[i];
+
+      if (char == '"') {
+        insideQuotes = !insideQuotes;
+        currentToken.write(char);
+      } else if (char == ',' && !insideQuotes) {
+        if (currentToken.toString().isEmpty) {
+          result.add("");
+        } else {
+          result.add(currentToken.toString().trim());
+        }
+
+        currentToken.clear();
+      } else {
+        currentToken.write(char);
       }
     }
-    print("No row found for the search term");
+
+    // Add the last token
+    result.add(currentToken.toString().trim());
+
+    return result;
   }
 
   static Future<File> get _localFile async {
@@ -77,7 +140,7 @@ class CsvFileServices {
 
   static Future<void> copyAssetToDocumentDir() async {
     // Load the file from the assets folder
-    ByteData byteData = await rootBundle.load('assets/icons/larger.csv');
+    ByteData byteData = await rootBundle.load('assets/icons/large.csv');
 
     // Create a new file in the documents directory
     File file = await _localFile;
