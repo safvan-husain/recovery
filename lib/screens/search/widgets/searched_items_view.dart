@@ -38,7 +38,10 @@ class SearchedItemsView extends StatelessWidget {
                             // var item = await ExcelStore.getRowItems(
                             //     items.elementAt(index));
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (c) => ItemScreen(details: {})));
+                                builder: (c) => ItemScreen(
+                                      details: {},
+                                      heroTag: '',
+                                    )));
                           },
                           child: Card(
                             child: ListTile(

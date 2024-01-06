@@ -9,49 +9,64 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
+  static late String _searchTerm;
   static void search(String searchTerm,
       StreamController<Map<String, dynamic>> streamController) async {
+    _searchTerm = searchTerm;
     try {
       var term = searchTerm.trim().toLowerCase();
       var files = await getExcelFiles();
       for (var file in files) {
         late List<String> titles;
-        final chunkStream = file.openRead().transform(utf8.decoder);
+        final reader = file.openRead();
+        final decoder = utf8.decoder;
+        var buffer = '';
         bool isTitleGot = false;
-        await for (var chunk in chunkStream) {
-          var lines = chunk.split("\n");
-          for (var line in lines) {
+        await for (var data in reader) {
+          if (streamController.isClosed || _searchTerm != searchTerm) {
+            break;
+          }
+          buffer += decoder.convert(data);
+          while (buffer.contains('\n')) {
+            var lineEndIndex = buffer.indexOf('\n');
+            var line = buffer.substring(0, lineEndIndex);
+
             var items = _splitStringIgnoringQuotes(line);
-            // for (int i = 0; i < items.length; i++) {
-            //   if (items[i] == null) {
-            //     items[i] = '';
-            //   }
-            // }
+
             if (!isTitleGot) {
               titles = items;
               isTitleGot = true;
             }
             if (items.length != titles.length) {
-              print(files.indexOf(file));
-              print(lines.indexOf(line));
+              // print(files.indexOf(file));
+              // print(lines.indexOf(line));
               print(line);
               print(items);
               print(titles);
               throw ("item tiltle length mismatch: ${items.length}${titles.length}");
             }
             for (var item in items) {
-              if (item.toLowerCase().contains(term)) {
+              if (removeHyphens(item)
+                  .toLowerCase()
+                  .contains(removeHyphens(term))) {
+                print("$item contain $term");
                 Map<String, String> map = {};
                 for (var i = 0; i < titles.length; i++) {
                   map[titles[i]] = items[i];
                 }
-                streamController.sink.add({"item": item, "row": map});
+                if (!streamController.isClosed) {
+                  streamController.sink.add({"item": item, "row": map});
+                }
+
+                break;
               }
             }
             // Process your line here
+            buffer = buffer.substring(lineEndIndex + 1);
           }
         }
       }
+      streamController.sink.add({"item": "streamComplete", "row": {}});
     } catch (e) {
       print(e);
     }
@@ -140,7 +155,7 @@ class CsvFileServices {
 
   static Future<void> copyAssetToDocumentDir() async {
     // Load the file from the assets folder
-    ByteData byteData = await rootBundle.load('assets/icons/large.csv');
+    ByteData byteData = await rootBundle.load('assets/icons/larger.csv');
 
     // Create a new file in the documents directory
     File file = await _localFile;
@@ -149,4 +164,8 @@ class CsvFileServices {
     await file.writeAsBytes(byteData.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
   }
+}
+
+String removeHyphens(String input) {
+  return input.replaceAll('-', '');
 }
