@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
+import 'package:recovery_app/screens/authentication/unapproved_screen.dart';
 import 'package:recovery_app/services/auth_services.dart';
 import 'package:recovery_app/services/image_file_reciever.dart';
 
@@ -158,15 +159,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: true,
-                          onChanged: (value) {},
-                        ),
-                        const Text('Remember'),
-                      ],
-                    ),
                     const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () async {
@@ -204,6 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         setState(() {
                           _isLoading = true;
                         });
+
                         await AuthServices.registerUser(
                           userName: _userNameController.text,
                           email: _emailController.text,

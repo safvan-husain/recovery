@@ -2,7 +2,6 @@
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:custom_search_bar/custom_search_bar.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +17,6 @@ import 'package:recovery_app/screens/HomePage/widgets/vehical_owner_tile.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/screens/title_configure/title_configure_screen.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
-import 'package:recovery_app/services/excel_store.dart';
-import 'package:recovery_app/services/json_data_services.dart';
 
 import '../../resources/color_manager.dart';
 
@@ -37,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   List<String> categoryList() => ["Bike", "Home", "Car"];
   String? currentCatValue = "USED LCV";
+  bool isSubscribed = false;
   @override
   void initState() {
     context.read<HomeCubit>().homeInitialization();
@@ -69,52 +67,52 @@ class _HomePageState extends State<HomePage> {
           statusBarIconBrightness: Brightness.dark,
         ),
         title: _buildSearchBar(context, scWidth),
-        actions: [
-          InkWell(
-            onTap: () {
-              if (context.read<HomeCubit>().state.vehichalOwnerList.isEmpty) {
-                return;
-              }
-              showBottomSheet(
-                context: context,
-                builder: (context) {
-                  return FilterBottomSheet(
-                    onFilter: (list) {
-                      _listScrollController.jumpTo(0);
-                      setState(() {
-                        filterdItems = list;
-                      });
-                    },
-                  );
-                },
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(
-                FontAwesomeIcons.filter,
-                color: filterdItems.isEmpty ? Colors.grey : Colors.blue,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          InkWell(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (c) => const NotificationScreen(),
-                ),
-              );
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(
-                FontAwesomeIcons.solidBell,
-                color: Color.fromARGB(255, 0, 0, 0),
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   InkWell(
+        //     onTap: () {
+        //       if (context.read<HomeCubit>().state.vehichalOwnerList.isEmpty) {
+        //         return;
+        //       }
+        //       showBottomSheet(
+        //         context: context,
+        //         builder: (context) {
+        //           return FilterBottomSheet(
+        //             onFilter: (list) {
+        //               _listScrollController.jumpTo(0);
+        //               setState(() {
+        //                 filterdItems = list;
+        //               });
+        //             },
+        //           );
+        //         },
+        //       );
+        //     },
+        //     child: Padding(
+        //       padding: const EdgeInsets.all(8.0),
+        //       child: Icon(
+        //         FontAwesomeIcons.filter,
+        //         color: filterdItems.isEmpty ? Colors.grey : Colors.blue,
+        //       ),
+        //     ),
+        //   ),
+        //   const SizedBox(width: 10),
+        //   InkWell(
+        //     onTap: () {
+        //       Navigator.of(context).push(
+        //         MaterialPageRoute(
+        //           builder: (c) => const NotificationScreen(),
+        //         ),
+        //       );
+        //     },
+        //     child: const Padding(
+        //       padding: EdgeInsets.all(8.0),
+        //       child: Icon(
+        //         FontAwesomeIcons.solidBell,
+        //         color: Color.fromARGB(255, 0, 0, 0),
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
@@ -123,25 +121,25 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               _getCarousel(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: () async {
-                      // context.read<HomeCubit>().downloadData();
-                      // ExcelStore.processExcelInChunks();
-                      // JsonDataServices.readJsonFromFileChunked();
-                      // CsvFileServices.copyAssetToDocumentDir();
-                      CsvFileServices.getExcelFiles();
-                      // print(await CsvFileServices.search("SWIFT DZIRE"));
-                    },
-                    child: Text(
-                      "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
-                      style: TextStyle(color: Colors.grey, fontSize: 15),
-                    ),
-                  )
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.end,
+              //   children: [
+              //     InkWell(
+              //       onTap: () async {
+              //         // context.read<HomeCubit>().downloadData();
+              //         // ExcelStore.processExcelInChunks();
+              //         // JsonDataServices.readJsonFromFileChunked();
+              //         // CsvFileServices.copyAssetToDocumentDir();
+              // CsvFileServices.getExcelFiles();
+              //         // print(await CsvFileServices.search("SWIFT DZIRE"));
+              //       },
+              //       child: Text(
+              //         "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
+              //         style: TextStyle(color: Colors.grey, fontSize: 15),
+              //       ),
+              //     )
+              //   ],
+              // ),
               // _getCategoryTabs(),
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
@@ -150,62 +148,101 @@ class _HomePageState extends State<HomePage> {
                     return ConstrainedBox(
                       constraints: BoxConstraints(minHeight: 200),
                       child: Center(
-                        child: state.changeType == ChangeType.loading
-                            ? Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  CircularProgressIndicator(
-                                    value: (state.downloadProgress ?? 0) / 100,
-                                  ),
-                                  if (state.downloadProgress != null)
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                          "${state.downloadProgress!.floor()} %"),
-                                    )
-                                ],
-                              )
-                            : ElevatedButton(
-                                onPressed: () async {
-                                  if (state.files.isEmpty) {
-                                    showSnackbar(
-                                      "Started to download data",
-                                      context,
-                                      Icons.downloading,
-                                    );
-                                    context.read<HomeCubit>().downloadData();
-                                  } else {
-                                    //TODO: loading.
-                                    // List<List<String?>> titlesOfSheets =
-                                    //     await ExcelStore.getAllListSheetTitles(
-                                    //         context
-                                    //             .read<HomeCubit>()
-                                    //             .state
-                                    //             .files);
-                                    if (context.mounted) {
-                                      PersistentNavBarNavigator.pushNewScreen(
-                                        context,
-                                        screen: TitleConfigure(
-                                          titlesOfSheets: [],
-                                        ),
-                                        withNavBar:
-                                            false, // OPTIONAL VALUE. True by default.
-                                        pageTransitionAnimation:
-                                            PageTransitionAnimation.cupertino,
-                                      );
-                                    }
-
-                                    //TODO: configute logic.
-                                  }
-                                },
+                        // child: state.changeType == ChangeType.loading
+                        //     ? Stack(
+                        //         alignment: Alignment.center,
+                        //         children: [
+                        //           CircularProgressIndicator(
+                        //             value: (state.downloadProgress ?? 0) / 100,
+                        //           ),
+                        //           if (state.downloadProgress != null)
+                        //             Align(
+                        //               alignment: Alignment.center,
+                        //               child: Text(
+                        //                   "${state.downloadProgress!.floor()} %"),
+                        //             )
+                        //         ],
+                        //       )
+                        child: Container(
+                          margin: const EdgeInsets.all(5),
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 162, 190, 248),
+                              borderRadius: BorderRadius.circular(10),
+                              border:
+                                  Border.all(color: Colors.grey, width: 1.0)),
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(20),
                                 child: Text(
-                                  state.files.isEmpty
-                                      ? "Download"
-                                      : "Configure",
+                                  isSubscribed
+                                      ? "Search to see the data"
+                                      : "Take a Subscription to see the data",
                                   style:
-                                      GoogleFonts.poppins(color: Colors.white),
+                                      GoogleFonts.poppins(color: Colors.black),
                                 ),
                               ),
+                              if (!isSubscribed)
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if (!isSubscribed) {
+                                      var files =
+                                          await CsvFileServices.getExcelFiles();
+                                      if (files.isEmpty) {
+                                        await CsvFileServices
+                                            .copyAssetToDocumentDir();
+                                      }
+
+                                      setState(() {
+                                        isSubscribed = true;
+                                      });
+                                    }
+                                    if (state.files.isEmpty) {
+                                      // showSnackbar(
+                                      //   "Started to download data",
+                                      //   context,
+                                      //   Icons.downloading,
+                                      // );
+
+                                      // context.read<HomeCubit>().downloadData();
+                                    } else {
+                                      //TODO: loading.
+                                      // List<List<String?>> titlesOfSheets =
+                                      //     await ExcelStore.getAllListSheetTitles(
+                                      //         context
+                                      //             .read<HomeCubit>()
+                                      //             .state
+                                      //             .files);
+                                      if (context.mounted) {
+                                        PersistentNavBarNavigator.pushNewScreen(
+                                          context,
+                                          screen: TitleConfigure(
+                                            titlesOfSheets: [],
+                                          ),
+                                          withNavBar:
+                                              false, // OPTIONAL VALUE. True by default.
+                                          pageTransitionAnimation:
+                                              PageTransitionAnimation.cupertino,
+                                        );
+                                      }
+
+                                      //TODO: configute logic.
+                                    }
+                                  },
+                                  child: Text(
+                                    state.files.isEmpty
+                                        ? "Subscribe"
+                                        : "Configure",
+                                    style: GoogleFonts.poppins(
+                                        color: Colors.white),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                       ),
                     );
                   }

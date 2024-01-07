@@ -5,7 +5,6 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'package:recovery_app/models/detail_model.dart';
 import 'package:recovery_app/screens/vehical_info_sc/vehical_info_confirm.dart';
-import 'package:recovery_app/services/excel_store.dart';
 import 'package:recovery_app/services/loation.dart';
 
 import '../../models/otp_model.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:recovery_app/screens/search/item_screen.dart';
-import 'package:recovery_app/services/excel_store.dart';
 
 class SearchedItemsView extends StatelessWidget {
   const SearchedItemsView({

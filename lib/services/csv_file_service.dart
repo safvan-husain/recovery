@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:developer';
 
 import 'package:flutter/services.dart';
-import 'package:aho_corasick/aho_corasick.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -37,19 +35,11 @@ class CsvFileServices {
               titles = items;
               isTitleGot = true;
             }
-            if (items.length != titles.length) {
-              // print(files.indexOf(file));
-              // print(lines.indexOf(line));
-              print(line);
-              print(items);
-              print(titles);
-              throw ("item tiltle length mismatch: ${items.length}${titles.length}");
-            }
+
             for (var item in items) {
               if (removeHyphens(item)
                   .toLowerCase()
                   .contains(removeHyphens(term))) {
-                print("$item contain $term");
                 Map<String, String> map = {};
                 for (var i = 0; i < titles.length; i++) {
                   map[titles[i]] = items[i];

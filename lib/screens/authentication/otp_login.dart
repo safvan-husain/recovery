@@ -20,8 +20,7 @@ class OtpLogin extends StatefulWidget {
 }
 
 class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
-  final TextEditingController _emailController =
-      TextEditingController(text: "7907320942");
+  final TextEditingController _emailController = TextEditingController();
   String? otp;
   UserModel? user;
   var isCountComplete = false;
@@ -61,173 +60,193 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
     super.initState();
   }
 
+  bool isClicked = false;
+
+  var value2 = true;
   @override
   Widget build(BuildContext context) {
     var isOtpGenerated = otp != null;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height - 100),
-              child: Column(
-                mainAxisAlignment: isOtpGenerated
-                    ? MainAxisAlignment.start
-                    : MainAxisAlignment.spaceBetween,
-                children: [
-                  Image.asset(isOtpGenerated
-                      ? 'assets/images/otp.png'
-                      : 'assets/images/phone-verify.png'),
-                  if (!isOtpGenerated) ...[
-                    Text(
-                      'Verify your phone number',
-                      style: GoogleFonts.outfit(
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xff23202a),
-                        ),
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        buildPhoneInputFieald(
-                          controller: _emailController,
-                        ),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: true,
-                              onChanged: (value) {},
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height - 100),
+                  child: Column(
+                    mainAxisAlignment: isOtpGenerated
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(isOtpGenerated
+                          ? 'assets/images/otp.png'
+                          : 'assets/images/phone-verify.png'),
+                      if (!isOtpGenerated) ...[
+                        Text(
+                          'Verify your phone number',
+                          style: GoogleFonts.outfit(
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff23202a),
                             ),
-                            const Text('Remember'),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            buildPhoneInputFieald(
+                              controller: _emailController,
+                            ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: value2,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      value2 = value ?? false;
+                                    });
+                                  },
+                                ),
+                                const Text('Remember'),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_emailController.text.isEmpty) {
-                          showSnackbar(
-                            "Phone number is required",
-                            context,
-                            Icons.warning,
-                          );
-                          return;
-                        }
-                        var result = await AuthServices.verifyPhone(
-                          phone: _emailController.text,
-                          context: context,
-                        );
-                        otp = result.$1;
-                        user = result.$2;
-                        setState(() {});
-                        _startCountDown();
-                      },
-                      style: ButtonStyle(
-                        textStyle: MaterialStateProperty.all<TextStyle>(
-                          const TextStyle(color: Colors.white),
-                        ),
-                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                          const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 100), // Adjust the padding here
-                        ),
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            const Color(0xff2c65d8)),
-                        shape: MaterialStateProperty.all<OutlinedBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                        const SizedBox(height: 30),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_emailController.text.isEmpty ||
+                                _emailController.text.length < 10) {
+                              showSnackbar(
+                                "Phone number is required",
+                                context,
+                                Icons.warning,
+                              );
+                              return;
+                            }
+                            try {
+                              setState(() {
+                                isClicked = true;
+                              });
+                              var result = await AuthServices.verifyPhone(
+                                phone: _emailController.text,
+                                context: context,
+                              );
+                              setState(() {
+                                isClicked = false;
+                              });
+                              otp = result.$1;
+                              user = result.$2;
+                              setState(() {});
+                              _startCountDown();
+                            } catch (e) {
+                              if (context.mounted) {
+                                showSnackbar(
+                                  "Authentication failed",
+                                  context,
+                                  Icons.warning,
+                                );
+                              }
+                              setState(() {
+                                isClicked = false;
+                              });
+                            }
+                          },
+                          style: ButtonStyle(
+                            textStyle: MaterialStateProperty.all<TextStyle>(
+                              const TextStyle(color: Colors.white),
+                            ),
+                            padding:
+                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal: 100), // Adjust the padding here
+                            ),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color(0xff2c65d8)),
+                            shape: MaterialStateProperty.all<OutlinedBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Get OTP',
+                            maxLines: 1,
+                            style: GoogleFonts.outfit(
+                              textStyle: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      child: Text(
-                        'Get OTP',
-                        maxLines: 1,
-                        style: GoogleFonts.outfit(
-                          textStyle: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "OR",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 16,
-                          // fontWeight: FontWeight.bold, // Makes the text bold
-                          letterSpacing:
-                              1.2, // Increases spacing between letters
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Text(
-                          "Login With Password",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            color: Colors.blue,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400, // Makes the text bold
-                            letterSpacing:
-                                1.2, // Increases spacing between letters
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (c) => const Login()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 40),
-                    // InkWell(
-                    //   onTap: () {
-                    //     Navigator.of(context).push(MaterialPageRoute(
-                    //         builder: (c) => const SignUpScreen()));
-                    //   },
-                    //   child: const Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       Text("Don't have an account?"),
-                    //       SizedBox(width: 5),
-                    //       Text(
-                    //         'Sign Up',
-                    //         style: TextStyle(
-                    //           color: Color(0xff2c65d8),
-                    //           fontWeight: FontWeight.w600,
-                    //         ),
-                    //         maxLines: 1,
-                    //       ),
-                    //     ],
-                    //   ),
-                    // )
-                  ] else
-                    ..._enterPinScreen,
-                  const SizedBox(height: 40),
-                ],
+                        // Padding(
+                        //   padding: const EdgeInsets.all(8.0),
+                        //   child: Text(
+                        //     "OR",
+                        //     textAlign: TextAlign.center,
+                        //     style: GoogleFonts.poppins(
+                        //       color: Colors.black,
+                        //       fontSize: 16,
+                        //       // fontWeight: FontWeight.bold, // Makes the text bold
+                        //       letterSpacing:
+                        //           1.2, // Increases spacing between letters
+                        //     ),
+                        //   ),
+                        // ),
+                        // InkWell(
+                        //   child: Container(
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 20, vertical: 5),
+                        //     decoration: BoxDecoration(
+                        //       border: Border.all(color: Colors.blue),
+                        //       borderRadius: BorderRadius.circular(15),
+                        //     ),
+                        //     child: Text(
+                        //       "Login With Password",
+                        //       textAlign: TextAlign.center,
+                        //       style: GoogleFonts.poppins(
+                        //         color: Colors.blue,
+                        //         fontSize: 16,
+                        //         fontWeight: FontWeight.w400, // Makes the text bold
+                        //         letterSpacing:
+                        //             1.2, // Increases spacing between letters
+                        //       ),
+                        //     ),
+                        //   ),
+                        //   onTap: () {
+                        //     Navigator.of(context).push(
+                        //       MaterialPageRoute(builder: (c) => const Login()),
+                        //     );
+                        //   },
+                        // ),
+                        const SizedBox(height: 40),
+                      ] else
+                        ..._enterPinScreen,
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          if (isClicked)
+            Stack(
+              children: [
+                ModalBarrier(
+                    dismissible: false, color: Colors.grey.withOpacity(0.3)),
+                const Center(child: CircularProgressIndicator()),
+              ],
+            ),
+        ],
       ),
     );
   }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:recovery_app/screens/settings_sc/language_sc/language_sc.dart';
-import 'package:recovery_app/services/excel_store.dart';
 
 import '../../resources/color_manager.dart';
 

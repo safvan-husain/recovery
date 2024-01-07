@@ -10,11 +10,9 @@ import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/initialScreen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
-import 'package:recovery_app/services/excel_store.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await ExcelStore.initilize();
 
   runApp(
     MultiBlocProvider(
@@ -25,10 +23,7 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-  // MyApp._internal();  //Private Named Constructor
-  // int appState = 0;
-  // static final MyApp instance = MyApp._internal();  //Single Instance -- Singleton
-  // factory MyApp() =>instance; //factory for class Instance
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -43,8 +38,8 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const InitialScreen(),
         '/login': (context) => const Login(),
-        '/otp-login': (context) => const BottomNavView(),
-        // '/otp-login': (context) => const OtpLogin(),
+        // '/otp-login': (context) => const BottomNavView(),
+        '/otp-login': (context) => const OtpLogin(),
       },
       builder: (context, child) {
         return MediaQuery(

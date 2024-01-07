@@ -134,6 +134,7 @@ class AuthServices {
         } else {
           if (context.mounted) {
             showSnackbar("failed to send otp", context, Icons.warning);
+            throw Error();
           }
         }
       }
@@ -170,52 +171,59 @@ class AuthServices {
       if (response.statusCode == 200) {
         var result = jsonDecode(response.data);
         if (result['status'] == true) {
-          try {
-            FormData formData = FormData();
-            String fileName = panCard.path.split('/').last;
-            formData.files.add(
-              MapEntry(
-                'image1', // Use a unique key for each image
-                await MultipartFile.fromFile(
-                  panCard.path,
-                  filename: fileName,
-                ),
-              ),
+          if (context.mounted) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const UnApprovedScreen()),
+              (s) => false,
             );
-            String adharFileName = adharCard.path.split('/').last;
-            formData.files.add(
-              MapEntry(
-                'image2', // Use a unique key for each image
-                await MultipartFile.fromFile(
-                  adharCard.path,
-                  filename: adharFileName,
-                ),
-              ),
-            );
-            formData.fields.add(MapEntry('agentName', userName));
-
-            Response re = await dio.post(
-              'https://www.recovery.starkinsolutions.com/addImage.php',
-              data: formData,
-              options: Options(
-                headers: {'Content-Type': 'multipart/form-data'},
-              ),
-            );
-            if (result['status'] == true) {
-              if (context.mounted) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UnApprovedScreen()),
-                  (s) => false,
-                );
-              }
-            } else {
-              print(re.data);
-            }
-          } catch (e) {
-            print(e);
           }
+          // try {
+          //   FormData formData = FormData();
+          //   String fileName = panCard.path.split('/').last;
+          //   formData.files.add(
+          //     MapEntry(
+          //       'image1', // Use a unique key for each image
+          //       await MultipartFile.fromFile(
+          //         panCard.path,
+          //         filename: fileName,
+          //       ),
+          //     ),
+          //   );
+          //   String adharFileName = adharCard.path.split('/').last;
+          //   formData.files.add(
+          //     MapEntry(
+          //       'image2', // Use a unique key for each image
+          //       await MultipartFile.fromFile(
+          //         adharCard.path,
+          //         filename: adharFileName,
+          //       ),
+          //     ),
+          //   );
+          //   formData.fields.add(MapEntry('agentName', userName));
+
+          //   Response re = await dio.post(
+          //     'https://www.recovery.starkinsolutions.com/addImage.php',
+          //     data: formData,
+          //     options: Options(
+          //       headers: {'Content-Type': 'multipart/form-data'},
+          //     ),
+          //   );
+          //   if (result['status'] == true) {
+          //     if (context.mounted) {
+          //       Navigator.pushAndRemoveUntil(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (context) => const UnApprovedScreen()),
+          //         (s) => false,
+          //       );
+          //     }
+          //   } else {
+          //     print(re.data);
+          //   }
+          // } catch (e) {
+          //   print(e);
+          // }
         } else {
           if (context.mounted) {
             showSnackbar(result['message'], context, Icons.warning);

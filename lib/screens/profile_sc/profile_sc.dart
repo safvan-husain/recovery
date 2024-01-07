@@ -12,6 +12,7 @@ import 'package:recovery_app/resources/assets_manager.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/login.dart';
+import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/screens/common_widgets/count_down_ui.dart';
 import 'package:recovery_app/services/auth_services.dart';
 
@@ -244,117 +245,117 @@ class _ProfileScViewState extends State<ProfileScView>
             ),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // A button with a logout icon and a 3D effect
-            ElevatedButton.icon(
-              onPressed: () {
-                if (isEditting) {
-                  _mobNoController.text =
-                      context.read<HomeCubit>().state.user!.number;
-                  _emailController.text =
-                      context.read<HomeCubit>().state.user!.email;
-                  _addressController.text =
-                      context.read<HomeCubit>().state.user!.address;
-                  setState(() {
-                    isEditting = false;
-                    isPhoneChanged = false;
-                  });
-                }
-                print(context.read<HomeCubit>().state.user!.email);
-                print(context.read<HomeCubit>().state.user!.number);
-              },
-              icon: Icon(
-                isEditting ? Icons.cancel : Icons.logout,
-                color: Colors.white,
-                size: 30,
-              ),
-              label: Text(
-                isEditting ? "Cancel" : 'Log Out',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-              style: ButtonStyle(
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                elevation: MaterialStateProperty.all(10),
-                backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-              ),
-            ),
-            const SizedBox(width: 10),
-            // A button with an edit profile icon and a 3D effect
-            ElevatedButton.icon(
-              onPressed: () async {
-                if (isEditting) {
-                  // phone number changed so need to verify.
-                  if (_mobNoController.text !=
-                      context.read<HomeCubit>().state.user!.number) {
-                    var result = await AuthServices.verifyPhone(
-                      phone: _mobNoController.text,
-                      context: context,
-                      isLogin: false,
-                    );
-                    if (result.$2 != null) {
-                      if (context.mounted) {
-                        setState(() {
-                          isPhoneChanged = false;
-                          _mobNoController.text =
-                              context.read<HomeCubit>().state.user!.number;
-                        });
-                        showSnackbar(
-                            "Mobile number already exist with other account",
-                            context,
-                            Icons.warning);
-                      }
-                    } else {
-                      setState(() {
-                        isPhoneChanged = true;
-                      });
-                      _startCountDown();
-                      //TODO: update user.
-                    }
-                  } else {
-                    //TODO: update user.
-                  }
-                } else {
-                  FocusScope.of(context).requestFocus(focusNode);
-                }
-                setState(() {
-                  isEditting = !isEditting;
-                });
-              },
-              icon: Icon(
-                isEditting ? Icons.save : Icons.edit,
-                color: Colors.white,
-                size: 30,
-              ),
-              label: Text(
-                isEditting ? "Save Profile" : 'Edit Profile',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-              style: ButtonStyle(
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                elevation: MaterialStateProperty.all(10),
-                backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-              ),
-            ),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //   children: [
+        //     // A button with a logout icon and a 3D effect
+        //     ElevatedButton.icon(
+        //       onPressed: () {
+        //         if (isEditting) {
+        //           _mobNoController.text =
+        //               context.read<HomeCubit>().state.user!.number;
+        //           _emailController.text =
+        //               context.read<HomeCubit>().state.user!.email;
+        //           _addressController.text =
+        //               context.read<HomeCubit>().state.user!.address;
+        //           setState(() {
+        //             isEditting = false;
+        //             isPhoneChanged = false;
+        //           });
+        //         }
+        //         print(context.read<HomeCubit>().state.user!.email);
+        //         print(context.read<HomeCubit>().state.user!.number);
+        //       },
+        //       icon: Icon(
+        //         isEditting ? Icons.cancel : Icons.logout,
+        //         color: Colors.white,
+        //         size: 30,
+        //       ),
+        //       label: Text(
+        //         isEditting ? "Cancel" : 'Log Out',
+        //         style: GoogleFonts.poppins(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 16,
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //       style: ButtonStyle(
+        //         shape: MaterialStateProperty.all(
+        //           RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(10),
+        //           ),
+        //         ),
+        //         elevation: MaterialStateProperty.all(10),
+        //         backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+        //       ),
+        //     ),
+        //     const SizedBox(width: 10),
+        //     // A button with an edit profile icon and a 3D effect
+        //     ElevatedButton.icon(
+        //       onPressed: () async {
+        //         if (isEditting) {
+        //           // phone number changed so need to verify.
+        //           if (_mobNoController.text !=
+        //               context.read<HomeCubit>().state.user!.number) {
+        //             var result = await AuthServices.verifyPhone(
+        //               phone: _mobNoController.text,
+        //               context: context,
+        //               isLogin: false,
+        //             );
+        //             if (result.$2 != null) {
+        //               if (context.mounted) {
+        //                 setState(() {
+        //                   isPhoneChanged = false;
+        //                   _mobNoController.text =
+        //                       context.read<HomeCubit>().state.user!.number;
+        //                 });
+        //                 showSnackbar(
+        //                     "Mobile number already exist with other account",
+        //                     context,
+        //                     Icons.warning);
+        //               }
+        //             } else {
+        //               setState(() {
+        //                 isPhoneChanged = true;
+        //               });
+        //               _startCountDown();
+        //               //TODO: update user.
+        //             }
+        //           } else {
+        //             //TODO: update user.
+        //           }
+        //         } else {
+        //           FocusScope.of(context).requestFocus(focusNode);
+        //         }
+        //         setState(() {
+        //           isEditting = !isEditting;
+        //         });
+        //       },
+        //       icon: Icon(
+        //         isEditting ? Icons.save : Icons.edit,
+        //         color: Colors.white,
+        //         size: 30,
+        //       ),
+        //       label: Text(
+        //         isEditting ? "Save Profile" : 'Edit Profile',
+        //         style: GoogleFonts.poppins(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 16,
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //       style: ButtonStyle(
+        //         shape: MaterialStateProperty.all(
+        //           RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(10),
+        //           ),
+        //         ),
+        //         elevation: MaterialStateProperty.all(10),
+        //         backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ];
 
   PreferredSize _profilePictureSection(BuildContext context) {
@@ -487,7 +488,7 @@ class _ProfileScViewState extends State<ProfileScView>
                             onTap: () {
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (c) => const Login()),
+                                    builder: (c) => const OtpLogin()),
                                 (route) => false,
                               );
                             },
