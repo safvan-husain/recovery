@@ -10,10 +10,11 @@ import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/initialScreen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
+import 'package:recovery_app/storage/database_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await DatabaseHelper().initializeDatabase();
   runApp(
     MultiBlocProvider(
         providers: [BlocProvider(create: (c) => HomeCubit())],
