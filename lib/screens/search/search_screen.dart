@@ -6,6 +6,7 @@ import 'package:recovery_app/screens/search/item_screen.dart';
 import 'package:recovery_app/screens/search/widgets/searched_items_view.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:recovery_app/storage/database_helper.dart';
 
 class SearchScreen1 extends StatefulWidget {
   const SearchScreen1({super.key});
@@ -26,20 +27,10 @@ class SearchScreen1State extends State<SearchScreen1> {
 
   @override
   void initState() {
-    _streamController.stream.listen((event) {
-      if (event['item'] == "streamComplete") {
-        _isSearchComplete = true;
-      } else {
-        _isSearchComplete = false;
-        addItemAndSort(items, event, _controller.text.trim());
-        // items.add(event);
-      }
-      setState(() {});
-    });
     super.initState();
   }
 
-  List<Map<String, dynamic>> items = [];
+  List<String> items = [];
   @override
   void dispose() {
     _streamController.close();
@@ -103,9 +94,10 @@ class SearchScreen1State extends State<SearchScreen1> {
                   prefixIcon: Icon(Icons.search)),
               controller: _controller,
               onChanged: (value) async {
-                CsvFileServices.search(_controller.text, _streamController);
-                items = [];
-                setState(() {});
+                items = value.isEmpty
+                    ? []
+                    : await DatabaseHelper.showForPrefix(removeHyphens(value));
+                if (context.mounted) setState(() {});
               },
             ),
           ),
@@ -120,21 +112,24 @@ class SearchScreen1State extends State<SearchScreen1> {
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   return InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (c) => ItemScreen(
-                            details: items[index]['row'],
-                            heroTag: 'item-$index',
-                          ),
-                        ),
-                      );
+                    onTap: () async {
+                      var result =
+                          await DatabaseHelper.getDetails(items[index]);
+                      print(result);
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (c) => ItemScreen(
+                      //       details: items[index]['row'],
+                      //       heroTag: 'item-$index',
+                      //     ),
+                      //   ),
+                      // );
                     },
                     child: Hero(
                       tag: 'item-$index',
                       child: Card(
                         child: ListTile(
-                          title: Text(items[index]['item']),
+                          title: Text(items[index]),
                         ),
                       ),
                     ),

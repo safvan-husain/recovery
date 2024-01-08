@@ -42,8 +42,8 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const InitialScreen(),
         '/login': (context) => const Login(),
-        // '/otp-login': (context) => const BottomNavView(),
-        '/otp-login': (context) => const OtpLogin(),
+        '/otp-login': (context) => const BottomNavView(),
+        // '/otp-login': (context) => const OtpLogin(),
       },
       builder: (context, child) {
         return MediaQuery(

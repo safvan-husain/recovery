@@ -83,6 +83,7 @@ class DatabaseHelper {
   }
 
   static Future<int> inseartTitles(List<String> titles) async {
+    print("titles added");
     return await _database
         .insert(jsonStore, {'json_string': jsonEncode(titles)});
   }

@@ -4,59 +4,41 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:recovery_app/storage/database_helper.dart';
 import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
-  static late String _searchTerm;
-  static void search(String searchTerm,
-      StreamController<Map<String, dynamic>> streamController) async {
-    _searchTerm = searchTerm;
+  static void proccessFiles() async {
     try {
-      var term = searchTerm.trim().toLowerCase();
       var files = await getExcelFiles();
       for (var file in files) {
         late List<String> titles;
         final reader = file.openRead();
         final decoder = utf8.decoder;
         var buffer = '';
-        bool isTitleGot = false;
+        int? titleDBId;
         await for (var data in reader) {
-          if (streamController.isClosed || _searchTerm != searchTerm) {
-            break;
-          }
           buffer += decoder.convert(data);
           while (buffer.contains('\n')) {
             var lineEndIndex = buffer.indexOf('\n');
             var line = buffer.substring(0, lineEndIndex);
 
-            var items = _splitStringIgnoringQuotes(line);
+            var items = _splitStringIgnoringQuotes(line)
+                .map((e) => removeHyphens(e))
+                .toList();
 
-            if (!isTitleGot) {
+            if (titleDBId == null) {
               titles = items;
-              isTitleGot = true;
+              titleDBId = await DatabaseHelper.inseartTitles(titles);
+            } else {
+              await DatabaseHelper.inseartRow(items, titleDBId);
             }
 
-            for (var item in items) {
-              if (removeHyphens(item)
-                  .toLowerCase()
-                  .contains(removeHyphens(term))) {
-                Map<String, String> map = {};
-                for (var i = 0; i < titles.length; i++) {
-                  map[titles[i]] = items[i];
-                }
-                if (!streamController.isClosed) {
-                  streamController.sink.add({"item": item, "row": map});
-                }
-
-                break;
-              }
-            }
             // Process your line here
             buffer = buffer.substring(lineEndIndex + 1);
           }
         }
       }
-      streamController.sink.add({"item": "streamComplete", "row": {}});
     } catch (e) {
       print(e);
     }
@@ -145,7 +127,7 @@ class CsvFileServices {
 
   static Future<void> copyAssetToDocumentDir() async {
     // Load the file from the assets folder
-    ByteData byteData = await rootBundle.load('assets/icons/larger.csv');
+    ByteData byteData = await rootBundle.load('assets/icons/large.csv');
 
     // Create a new file in the documents directory
     File file = await _localFile;
@@ -157,5 +139,5 @@ class CsvFileServices {
 }
 
 String removeHyphens(String input) {
-  return input.replaceAll('-', '');
+  return input.replaceAll('-', '').replaceAll(' ', '').toLowerCase();
 }
