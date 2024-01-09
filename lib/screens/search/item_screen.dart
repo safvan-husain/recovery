@@ -1,73 +1,78 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/screens/search/widgets/single_item.dart';
 
-class ItemScreen extends StatelessWidget {
-  final Map<String, dynamic> details;
+class ItemScreen extends StatefulWidget {
+  final List<int> rowIds;
   final String heroTag;
   const ItemScreen({
     Key? key,
-    required this.details,
+    required this.rowIds,
     required this.heroTag,
   }) : super(key: key);
+
+  @override
+  State<ItemScreen> createState() => _ItemScreenState();
+}
+
+class _ItemScreenState extends State<ItemScreen> {
+  final PageController controller = PageController();
+  int currentIndex = 1;
+  @override
+  void initState() {
+    controller.addListener(() {
+      var index = controller.page!.round() + 1;
+      if (index != currentIndex) {
+        setState(() {
+          currentIndex = index;
+        });
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Details"),
+        title:const Text("Details"),
       ),
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Hero(
-          tag: heroTag,
-          child: Card(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: details.entries
-                      .where((element) => element.value.toString().isNotEmpty)
-                      .map((e) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    e.key,
-                                    style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  " : ",
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      e.value.toString(),
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    )),
-                              ],
-                            ),
-                          ))
-                      .toList(),
-                ),
+        child: widget.rowIds.isEmpty
+            ? const Center(
+                child: Text("No details available"),
+              )
+            : Column(
+                children: [
+                  Container(
+                    child: Text("Item $currentIndex / ${widget.rowIds.length}"),
+                  ),
+                  GestureDetector(
+                    onHorizontalDragEnd: (details) {
+                      if (details.primaryVelocity! > 0) {
+                        // Swipe Right
+                        print('Swiped Right');
+                      } else if (details.primaryVelocity! < 0) {
+                        // Swipe Left
+                        print('Swiped Left');
+                      }
+                    },
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height - 200,
+                      child: PageView(
+                        controller: controller,
+                        children: widget.rowIds
+                            .map((e) => SingleItemScreen(
+                                rowId: e, heroTag: widget.heroTag))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ),
       )),
     );
   }

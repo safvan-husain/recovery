@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:recovery_app/storage/node_model.dart';
 import 'package:sqflite/sqflite.dart';
@@ -76,20 +75,8 @@ class DatabaseHelper {
         'rowId': rowId == null ? "[]" : jsonEncode([rowId])
       },
     );
-    // print(id);
-    // var k =
-    //     await _database.query(trie, where: '$charColum = ?', whereArgs: [char]);
-    // print(k);
-    // // print("created node : ${obj}");
     return id;
   }
-
-  // static Future<void> _addRowToNode(int nodeId, int rowId) async {
-  //   var map = await _getNode(nodeId);
-  //   List<dynamic> rowIds = map.rowId;
-  //   rowIds.add(rowId);
-  //   await _database.update(trie, {"rowId": jsonEncode(rowIds)});
-  // }
 
   static Future<int> inseartTitles(List<String> titles) async {
     return await _database
@@ -99,11 +86,8 @@ class DatabaseHelper {
   static Future<void> inseartRow(List<String> row, int titlesId) async {
     int rowId = await _database.insert(
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
-    int count = 0;
-    print(row);
     for (var element in row) {
       await _inseartString(element, rowId);
-      // print("inserted string ${count++} times for a row");
     }
   }
 
@@ -127,19 +111,12 @@ class DatabaseHelper {
       }
       if (i == word.length - 1) {
         node = await _getNode(nodeId);
-        log('$charecter is the end of $word and its node : ${node.toMap()}');
         List<int> rowIds = node.rowId;
         if (!rowIds.contains(rowId)) {
           rowIds.add(rowId);
-          redLog('adding rowID : ${rowId} to ');
           await _database.update(trie, {"rowId": jsonEncode(rowIds)},
               where: 'id = ?', whereArgs: [node.dbId]);
         }
-      } else {
-        nodeId = node.children[charecter]!;
-        node = await _getNode(nodeId);
-        print(
-            '$charecter is not the end of $word and its node : ${node.toMap()}');
       }
     }
   }

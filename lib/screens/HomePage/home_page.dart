@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                       // context.read<HomeCubit>().downloadData();
                       // ExcelStore.processExcelInChunks();
                       // JsonDataServices.readJsonFromFileChunked();
-                      // await CsvFileServices.copyAssetToDocumentDir();
+                      await CsvFileServices.fetchDownloadLinksAndNames();
                       // await CsvFileServices.getExcelFiles();
                       await DatabaseHelper.deleteAllData();
                       CsvFileServices.proccessFiles();

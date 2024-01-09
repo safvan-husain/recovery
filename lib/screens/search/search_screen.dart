@@ -114,12 +114,10 @@ class SearchScreen1State extends State<SearchScreen1> {
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () async {
-                      var result = await DatabaseHelper.getDetails(
-                          items[index].node.rowId[0]);
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (c) => ItemScreen(
-                            details: result!,
+                            rowIds: items[index].node.rowId,
                             heroTag: 'item-$index',
                           ),
                         ),

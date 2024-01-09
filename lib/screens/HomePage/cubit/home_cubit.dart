@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 
 import 'package:recovery_app/models/detail_model.dart';
 import 'package:recovery_app/models/user_model.dart';
+import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/home_service.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -49,7 +50,10 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copywith(changeType: ChangeType.loading));
     print(state.user!.agencyId!); //TODO: agencyId is hard coded.
     StreamController<double> downloadProgress = StreamController<double>();
-    // ExcelStore.downloadFile("2", downloadProgress);
+
+    CsvFileServices.fetchDownloadLinksAndNames(
+        state.user!.agencyId!, downloadProgress);
+
     downloadProgress.stream.listen((p) {
       if (p >= 100) {
         homeInitialization();

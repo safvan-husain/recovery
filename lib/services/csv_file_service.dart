@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recovery_app/storage/database_helper.dart';
@@ -17,7 +17,6 @@ class CsvFileServices {
         final decoder = utf8.decoder;
         var buffer = '';
         int? titleDBId;
-        int count = 0;
         await for (var data in reader) {
           buffer += decoder.convert(data);
           while (buffer.contains('\n')) {
@@ -33,7 +32,6 @@ class CsvFileServices {
               titleDBId = await DatabaseHelper.inseartTitles(titles);
             } else {
               await DatabaseHelper.inseartRow(items, titleDBId);
-              print("inserted row ${count++} times");
             }
 
             // Process your line here
@@ -46,6 +44,49 @@ class CsvFileServices {
     }
 
     print("No row found for the search term");
+  }
+
+  static Future<void> downloadFile(
+    String url,
+    String savePath,
+    StreamController<double> downloadProgress,
+  ) async {
+    Dio dio = Dio();
+    try {
+      await dio.download(url, savePath, onReceiveProgress: (received, total) {
+        if (total != -1) {
+          print('${(received / total * 100).toStringAsFixed(0)}%');
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<Map<String, String>> fetchDownloadLinksAndNames(
+    String agencyId,
+    StreamController<double> downloadProgress,
+  ) async {
+    String url = "http://192.168.43.32:3000/data";
+    final dio = Dio();
+    final response =
+        await dio.post(url, data: {"filenames": [], "agencyId": agencyId});
+
+    if (response.statusCode == 200) {
+      Map<String, String> downloadLinksAndNames = {};
+
+      response.data['missingFiles'].forEach((link) {
+        Uri uri = Uri.parse(link);
+        String fileName = uri.pathSegments.last;
+        downloadLinksAndNames[fileName] = link;
+      });
+      downloadLinksAndNames.forEach((key, value) async {
+        await downloadFile(value, key, downloadProgress);
+      });
+      return downloadLinksAndNames;
+    } else {
+      throw Exception('Failed to load download links');
+    }
   }
 
   static List<String> _splitStringIgnoringQuotes(String input) {
