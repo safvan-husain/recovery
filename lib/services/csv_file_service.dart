@@ -49,15 +49,11 @@ class CsvFileServices {
   static Future<void> downloadFile(
     String url,
     String savePath,
-    StreamController<double> downloadProgress,
+    void Function(int, int)? onReceiveProgress,
   ) async {
     Dio dio = Dio();
     try {
-      await dio.download(url, savePath, onReceiveProgress: (received, total) {
-        if (total != -1) {
-          print('${(received / total * 100).toStringAsFixed(0)}%');
-        }
-      });
+      await dio.download(url, savePath, onReceiveProgress: onReceiveProgress);
     } catch (e) {
       print(e);
     }
@@ -81,7 +77,11 @@ class CsvFileServices {
         downloadLinksAndNames[fileName] = link;
       });
       downloadLinksAndNames.forEach((key, value) async {
-        await downloadFile(value, key, downloadProgress);
+        await downloadFile(value, key, (received, total) {
+          if (total != -1) {
+            print('${(received / total * 100).toStringAsFixed(0)}%');
+          }
+        });
       });
       return downloadLinksAndNames;
     } else {

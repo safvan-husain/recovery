@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                       // context.read<HomeCubit>().downloadData();
                       // ExcelStore.processExcelInChunks();
                       // JsonDataServices.readJsonFromFileChunked();
-                      await CsvFileServices.fetchDownloadLinksAndNames();
+                      // await CsvFileServices.fetchDownloadLinksAndNames();
                       // await CsvFileServices.getExcelFiles();
                       await DatabaseHelper.deleteAllData();
                       CsvFileServices.proccessFiles();
@@ -151,101 +151,70 @@ class _HomePageState extends State<HomePage> {
                     return ConstrainedBox(
                       constraints: BoxConstraints(minHeight: 200),
                       child: Center(
-                        // child: state.changeType == ChangeType.loading
-                        //     ? Stack(
-                        //         alignment: Alignment.center,
-                        //         children: [
-                        //           CircularProgressIndicator(
-                        //             value: (state.downloadProgress ?? 0) / 100,
-                        //           ),
-                        //           if (state.downloadProgress != null)
-                        //             Align(
-                        //               alignment: Alignment.center,
-                        //               child: Text(
-                        //                   "${state.downloadProgress!.floor()} %"),
-                        //             )
-                        //         ],
-                        //       )
-                        child: Container(
-                          margin: const EdgeInsets.all(5),
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 162, 190, 248),
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: Colors.grey, width: 1.0)),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(20),
-                                child: Text(
-                                  isSubscribed
-                                      ? "Search to see the data"
-                                      : "Take a Subscription to see the data",
-                                  style:
-                                      GoogleFonts.poppins(color: Colors.black),
+                        child: state.changeType == ChangeType.loading
+                            ? Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  CircularProgressIndicator(
+                                    value: (state.downloadProgress ?? 0) / 100,
+                                  ),
+                                  if (state.downloadProgress != null)
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                          "${state.downloadProgress!.floor()} %"),
+                                    )
+                                ],
+                              )
+                            : Container(
+                                margin: const EdgeInsets.all(5),
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 162, 190, 248),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.grey, width: 1.0)),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(20),
+                                      child: Text(
+                                        isSubscribed
+                                            ? "Search to see the data"
+                                            : "Take a Subscription to see the data",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.black),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        if (state.files.isEmpty) {
+                                          showSnackbar(
+                                            "Started to download data",
+                                            context,
+                                            Icons.downloading,
+                                          );
+
+                                          context
+                                              .read<HomeCubit>()
+                                              .downloadData();
+                                        } else {
+                                          //TODO: loading.
+                                        }
+                                      },
+                                      child: Text(
+                                        state.files.isEmpty
+                                            ? "DOwnload"
+                                            : "Configure",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              if (!isSubscribed)
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    if (!isSubscribed) {
-                                      var files =
-                                          await CsvFileServices.getExcelFiles();
-                                      if (files.isEmpty) {
-                                        await CsvFileServices
-                                            .copyAssetToDocumentDir();
-                                      }
-
-                                      setState(() {
-                                        isSubscribed = true;
-                                      });
-                                    }
-                                    if (state.files.isEmpty) {
-                                      // showSnackbar(
-                                      //   "Started to download data",
-                                      //   context,
-                                      //   Icons.downloading,
-                                      // );
-
-                                      // context.read<HomeCubit>().downloadData();
-                                    } else {
-                                      //TODO: loading.
-                                      // List<List<String?>> titlesOfSheets =
-                                      //     await ExcelStore.getAllListSheetTitles(
-                                      //         context
-                                      //             .read<HomeCubit>()
-                                      //             .state
-                                      //             .files);
-                                      if (context.mounted) {
-                                        PersistentNavBarNavigator.pushNewScreen(
-                                          context,
-                                          screen: TitleConfigure(
-                                            titlesOfSheets: [],
-                                          ),
-                                          withNavBar:
-                                              false, // OPTIONAL VALUE. True by default.
-                                          pageTransitionAnimation:
-                                              PageTransitionAnimation.cupertino,
-                                        );
-                                      }
-
-                                      //TODO: configute logic.
-                                    }
-                                  },
-                                  child: Text(
-                                    state.files.isEmpty
-                                        ? "Subscribe"
-                                        : "Configure",
-                                    style: GoogleFonts.poppins(
-                                        color: Colors.white),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
                       ),
                     );
                   }
