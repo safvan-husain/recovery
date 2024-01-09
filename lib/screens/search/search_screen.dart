@@ -7,6 +7,7 @@ import 'package:recovery_app/screens/search/widgets/searched_items_view.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:recovery_app/storage/database_helper.dart';
+import 'package:recovery_app/storage/node_model.dart';
 
 class SearchScreen1 extends StatefulWidget {
   const SearchScreen1({super.key});
@@ -30,7 +31,7 @@ class SearchScreen1State extends State<SearchScreen1> {
     super.initState();
   }
 
-  List<String> items = [];
+  List<SearchResultItem> items = [];
   @override
   void dispose() {
     _streamController.close();
@@ -113,23 +114,27 @@ class SearchScreen1State extends State<SearchScreen1> {
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () async {
-                      var result =
-                          await DatabaseHelper.getDetails(items[index]);
-                      print(result);
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (c) => ItemScreen(
-                      //       details: items[index]['row'],
-                      //       heroTag: 'item-$index',
-                      //     ),
-                      //   ),
-                      // );
+                      var result = await DatabaseHelper.getDetails(
+                          items[index].node.rowId[0]);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (c) => ItemScreen(
+                            details: result!,
+                            heroTag: 'item-$index',
+                          ),
+                        ),
+                      );
                     },
                     child: Hero(
                       tag: 'item-$index',
                       child: Card(
                         child: ListTile(
-                          title: Text(items[index]),
+                          title: Text(items[index].item),
+                          trailing: CircleAvatar(
+                            radius: 10,
+                            child:
+                                Text(items[index].node.rowId.length.toString()),
+                          ),
                         ),
                       ),
                     ),

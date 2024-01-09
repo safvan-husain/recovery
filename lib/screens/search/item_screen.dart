@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ItemScreen extends StatelessWidget {
-  final Map<String, String> details;
+  final Map<String, dynamic> details;
   final String heroTag;
   const ItemScreen({
     Key? key,
@@ -30,7 +30,7 @@ class ItemScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: details.entries
-                      .where((element) => element.value.isNotEmpty)
+                      .where((element) => element.value.toString().isNotEmpty)
                       .map((e) => Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
@@ -53,7 +53,7 @@ class ItemScreen extends StatelessWidget {
                                 Expanded(
                                     flex: 2,
                                     child: Text(
-                                      e.value,
+                                      e.value.toString(),
                                       style: GoogleFonts.poppins(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w400,

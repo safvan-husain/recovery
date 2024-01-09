@@ -1,0 +1,264 @@
+,So No,Deal No,,Customer Code,Deal Date,Due Date,Customer Name,OverDue,Curr Month,DPD,Curr,SOH,Curr,ME,Mort,Product,CIBIL,Branch Name,No of,PTP,DL Code,Org,Minimum To,Registration No,STATUS
+,,,,,,,,,,,Month Coln,,bkt,bkt,Flag,Name,Score,,Visits,Date,,Veh type,Collect,,
+,1,100316588,,CW1211932,44654,45108,sagar subhash patil,8,6031,27,,6039,SMA1,SMA0,NOM,ashok leyland 1615he 4200mm wb chs bs 6,712,kolhapur_mpk,,,MPK057,N,,MH09FL7702,
+,2,100321625,,CW3989448,22/03/2022,45108,santosh pawar,8,6040,27,,12079,SMA1,SMA0,NOM,al ecomet 1615/4200 hsd bs6 20 ft,786,kolhapur_mpk,,,MPK057,N,,MH09FL3459,
+,3,100324695,,CW0834729,44685,15/01/2023,manesh dhanaji bad,5,4118,3,,8233,SMA0,SMA0,NOM,eicher pro 11.10 hsd bs4,691,kolhapur_mpk,,,MPK057,N,,MH09EM6017,
+,4,100338092,,CU3226626,44657,15/01/2023,abasaheb bhagwan kamble,6,4635,19,,18543,SMA0,SMA0,NOM,al ecomet 1212 tpper,686,kolhapur_mpk,,,mpk057,N,,MH09EM7572,
+,5,100338993,,CW1211932,44779,15/01/2023,sagar subhash patil,6,4571,19,,18282,SMA1,SMA0,NOM,al ecomet 1214,712,kolhapur_mpk,,,mpk057,N,,MH09EM7702,
+,6,100345208,,CU9888514,44780,15/01/2023,anil manik kumbhar,3,2217,19,,11088,SMA0,SMA0,NOM,ashok leyland dost,709,kolhapur_mpk,,,MPK057,U,,MH09EM3836,
+,7,100351343,,CW1635841,30/07/2022,15/01/2023,kishor kavade,2,2216,3,,13291,SMA0,SMA0,NOM,ashok leyland dost,734,kolhapur_mpk,,,mpk057,N,,MH09EM8164,
+,8,100353010,,CW4367596,44689,45108,margubrehman hukkire,1,2158,27,,12943,SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL3118,
+,9,100358676,,CW0597939,29/08/2022,15/01/2023,dilip bhagoji patil,4689,3604,34,,29917,SMA1,SMA1,NOM,tata lpt 1109 hex2 42 hdlb crde bs3,736,kolhapur_mpk,,,MPK044,U,9.01,MH09CU0048,
+,10,100359620,,MKK01911H,44570,45108,mahesh paramanand koli,6728,5595,27,,45888,SMA2,SMA0,NOM,al ecomet 1214,1,kolhapur_mpk,,,MPK044,N,,MH09EM8420,
+,11,100363063,,CU2707506,13/09/2022,15/01/2023,mahadeo hari theragve thergave,5,3534,19,,24738,SMA0,SMA0,NOM,lpt 1109 turbo truck,639,kolhapur_mpk,,,MPK044,U,,MH10Z3358,
+,12,100366881,,CU0666889,26/09/2022,45108,raghunath yashvant suwase,2,2603,3,,20817,SMA0,SMA0,NOM,tata sfc 407/29 pickup truck,721,kolhapur_mpk,,,mpk057,N,,MH09EM8317,
+,13,100372605,,CW4624385,17/10/2022,15/01/2023,vishwas abane,4,2647,19,,21180,SMA0,SMA0,NOM,ashok leyland dost plus bs 6,683,kolhapur_mpk,,,MPK044,N,,MH09FL3655,
+,14,100372678,,CW4632376,17/10/2022,15/01/2023,ajit khatari,7,6177,3,,49414,SMA1,SMA0,NOM,al 1615 he 4750 mm hsd slr cab bs6,1,kolhapur_mpk,,,MPK044,N,,MH09FL4108,
+,15,100373506,,CW3401123,20/10/2022,15/01/2023,vijay chavan,1049,2741,11,,22972,SMA0,SMA0,NOM,bolero pik-up fb ps 1.3t bs vi,740,kolhapur_mpk,,,MPK044,N,,MH09FL2577,
+,16,200090481,,CW1823527,44229,45108,mahadev thorvat,12144,5075,57,,"1,44,080",SMA2,SMA1,NOM,emergency credit gurantee_lcv,717,kolhapur_mpk,,,MPK044,N,5981.7,NA,
+,17,200109550,,MKK01911H,22/06/2021,15/01/2023,mahesh paramanand koli,32537,10188,80,,"3,38,193",SMA2,SMA2,NOM,emergency credit gurantee_lcv,1,kolhapur_mpk,,,MPK044,N,9973.08,NA,
+,18,200118648,,CW0597939,22/06/2021,15/01/2023,dilip bhagoji patil,4307,3293,19,,"1,03,113",SMA1,SMA0,NOM,emergency credit gurantee_lcv,736,kolhapur_mpk,,,MPK044,N,,NA,
+,19,200127228,1,CW1019729,28/06/2021,15/01/2023,parvez shoukat patel,84225,12642,202,,"4,63,473",NPA2,NPA2,NOM,emergency credit gurantee_lcv,654,kolhapur_mpk,,,MPK057,N,84224.85,NA,
+,20,200127647,,CW1487907,24/06/2021,15/01/2023,ananda dilip awale,10963,10086,19,,"3,13,524",SMA1,SMA0,NOM,emergency credit gurantee_lcv,-1,kolhapur_mpk,,,mpk057,N,,NA,
+,21,200134915,,CU8567731,15/07/2021,45108,pradeep mukaramsing thakur,1,2122,3,,65799,SMA1,SMA0,NOM,emergency credit gurantee_lcv,727,kolhapur_mpk,,,mpk057,N,,NA,
+,22,200139288,,CU5002250,25/06/2021,15/01/2023,shrikant prakash bagadi,22902,11349,49,,"3,63,362",SMA2,SMA1,NOM,emergency credit gurantee_lcv,705,kolhapur_mpk,,,MPK044,N,10342.88,NA,
+,23,200158578,,CW1974791,44384,45108,ravindra dhondiba ghatte ghatte,39853,9064,149,,"3,20,845",NPA1,NPA1,NOM,emergency credit gurantee_lcv,675,kolhapur_mpk,,,MPK044,N,39853.04,NA,
+,24,200173766,,CU0832404,28/07/2021,18/01/2023,tukaram ravaso kore,2,5112,3,,"1,58,494",SMA2,SMA0,NOM,emergency credit gurantee_lcv,688,kolhapur_mpk,,,MPK057,N,,NA,
+,25,200182266,,CW2477062,44355,45108,amar kumbhar akaram,21431,9689,57,,"3,31,471",SMA2,SMA1,NOM,emergency credit gurantee_lcv,639,kolhapur_mpk,,,MPK044,N,10738.6,NA,
+,26,200208989,,CW1192860,13/08/2021,45108,vinayak namdev korvi,1,2787,3,,89183,SMA1,SMA0,NOM,emergency credit gurantee_lcv,741,kolhapur_mpk,,,MPK057,N,,NA,
+,27,200273792,,CW2656556,23/08/2021,15/01/2023,mukundshing rajput kundanshing bhoushing rajput,1,4753,3,,"1,52,077",SMA2,SMA0,NOM,emergency credit gurantee_lcv,762,kolhapur_mpk,,,MPK057,N,,NA,
+,28,MPK00234L,8,CU6766173,29/10/2016,21/01/2023,madhav gangaram patil,65752,22000,74,,"3,52,734",SMA2,SMA2,M1M2,tata lpk 909 tipper,1,kolhapur_mpk,,,MPK044,N,21752.38,MH09CU9225,YES
+,29,MPK00269L,,CU8286295,31/05/2017,21/01/2023,santosh bhaguji karande,30071,28470,43,,71386,SMA1,SMA1,M1M2,eicher 11.10 (7 ton payload truck),728,kolhapur_mpk,,,mpk057,N,1190.76,MH09EM0531,NO
+,30,MPK00271L,,CU8313674,42953,45108,deepak vijayrao awaghan,12634,9500,57,,"2,97,717",SMA1,SMA1,M1M2,ashok leyland dost,1,kolhapur_mpk,,,MPK057,N,2978.03,MH09EM0589,YES
+,31,MPK00285L,,CU8418593,30/06/2017,21/01/2023,sushant balvant desai,19556,11950,43,,57361,SMA1,SMA1,M1M2,ashok leyland dost,1,kolhapur_mpk,,,mpk057,N,6919.61,MH10CR0814,NO
+,32,MPK00297L,,CU8567731,29/08/2017,21/01/2023,pradeep mukaramsing thakur,20149,11980,43,,"1,15,046",SMA1,SMA1,M1M2,ashok leyland dost,727,kolhapur_mpk,,,mpk057,N,6522.45,MH09EM1199,NO
+,33,MPK00312L,,CU8759351,42926,45108,pradipkumar pramod kulkarni,10781,11200,27,,22882,SMA0,SMA0,M1,ashok leyland dost plus,624,kolhapur_mpk,,,MPK057,N,,MH09EM1320,
+,34,MPK00318L,1,CU8912771,42958,45108,vijay pandurang lokhande,27436,11510,64,,"1,60,947",SMA2,SMA2,M1M2,ashok leyland dost rlx bs iv,-1,kolhapur_mpk,,,MPK057,N,543.28,MH09EM1602,YES
+,35,MPK00335L,,CU9391259,43315,45108,bapuso laxman shinde,9996,9710,27,10000,"1,12,572",SMA0,SMA2,M1M2,ashok leyland dost plus,785,kolhapur_mpk,,,MPK057,N,,MH09EM2693,
+,36,MPK00340L,2,CU9474917,27/03/2018,21/01/2023,umesh dadaso madiwal,24488,12037,13,,"1,59,441",SMA0,SMA0,M1,ashok leyland dost,-1,kolhapur_mpk,,,MPK057,N,,MH09EM3717,
+,37,MPK00350L,,CU8711094,16/05/2018,15/01/2023,ankush dinkar shovaji shinde,9154,19644,19,,"2,95,518",SMA0,SMA0,M1M2,sml isuzu sartaj 5252 xm,753,kolhapur_mpk,,,mpk057,N,,MH10CR1739,
+,38,MPK00355L,,CU9723947,25/05/2018,15/01/2023,uttam sidram bandagar,6450,11295,19,,"1,56,220",SMA0,SMA0,M1M2,ashok leyland dost,722,kolhapur_mpk,,,MPK057,N,,MH09EM3460,
+,39,MPK00360L,,CU9764342,43257,45108,sambhaji gundu gudale,34630,12680,57,,"2,20,721",SMA1,SMA1,M1,ashok leyland dost,569,kolhapur_mpk,,,MPK044,N,19844.91,MH09EM3566,NO
+,40,MPK00367L,4,CU9822317,20/06/2018,15/01/2023,akash siddhu gudale,"1,25,325",13152,263,,"3,84,516",NPA2,NPA2,M1M2,ashok leyland dost,705,kolhapur_mpk,,,MPK044,N,"1,25,325.32",MH09EM3646,YES
+,41,MPK00369L,,CU6863237,27/06/2018,1,vishvnath maruti ramankatti,22545,,49,,22545,SMA1,SMA1,M1M2,ashok leyland dost,1,kolhapur_mpk,,,MPK057,N,22545.19,MH09EM3731,NO
+,42,MPK00372L,,CU9888752,43138,45108,sunil subhash kadam,4239,13234,27,,"1,87,758",SMA0,SMA0,M1M2,ashok leyland dost,-1,kolhapur_mpk,,,MPK057,N,,MH09EM4752,
+,43,MPK00374L,,CU9897393,43138,45108,vilas bandu panhalkar,106,12287,27,,"1,90,440",SMA0,SMA0,M1M2,ashok leyland dost,721,kolhapur_mpk,,,MPK057,N,,MH09EM3835,
+,44,MPK00377L,,CW0028690,43259,45108,hasan nanhu mujavar nujavar,2099,12406,27,,"2,07,596",SMA0,SMA0,M1M2,ashok leyland dost,-1,kolhapur_mpk,,,MPK057,N,,MH09EM4068,
+,45,MPK00379L,,CU6414674,43381,45108,shahaji bapu gholap,29422,12250,64,,"1,71,960",SMA2,SMA2,NOM,bolero pik_up,1,kolhapur_mpk,,,MPK044,N,2228.46,MH09EM4110,YES
+,46,MPK00386L,,CW0195751,14/09/2018,45108,babaso shripal bele,19,28825,3,,"3,54,337",SMA0,SMA0,M1,eicher 10.95f hsd 16ft 6.50ton,739,kolhapur_mpk,,,MPK044,N,,MH09EM4474,
+,47,MPK00396L,,CU3226626,30/10/2018,15/01/2023,abasaheb bhagwan kamble,29,36823,3,,"6,13,708",SMA0,SMA0,M1M2,eicher 11.10 h hsd rhd bsiii,686,kolhapur_mpk,,,mpk057,N,,MH09EM5572,
+,48,MPK00397L,,CW0435558,43170,45108,sagar bajarang thorath,93700,23425,118,,"5,46,874",NPA1,NPA1,M1M2,eicher 10.55 c fsd bs iv,754,kolhapur_mpk,,,mpk057,N,93700,MH10CR2960,YES
+,49,MPK00402L,,CW0546157,26/11/2018,15/01/2023,mahadev subarao saptal,40969,35485,49,,"7,33,498",SMA1,SMA1,M1M2,eicher pro 3014,730,kolhapur_mpk,,,MPK057,N,4644.81,MH09EM5274,YES
+,50,MPK00407L,,CW0751223,43586,45108,laxman joti magdum magadum,70222,32707,57,,"6,10,621",SMA1,SMA1,M1,al ecomet 1214,766,kolhapur_mpk,,,MPK057,N,35117.76,MH09EM6627,YES
+,51,MPK00414L,,CW0834729,28/01/2019,15/01/2023,manesh dhanaji bad,8416,34192,19,,"7,44,187",SMA0,SMA0,M1M2,eicher pro 11.10 hsd bs4,691,kolhapur_mpk,,,MPK057,N,,MH09EM6017,
+,52,MPK00415L,,CW0834447,18/01/2019,15/01/2023,suresh ramchandra garade,71624,33521,49,,"7,92,986",SMA1,SMA1,M1M2,al e-comet 1214 il h series,714,kolhapur_mpk,,,MPK044,N,35698.83,MH09EM6104,NO
+,53,MPK00418L,,CW0847854,28/01/2019,15/01/2023,rajendra ashok kambale,79715,31428,64,,"6,08,276",SMA2,SMA2,M1,eicher pro 10.95 xp container 4765mm wb 21.5ft,715,kolhapur_mpk,,,MPK044,N,14853,MH09EM6015,YES
+,54,MPK00420L,1,CU8372714,43589,45108,rahul maruti jambhale jambhale jambhale,37576,19500,57,,"7,71,862",SMA1,SMA1,M1M2,force traveller mb 3700 18 str bs4,647,kolhapur_mpk,,,MPK044,U,37576.28,MH12KQ4036,YES
+,55,MPK00422L,,CW0933241,15/02/2019,45108,yashawant bapu satpute,178,11826,27,,"2,13,463",SMA0,SMA0,M1,ashok leyland dost,636,kolhapur_mpk,,,MPK044,N,,MH09EM7837,
+,56,MPK00423L,1,CU0832404,22/02/2019,15/01/2023,tukaram ravaso kore,93433,39660,64,,"10,00,368",SMA2,SMA2,M1M2,eicher 10.90l cowl & bus 32 str,688,kolhapur_mpk,,,MPK057,N,8617.78,MH09EM9781,YES
+,57,MPK00427L,,CU9217368,14/03/2019,15/01/2023,shri sai core shop pro satish shrikant gaikwad shri sai core shop,22925,15410,49,,"3,95,198",SMA1,SMA1,M1M2,mahindra bolero pick up fb 2wd bsiv,,kolhapur_mpk,,,MPK057,N,5891.64,MH09EM6571,NO
+,58,MPK00436L,,CW1166922,43589,45108,nitin namdeo patil,6,12670,3,,"2,54,901",SMA0,SMA0,M1,ashok leyland dost,2,kolhapur_mpk,,,MPK057,N,,MH09EM6814,
+,59,MPK00440L,,CW1192860,43803,45108,vinayak namdev korvi,19994,11700,57,,"3,13,841",SMA1,SMA1,M1M2,ashok leyland dost,741,kolhapur_mpk,,,MPK057,N,6623.91,MH09EM6865,YES
+,60,MPK00441L,,CW1211932,16/04/2019,15/01/2023,sagar subhash patil,25329,38409,19,,"9,86,520",SMA1,SMA0,M1M2,al ecomet 1214,712,kolhapur_mpk,,,mpk057,N,,MH09EM7702,
+,61,MPK00442L,,CW1210407,16/04/2019,15/01/2023,prashant pandurang patil,751,29415,19,,"4,41,991",SMA0,SMA0,NOM,al ecomet 1012,740,kolhapur_mpk,,,mpk057,N,,MH09EL6500,
+,62,MPK00446L,,CW1251305,26/04/2019,15/01/2023,vijay laxman bhadaragade,3826,12610,19,,"3,00,905",SMA0,SMA0,M1M2,mahindra bolero maxi truck,-1,kolhapur_mpk,,,MPK057,N,,MH09EM7091,
+,63,MPK00449L,,CU1260762,26/04/2019,15/01/2023,mahavir neminath navle,282,14290,19,,"1,07,506",SMA0,SMA0,M1,ashok leyland dost,758,kolhapur_mpk,,,mpk057,N,,MH09EM7098,
+,64,MPK00451L,,CW1302917,43621,45108,shivaji annappa bhandare,26230,14400,57,,"7,58,713",SMA1,SMA1,M1M2,mahindra bolero pick up 1.7,711,kolhapur_mpk,,,MPK044,N,10114.17,MH09EN7184,YES
+,65,MPK00456L,,CU5002250,43775,45108,shrikant prakash bagadi,97073,43000,64,,"22,88,987",SMA2,SMA2,M1M2,tata 912/49 36+1 str,705,kolhapur_mpk,,,MPK044,N,4313.93,MH09EL3499,NO
+,66,MPK00458L,,CW1487907,43805,45108,ananda dilip awale,73307,38146,57,,"11,04,635",SMA1,SMA1,M1M2,al ecomet 1214,-1,kolhapur_mpk,,,mpk057,N,31619.8,MH50N1204,YES
+,67,MPK00467L,,CU0666889,43593,45108,raghunath yashvant suwase,8,17193,3,,"5,12,250",SMA0,SMA0,M1M2,tata sfc 407/29 pickup truck,721,kolhapur_mpk,,,mpk057,N,,MH09EM8317,
+,68,MPK00471L,,CW1630902,43776,15/01/2023,eknath shinde,101,14580,19,,"1,56,129",SMA0,SMA0,M1,ashok leyland dost,724,kolhapur_mpk,,,mpk057,N,,MH09EM8120,
+,69,MPK00476L,,CW0248897,23/08/2019,15/01/2023,vishal arvind dongale,12735,38635,3,,"10,82,304",SMA0,SMA0,M1M2,ashok layland al-1214 cbc bsiv,713,kolhapur_mpk,,,mpk057,N,,MH09EM8238,
+,70,MPK00483L,,CW1765126,16/08/2019,15/01/2023,niranjan khot,71,13341,19,,"3,23,889",SMA0,SMA0,M1,ashok leyland dost,728,kolhapur_mpk,,,mpk057,N,,MH09EM8265,
+,71,MPK00486L,,CU2545111,43655,45108,sudarshan annappa shahabadi,8333,37706,27,,"10,13,102",SMA0,SMA0,M1M2,al ecomet 1214,643,kolhapur_mpk,,,MPK044,N,,MH09EM9756,
+,72,MPK00488L,,CW1823527,43594,45108,mahadev thorvat,82014,37706,64,,"10,23,538",SMA2,SMA2,M1,al ecomet 1214,717,kolhapur_mpk,,,MPK044,N,1150.05,MH09EM8856,NO
+,73,MPK00489L,,CW1823656,43655,45108,kumar nayakwade,9499,37706,27,,"10,14,268",SMA0,SMA0,M1M2,al ecomet 1214,564,kolhapur_mpk,,,MPK044,N,,MH09EM8946,
+,74,MPK00490L,2,MKK01911H,43655,45108,mahesh paramanand koli,84788,37706,64,,"12,17,149",SMA2,SMA2,M1M2,al ecomet 1214,1,kolhapur_mpk,,,MPK044,N,4790.9,MH09EM8420,NO
+,75,MPK00492L,,CW1823427,43655,45108,navanath maruti dole dole,75195,37706,57,,"10,16,719",SMA1,SMA1,M1,al ecomet 1214,721,kolhapur_mpk,,,mpk057,N,35514.77,MH09EM9077,YES
+,76,MPK00494L,,CW0546157,43625,45108,mahadev subarao saptal,64501,37822,57,,"11,38,226",SMA1,SMA1,M1M2,al ecomet 1214,730,kolhapur_mpk,,,MPK057,N,24002.56,MH09EM8482,YES
+,77,MPK00495L,,CW1845047,43655,45108,pavan chougule,17501,15394,57,,"4,92,024",SMA1,SMA1,M1M2,"force shaktiman-200,2730 wbfm 2.0cr bs1v",700,kolhapur_mpk,,,MPK057,N,1705.07,MH09EM8556,YES
+,78,MPK00500L,1,CU8926935,43534,45108,vishal laxman magdum magdum,74765,36384,57,,"11,44,922",NPA1,SMA1,M1M2,al ecomet 1214,652,kolhapur_mpk,,,MPK044,N,74764.88,MH09EM9427,YES
+,79,MPK00503L,,CW1974815,43534,45108,vikram suryavanshi,24113,32000,27,15298,"17,46,201",SMA0,SMA1,M1M2,al ecomet 1212,659,kolhapur_mpk,,,MPK044,N,,KA23B3066,
+,80,MPK00508L,1,CW1957238,26/09/2019,15/01/2023,dattatray chougale,68125,24625,64,,"6,93,086",SMA2,SMA2,M1,al partner hsd 14 ft,1,kolhapur_mpk,,,MPK044,N,14245.74,MH09EM8835,YES
+,81,MPK00509L,,CW1995009,43718,45108,ramgonda patil,32750,38466,27,,"10,44,315",SMA0,SMA0,M1,eicher pro 11.10 hsd bs4,749,kolhapur_mpk,,,MPK057,N,,MH09EM8840,
+,82,MPK00512L,,CW1998401,43595,45108,anil kudale,2985,12400,27,,"6,27,852",SMA0,SMA0,M1,ashok leyland dost,618,kolhapur_mpk,,,MPK044,N,,MH09EM8891,
+,83,MPK00517L,,CW2125170,43596,45108,swati bhoite,62178,35440,57,,"12,31,315",SMA1,SMA1,M1M2,tata lpt 1212/42 hd lb bsiv,749,kolhapur_mpk,,,mpk057,N,24871.39,MH09EM9402,YES
+,84,MPK00520L,,CW2212809,43627,45108,neha unhale dilip balaso barad,21422,12000,57,,"6,74,337",SMA1,SMA1,M1M2,ashok leyland dost plus,712,kolhapur_mpk,,,MPK044,N,9046.09,MH09EM9526,NO
+,85,MPK00521L,,CU8255777,30/11/2019,15/01/2023,avinash bhimrao lokhande,15391,13840,49,,"4,75,278",SMA1,SMA1,M1M2,ashok leyland dost,631,kolhapur_mpk,,,MPK057,N,1359.99,MH09EM9839,NO
+,86,MPK00525L,1,CW0597939,27/11/2019,15/01/2023,dilip bhagoji patil,33182,15168,49,,"2,64,768",SMA1,SMA1,M1,tata lpt 1109 hex2 42 hdlb crde bs3,736,kolhapur_mpk,,,MPK044,U,16222.44,MH09CU0048,NO
+,87,MPK00530L,,CW1309809,43781,15/01/2023,shivaji maruti sharabindr,62,17181,19,,"4,90,253",SMA0,SMA0,M1,tata sfc 407ex/31wb bs iv,739,kolhapur_mpk,,,mpk057,N,,MH09FL5041,
+,88,MPK00531L,,CU6576625,17/12/2019,15/01/2023,nitin arun patil,24220,14198,49,,"5,08,821",SMA1,SMA1,M1M2,ashok leyland dost plus,713,kolhapur_mpk,,,MPK044,N,9548.61,MH09FL0114,NO
+,89,MPK00533L,1,CW2477062,43862,45108,amar kumbhar akaram,84865,34625,64,,"12,24,662",SMA2,SMA2,M1M2,al ecomet 1214,639,kolhapur_mpk,,,MPK044,N,11960.04,MH09FL1899,YES
+,90,MPK00536L,3,CW2496859,43891,45108,prakash jadhav shankar dhanu jadhav,52778,12334,149,,"4,17,585",NPA1,NPA1,M1,ashok leyland dost plus,1,kolhapur_mpk,,,MPK044,N,52778.27,MH09FL0291,YES
+,91,MPK00540L,1,CU5869329,20/01/2020,15/01/2023,vishvas sakharam bhakare,12381,7309,49,,"1,41,117",SMA1,SMA1,M1,mahindra bolero pik up,654,kolhapur_mpk,,,MPK044,U,3787.91,MH09CA8154,NO
+,92,MPK00544L,4,CW2596433,43923,45108,sudarshan dinkar sawant sawant dinkar dattu sawant,"2,68,424",37849,210,,"16,44,586",NPA2,NPA2,M1M2,al ecomet 1214,1,kolhapur_mpk,,,MPK057,N,"2,68,424.00",MH09FL1719,YES
+,93,MPK00550L,,CW2641409,43923,45108,ravindra tapdiya dwarakadas,66,10956,27,,56556,SMA0,SMA0,M1,ashok leyland dost,727,kolhapur_mpk,,,mpk057,N,,MH09FL0531,
+,94,MPK00552L,,CW2656556,15/02/2020,45108,mukundshing rajput kundanshing bhoushing rajput,83111,36745,64,,"13,93,455",SMA2,SMA2,M1M2,al ecomet 1214,762,kolhapur_mpk,,,MPK057,N,5771.03,MH09FL0727,YES
+,95,MPK00554L,,CW2665951,14/02/2020,45108,nitin pandurang zanzane zanzane pandurang bhagwan zanzane,451,37832,3,,"13,46,323",SMA0,SMA0,M1M2,al ecomet 1214,675,kolhapur_mpk,,,MPK057,N,,MH09FL9673,
+,96,MPK00560L,3,CW2763760,44015,45108,dadaso nemgonda patil nemgonda,10467,12949,27,,"2,40,584",SMA0,SMA0,M1,mahindra bolero pick up fb 1.5t ps bs4,713,kolhapur_mpk,,,MPK044,U,,MH14GU3727,
+,97,MPK00561L,,CW2784792,17/03/2020,15/01/2023,santosh trading company,1640,19500,19,,"5,76,018",SMA0,SMA0,M1,sml isuzu sartaj 5252 xm,,kolhapur_mpk,,,MPK057,N,,MH09FL0805,
+,98,MPK00575L,2,CW3008266,30/06/2020,15/01/2023,krishna kadkol rajendra,68,15365,19,,"4,45,648",SMA0,SMA0,NOM,ashok leyland dost strong bs 6,703,kolhapur_mpk,,,MPK057,N,,MH09FL1169,
+,99,MPK00579L,,CW3029649,28/07/2020,15/01/2023,sarojanand jha taranand,96,15667,19,,"4,70,155",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,729,kolhapur_mpk,,,MPK057,N,,MH09FL1222,
+,100,MPK00581L,,CW3069485,28/07/2020,15/01/2023,jyotirling minerals,,14201,19,,"4,26,026",SMA0,SMA0,NOM,ashok leyland dost strong bs 6,,kolhapur_mpk,,,MPK044,N,,MH09FL8377,
+,101,MPK00585L,,CW3156707,21/08/2020,15/01/2023,ramajan mhaldar gulab,15156,15791,19,,"5,04,656",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,1,kolhapur_mpk,,,MPK057,N,,MH09FL1335,
+,102,MPK00586L,,CW3187106,43899,45108,abhinandan madbhave ramchandra,37178,15325,64,,"5,27,579",SMA2,SMA2,NOM,ashok leyland dost strong bs 6,763,kolhapur_mpk,,,MPK057,N,4761.05,MH09FL1372,NO
+,103,MPK00587L,,CW0787768,24/08/2020,15/01/2023,rahul shantinath nirvane,8728,6849,49,,"1,38,827",SMA1,SMA1,NOM,mahindra bolero maxi truck,683,kolhapur_mpk,,,MPK044,U,1879,MH09CU3850,NO
+,104,MPK00588L,,CW3178294,26/08/2020,15/01/2023,afridi liyakat bagwan bagwan liyakat moola bagwan,271,16099,19,,"4,99,353",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,,kolhapur_mpk,,,MPK057,N,,MH09FL1341,
+,105,MPK00589L,,CW3186933,44021,45108,anil shinde rajaram,,14169,27,,"4,53,382",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,662,kolhapur_mpk,,,MPK057,N,,MH09FL1373,
+,106,MPK00590L,,CW3190332,28/08/2020,15/01/2023,vaishali sambhaji gaikwad gaikwad balaso,15,14219,19,,"4,40,801",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,729,kolhapur_mpk,,,MPK057,N,,MH09FL3688,
+,107,MPK00591L,,CW3191775,29/08/2020,15/01/2023,yogesh kambale vijay,73,10142,19,,"3,14,435",SMA0,SMA0,NOM,ashok leyland dost strong bs 6,775,kolhapur_mpk,,,MPK057,N,,MH09FL1962,
+,108,MPK00593L,1,CW3205003,31/08/2020,21/01/2023,rushiraj rokade sunil,38337,13200,74,,"7,60,961",SMA2,SMA2,NOM,ashok leyland dost ls fsd bs 6,1,kolhapur_mpk,,,MPK057,N,8353.01,MH10CR7013,YES
+,109,MPK00595L,,CW3225589,44052,45108,prathamesh kadam anil sadashiv kadam,3076,14261,27,,"4,59,398",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,713,kolhapur_mpk,,,MPK057,N,,MH09FL1387,
+,110,MPK00596L,,CW3244360,24/09/2020,15/01/2023,swapanil ingale,42972,14324,80,,"5,01,312",SMA2,SMA2,NOM,ashok leyland dost plus bs 6,740,kolhapur_mpk,,,MPK057,N,12259,MH09FL1452,NO
+,111,MPK00598L,,CW3249498,21/09/2020,15/01/2023,rajesh batunge,128,11910,19,,"3,81,183",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,1,kolhapur_mpk,,,MPK057,N,,MH09FL1424,
+,112,MPK00600L,,CW3260680,22/10/2020,15/01/2023,jyotiba kumbar,13876,13500,34,,"7,93,383",SMA1,SMA1,NOM,ashok leyland dost plus bs 6,778,kolhapur_mpk,,,MPK057,N,97.97,MH09FL1636,
+,113,MPK00604L,,CW3300755,44053,45108,javed shaikh,631,14766,27,,"4,87,901",SMA0,SMA0,NOM,ashok leyland bada dost lx fsd 2.99t bs6,775,kolhapur_mpk,,,MPK044,N,,MH09FL1470,
+,114,MPK00607L,,CU5800287,22/10/2020,15/01/2023,ashok ganpati ekshinge,36521,16541,64,,"5,82,316",SMA2,SMA2,NOM,m&m bolero pick up 1.3 std bs 6,788,kolhapur_mpk,,,MPK044,N,1733.63,MH09FL1642,YES
+,115,MPK00608L,,CW3351541,44175,45108,akash subhash gumane,20124,9110,64,,"1,02,114",SMA2,SMA2,NOM,ashok leyland dost,756,kolhapur_mpk,,,MPK044,U,865.93,MH10BR1890,YES
+,116,MPK00610L,,CW3346473,13/10/2020,45108,vijaykumar arage,61,14346,27,,"4,73,488",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,720,kolhapur_mpk,,,MPK057,N,,MH09FL1587,
+,117,MPK00615L,,CW3401123,22/10/2020,15/01/2023,vijay chavan,408,16519,19,,"5,45,592",SMA0,SMA0,NOM,bolero pik-up fb ps 1.3t bs vi,740,kolhapur_mpk,,,MPK044,N,,MH09FL2577,
+,118,MPK00616L,,CW2061838,21/10/2020,15/01/2023,dharmaraj jogeshwar benkar,67,13112,19,,"4,32,509",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,686,kolhapur_mpk,,,MPK057,N,,MH09FL1592,
+,119,MPK00619L,,CW3403228,43872,45108,gajanan jadhav,68,14046,27,,"4,77,575",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,785,kolhapur_mpk,,,MPK057,N,,MH09FL1615,
+,120,MPK00621L,,CU2707506,23/10/2020,15/01/2023,mahadeo hari theragve thergave,6036,13755,19,,"2,94,853",SMA0,SMA0,NOM,lpt 1109 turbo truck,639,kolhapur_mpk,,,MPK044,U,,MH10Z3358,
+,121,MPK00622L,,CW3419802,30/10/2020,15/01/2023,suryakant bhaskar gurav,16178,14300,34,,"4,88,071",SMA1,SMA1,NOM,ashok leyland dost strong ls fsd bs 6,663,kolhapur_mpk,,,MPK057,N,217.14,MH09FL1670,
+,122,MPK00623L,,CW3438181,31/10/2020,15/01/2023,akash bhosale,5626,14155,19,,"4,72,783",SMA0,SMA0,NOM,ashok leyland dost ls fsd bs 6,1,kolhapur_mpk,,,MPK057,N,,MH09FL9997,
+,123,MPK00626L,,CW3454349,43993,45108,santosh natekar,26,42467,3,,"14,43,951",SMA0,SMA0,NOM,eicher pro 3015j 20ft ps 7s ngb prm bs 6,701,kolhapur_mpk,,,MPK057,N,,MH09FL1723,
+,124,MPK00631L,,CW3499122,44146,45108,deepak shrishail birajdar,34,14270,3,,"4,85,104",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,756,kolhapur_mpk,,,MPK057,N,,MH09FL1756,
+,125,MPK00633L,,CW3530330,26/11/2020,15/01/2023,maruti jadhav,1923,43835,19,,"14,92,288",SMA0,SMA0,NOM,a l ecomet 1615he 4750mm wb chassis bs 6,695,kolhapur_mpk,,,MPK057,N,,MH09FL3465,
+,126,MPK00634L,,CW3546036,26/11/2020,15/01/2023,salim ilhai desai,19200,15035,49,,"5,30,356",SMA1,SMA1,NOM,ashok leyland dost plus bs 6,652,kolhapur_mpk,,,MPK044,N,3822.2,MH09FL1838,NO
+,127,MPK00636L,,CW3559364,19/12/2020,15/01/2023,tanaji dattatray khutale,7,17612,3,,"1,93,739",SMA0,SMA0,NOM,tata lpt 1109 hex2 42 hdlb crde bs3,726,kolhapur_mpk,,,MPK044,U,,MH10Z3613,
+,128,MPK00638L,,CU5002250,25/11/2020,15/01/2023,shrikant prakash bagadi,31209,10301,64,,"1,34,220",SMA2,SMA2,NOM,force traveller 3700 wb bsiii,705,kolhapur_mpk,,,MPK044,U,999.81,MH09CA3777,NO
+,129,MPK00640L,,CW3611933,43902,45108,rajkumar patil,14958,14518,27,,"5,23,039",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,1,kolhapur_mpk,,,MPK057,N,,MH09FL1837,
+,130,MPK00642L,,CW3629714,44086,45108,jagdish vagrale,562,38108,27,,"8,77,010",SMA0,SMA0,NOM,eicher pro 2080xp k cab hsd 22 ft bs 6,737,kolhapur_mpk,,,MPK044,N,,MH09FL1941,
+,131,MPK00644L,,CW3628516,44147,45108,rohit sutar,30195,16713,57,,"6,15,096",SMA1,SMA1,NOM,bolero pik-up fb ps 1.7t xl bs vi,546,kolhapur_mpk,,,MPK044,N,12621.01,MH09FL1955,NO
+,132,MPK00645L,,CW3651832,31/12/2020,15/01/2023,padmavti treders,7,15809,3,,"5,53,306",SMA0,SMA0,NOM,ashok leyland bada dost ls fsd 3.49t bs6,,kolhapur_mpk,,,MPK057,N,,MH09FL7376,
+,133,MPK00647L,,CW3704335,23/12/2020,15/01/2023,bhagwan kambure,25,36172,3,,"12,66,019",SMA0,SMA0,NOM,al 1015 te 2850 mm wb tipper bs 6,758,kolhapur_mpk,,,MPK057,N,,MH09FL3789,
+,134,MPK00648L,,CU7694398,28/12/2020,15/01/2023,sandip sadashiv patil,77,42930,3,,"15,02,192",SMA0,SMA0,NOM,tata ultra t16 49wb hdlb 20ft bs 6,736,kolhapur_mpk,,,MPK057,N,,MH09FL2018,
+,135,MPK00649L,,CW3750364,44378,45108,annappa tukaram varute,18086,13500,57,,"8,20,396",SMA1,SMA1,NOM,ashok leyland dost plus bs 6,689,kolhapur_mpk,,,MPK044,N,3236.77,MH09FL9438,YES
+,136,MPK00654L,,CW3815919,27/01/2021,15/01/2023,dastagir mahibubso tambole tambole,36009,20490,49,,"2,81,831",SMA1,SMA1,NOM,mahindra bolero pick up 1.7t cbc ps bsvi,709,kolhapur_mpk,,,MPK044,N,14631.29,MH09FL4993,NO
+,137,MPK00655L,,CW3823997,31/01/2021,15/01/2023,akshay gajanan mali mali,68,13766,19,,"4,95,610",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,793,kolhapur_mpk,,,MPK057,N,,MH09FL2264,
+,138,MPK00656L,,CW3843082,44198,45108,kiran kokane,"1,11,655",42607,64,,"16,88,166",SMA2,SMA2,NOM,al ecomet 1615 he chassis bs 6,677,kolhapur_mpk,,,MPK044,N,17336.65,MH09FL2346,YES
+,139,MPK00659L,1,CW3863227,44288,45108,prakash shamarao lohar lohar,31947,16132,57,,"6,28,793",SMA1,SMA1,NOM,ashok leyland bada dost ls fsd 3.49t bs6,1,kolhapur_mpk,,,MPK044,N,13818.36,MH09FL4460,NO
+,140,MPK00661L,,CW3069485,44410,45108,jyotirling minerals,8,15917,27,,"5,88,894",SMA0,SMA0,NOM,ashok leyland bada dost i4 ls bs 6,,kolhapur_mpk,,,MPK044,N,,MH09EL8377,
+,141,MPK00664L,,CW1211932,44258,45108,sagar subhash patil,48779,42550,34,,"16,65,392",SMA1,SMA1,NOM,ashok leyland 1615he 4200mm wb chs bs 6,712,kolhapur_mpk,,,MPK057,N,4080.14,MH09FL7702,
+,142,MPK00665L,,CW3982094,16/03/2021,18/01/2023,rajendra killedar,99815,43350,64,,"17,47,074",SMA2,SMA2,NOM,eicher pro 2114xp l hsd 22ft prm bs 6,740,kolhapur_mpk,,,MPK057,N,4982,KA23B4122,YES
+,143,MPK00666L,,CW3989448,44472,45108,santosh pawar,87803,42251,57,,"16,91,417",SMA1,SMA1,NOM,al ecomet 1615/4200 hsd bs6 20 ft,786,kolhapur_mpk,,,MPK057,N,42664.4,MH09FL3459,NO
+,144,MPK00669L,,CU9514611,44233,45108,amar shrikant sangar,12168,10860,34,,"3,27,005",SMA1,SMA1,NOM,ashok leyland dost rlx bs iv,726,kolhapur_mpk,,,MPK044,U,24.68,MH09EM5109,
+,145,MPK00674L,,CW4273570,20/07/2021,15/01/2023,amarsinh lendave,16,15547,19,,"6,52,976",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL3055,
+,146,MPK00675L,,CW1565770,20/07/2021,15/01/2023,mahendrashivajidafale shivaji dafale,108,15912,3,,"6,68,405",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,638,kolhapur_mpk,,,MPK044,N,,MH09FL2982,
+,147,MPK00677L,,CW4299032,27/07/2021,15/01/2023,sidappa mali,112,11172,19,,"3,35,239",SMA0,SMA0,NOM,ashok leyland dost rls bs iv,1,kolhapur_mpk,,,MPK057,U,,MH09EM8131,
+,148,MPK00679L,,CU8422137,16/07/2021,15/01/2023,nitin lalaso mohite,69268,29019,64,,"9,39,822",SMA2,SMA2,NOM,al e-comet 1214 il h series,599,kolhapur_mpk,,,MPK057,U,4535.24,MH10CR0043,YES
+,149,MPK00682L,,CW4367596,44324,45108,margubrehman hukkire,3266,15581,27,,"6,73,222",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL3118,
+,150,MPK00686L,,CW4392576,21/08/2021,15/01/2023,ramesh karkal,15,13286,19,,"4,11,819",SMA0,SMA0,NOM,ashok leyland dost rls bs iv,778,kolhapur_mpk,,,MPK057,U,,MH22AN1914,
+,151,MPK00687L,,CW4397402,13/09/2021,45108,rajendra londhe,12192,7193,57,,"2,36,364",SMA1,SMA1,NOM,force traveller mini bus 17+d hbs ps bs iii,767,kolhapur_mpk,,,MPK044,U,3416.09,MH12HB0661,NO
+,152,MPK00688L,1,CW4430264,14/10/2021,45108,girija bhopale,41907,19350,57,,"9,12,649",SMA1,SMA1,NOM,bolero camper gold zx 2wd ps bs vi,1,kolhapur_mpk,,,MPK044,N,19703.05,MH09FL3624,NO
+,153,MPK00689L,,CW4361844,31/08/2021,15/01/2023,akshay ingale,14,14655,3,,"6,30,158",SMA0,SMA0,NOM,ashok leyland bada dost ls fsd 3.49t bs6,723,kolhapur_mpk,,,MPK044,N,,MH09BL3223,
+,154,MPK00690L,,CW4451212,44264,45108,ajit patil,3210,23989,27,,"1,95,112",SMA0,SMA0,NOM,tata sfc 610 / 33 wb bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL2526,
+,155,MPK00692L,,CW4462997,44386,45108,malagonda bedar,150,18268,27,,"8,03,896",SMA0,SMA0,NOM,ashok leyland bada dost ls fsd bs 6,753,kolhapur_mpk,,,MPK057,N,,MH09FL7027,
+,156,MPK00695L,,CW2755282,16/09/2021,15/01/2023,mirasaheb musa mujawar mujawar musa hamidsaheb mujawar,1,16324,19,,"7,18,206",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,681,kolhapur_mpk,,,MPK057,N,,MH09FL2930,
+,157,MPK00696L,,CW4520129,29/09/2021,15/01/2023,abhishek patil,20388,8862,64,,"3,03,933",SMA2,SMA2,NOM,ashok leyland dost,1,kolhapur_mpk,,,MPK057,U,337.21,MH507988,NO
+,158,MPK00698L,,CW4530684,29/09/2021,15/01/2023,musveer bagwan,60396,21938,64,,"6,30,758",SMA2,SMA2,NOM,ashok leyland dost plus bs 6,,kolhapur_mpk,,,MPK057,N,12985.14,MH09FL3735,NO
+,159,MPK00701L,,CW4556534,44387,45108,samir jamadar,13824,16318,27,,"7,48,096",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,,kolhapur_mpk,,,MPK057,N,,MH09FL3581,
+,160,MPK00702L,1,CW4556730,27/11/2021,15/01/2023,krishna kamble,"1,57,260",46861,80,,"23,12,865",SMA2,SMA2,NOM,eicher pro 2114 xp bs 6,684,kolhapur_mpk,,,MPK044,N,45918,MH09FL3978,YES
+,161,MPK00703L,,CW4570166,28/10/2021,15/01/2023,gorakhanath helavi,177,16410,19,,"7,38,620",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,723,kolhapur_mpk,,,MPK057,N,,MH09FL3723,
+,162,MPK00704L,,CW4570406,29/10/2021,15/01/2023,karan patil,66,15903,19,,"7,15,689",SMA0,SMA0,NOM,mahindra bolero maxi truck plus ps bs 6,666,kolhapur_mpk,,,MPK057,N,,MH09FL6868,
+,163,MPK00707L,,CW4624245,29/10/2021,15/01/2023,rushikesh nakate,63,13523,19,,"6,08,567",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,1,kolhapur_mpk,,,MPK057,N,,MH09FL3716,
+,164,MPK00708L,,CW4624385,27/10/2021,15/01/2023,vishwas abane,17,16458,3,,"7,40,578",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,683,kolhapur_mpk,,,MPK044,N,,MH09FL3655,
+,165,MPK00709L,,CW4632376,28/10/2021,15/01/2023,ajit khatari,44251,42517,34,,"19,57,514",SMA1,SMA1,NOM,al 1615 he 4750 mm hsd slr cab bs6,1,kolhapur_mpk,,,MPK044,N,42.92,MH09FL4108,
+,166,MPK00716L,2,CW4589375,16/11/2021,15/01/2023,dipali desai,95640,45942,49,10000,"22,08,968",SMA1,SMA2,NOM,eicher pro 2114 xp22ft bs6 prm hsd,657,kolhapur_mpk,,,MPK044,N,41943.81,MH09FL3865,YES
+,167,MPK00718L,,CW4707242,44450,45108,mahadev chougule,976,41517,3,,"19,10,724",SMA0,SMA0,NOM,ashok leyland 1615he 4200mm wb chs bs 6,797,kolhapur_mpk,,,MPK044,N,,MH09FL6392,
+,168,MPK00719L,,CU0832404,27/11/2021,15/01/2023,tukaram ravaso kore,18591,17280,34,,"8,13,441",SMA2,SMA1,NOM,ashok leyland dost plus bs 6,688,kolhapur_mpk,,,MPK057,N,18.66,MH09FL7555,
+,169,MPK00720L,,CW4722247,29/11/2021,15/01/2023,prakash kalyani,47,46026,3,,"21,17,188",SMA0,SMA0,NOM,eicher pro 2114 xp22ft bs6 prm hsd,1,kolhapur_mpk,,,MPK044,N,,MH09FL4112,
+,170,MPK00721L,,CW4785031,23/12/2021,15/01/2023,rakesh ambupe,16,15423,3,,"5,39,777",SMA0,SMA0,NOM,mahindra bolero pick up 1.7,1,kolhapur_mpk,,,MPK057,U,,MH09EM8524,
+,171,MPK00722L,,CU8418074,23/11/2021,15/01/2023,vikram chandrakant chavan,13538,10276,49,,"3,62,893",SMA1,SMA1,NOM,ashok leyland dost plus,636,kolhapur_mpk,,,MPK057,U,1819.91,MH09EM3363,NO
+,172,MPK00724L,,CW4792727,29/11/2021,15/01/2023,virashri patil,17,16450,3,,"7,56,661",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,675,kolhapur_mpk,,,MPK044,N,,MH09FL3977,
+,173,MPK00725L,,CW4818616,44713,45108,sandip patil,9,8480,3,,"3,05,247",SMA0,SMA0,NOM,bolero sc xl pickup bs iii,1,kolhapur_mpk,,,MPK044,U,,MH09CA6857,
+,174,MPK00730L,,CW4861459,29/12/2021,15/01/2023,sujay kumbhar,65,16846,19,,"7,91,794",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,696,kolhapur_mpk,,,MPK057,N,,MH09FL4239,
+,175,MPK00731L,,CW1196645,27/12/2021,15/01/2023,decent chemical pro aslam babasaheb shekh decent chemical,40,14684,19,,"5,13,912",SMA0,SMA0,NOM,ashok leyland dost,,kolhapur_mpk,,,MPK057,U,,MH09EM6951,
+,176,MPK00734L,2,CW4879989,19/01/2022,15/01/2023,bajirao mohite,48339,16113,80,,"6,28,402",SMA2,SMA2,NOM,m&m bolero maxi truck plus 1.2t bsiv,1,kolhapur_mpk,,,MPK044,U,13058.93,MH09EM6071,YES
+,177,MPK00737L,,CW4888885,30/12/2021,15/01/2023,parashuram bagadi,15424,14936,19,,"5,38,183",SMA0,SMA0,NOM,force kargo king bs iv,1,kolhapur_mpk,,,MPK057,U,,MH09EM8879,
+,178,MPK00742L,,CW4965573,17/01/2022,15/01/2023,shabana sayyad,17,16810,3,,"8,06,852",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,775,kolhapur_mpk,,,MPK057,N,,MH09FL4326,
+,179,MPK00743L,,CW4965764,44775,45108,prashant gokake,59,45306,27,,"22,20,037",SMA0,SMA0,NOM,al ecomet 1615 4750 slpr hsd bs 6,760,kolhapur_mpk,,,MPK057,N,,KA33B3434,
+,180,MPK00746L,1,CU8245866,24/02/2022,15/01/2023,salarmahamad iqbal mulla,25610,10422,64,,"4,11,214",SMA2,SMA2,NOM,ashok leyland dost,741,kolhapur_mpk,,,MPK057,U,1151.15,KA23B0175,NO
+,181,MPK00750L,,CW5001949,29/01/2022,15/01/2023,akash sankpal,24608,17487,49,,"8,63,983",SMA1,SMA1,NOM,ashok leyland dost plus bs 6,1,kolhapur_mpk,,,MPK044,N,5384.19,MH09FL8183,NO
+,182,MPK00751L,,CU9888514,24/01/2022,15/01/2023,anil manik kumbhar,3579,9613,19,,"3,49,600",SMA0,SMA0,NOM,ashok leyland dost,709,kolhapur_mpk,,,MPK057,U,,MH09EM3836,
+,183,MPK00752L,,CW3648514,44594,45108,dadaso naik,34288,27219,57,,"13,67,974",SMA1,SMA1,NOM,mahindra furio 14hd/14ft hsd bsvi,684,kolhapur_mpk,,,MPK044,N,4475.35,KA23B4562,YES
+,184,MPK00755L,,CU7904891,44836,45108,rafiq nasaruddin takalagi,132,15160,3,,"3,79,110",SMA0,SMA0,NOM,ashok leyland dost plus,745,kolhapur_mpk,,,MPK057,U,,MH09EM1243,
+,185,MPK00758L,,CU0871148,14/02/2022,45108,jaysing hindurao jambilkar,821,59866,27,,"14,97,447",SMA0,SMA0,NOM,a l 1615 he 3970 mm cabin chassis bs 6,647,kolhapur_mpk,,,MPK044,N,,MH09FL8006,
+,186,MPK00761L,,CW5081795,28/02/2022,15/01/2023,pandurang kamble,254,28014,3,,"13,72,919",SMA0,SMA0,NOM,al partner hsd 3320 wb ls white bs 6,745,kolhapur_mpk,,,MPK044,U,,MH09FL2307,
+,187,MPK00764L,1,CU5436234,23/03/2022,15/01/2023,uttam shivaji jadhav,31338,13197,64,,"5,32,805",SMA2,SMA2,NOM,mahindra bolero pik up,650,kolhapur_mpk,,,MPK057,U,861.97,MH09EM3028,YES
+,188,MPK00765L,,CW3544892,44654,45108,sachin jayavant patil patil,21087,41933,27,,"21,17,703",SMA0,SMA0,NOM,mahindra furio 14 hd 19 ft bsvi,682,kolhapur_mpk,,,MPK057,N,,MH09FL4796,
+,189,MPK00768L,,CW4556730,31/03/2022,15/01/2023,krishna kamble,84061,39842,49,,"20,76,134",SMA2,SMA1,NOM,eicher pro 2110 h hsd bs 6,684,kolhapur_mpk,,,MPK044,N,40683.12,MH09FL7025,YES
+,190,MPK00775L,,CW5206382,30/03/2022,15/01/2023,amol londhe,15,15881,3,,"7,94,032",SMA0,SMA0,NOM,mahindra bolero maxi truck plus ps bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL4952,
+,191,MPK00777L,,CW5231951,44716,45108,shrikant khade,18,17062,3,,"8,70,176",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,740,kolhapur_mpk,,,MPK044,N,,MH09FL5070,
+,192,MPK00778L,,CW5251214,44746,45108,rupa jat,39525,18013,57,,"9,58,160",SMA1,SMA1,NOM,ashok leyland dost plus bs 6,638,kolhapur_mpk,,,MPK057,N,19463.78,MH09FL5123,NO
+,193,MPK00780L,,CU8245866,44685,45108,salarmahamad iqbal mulla,24590,19440,57,,"10,15,975",SMA2,SMA1,NOM,ashok leyland bada dost ls fsd bs 6,741,kolhapur_mpk,,,MPK057,N,2874.15,MH09FL5205,NO
+,194,MPK00781L,,CW5245891,22/04/2022,15/01/2023,yashawant thorat,149,35355,19,,"18,03,209",SMA0,SMA0,NOM,eicher pro 2114 xp22ft bs6 prm hsd,785,kolhapur_mpk,,,MPK057,N,,MH09FZ5533,
+,195,MPK00782L,,CU7901204,44655,45108,uttam sarjerao patil,77,33777,27,,"17,22,673",SMA0,SMA0,NOM,ashok leyland ecomet 1015te scum ubt bs6,664,kolhapur_mpk,,,MPK044,N,,MH09FL5681,
+,196,MPK00783L,,CW5272777,13/04/2022,45108,santosh tandale,14,14359,3,,"7,32,310",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,749,kolhapur_mpk,,,MPK057,N,,MH09FL5076,
+,197,MPK00784L,,CW3648514,22/04/2022,15/01/2023,dadaso naik,8339,14314,19,,"7,38,335",SMA1,SMA0,NOM,ashok leyland dost plus bs 6,684,kolhapur_mpk,,,MPK044,N,,MH09FL5025,
+,198,MPK00787L,,CW5295141,22/04/2022,15/01/2023,uttam parit,69995,32310,64,,"17,17,796",SMA2,SMA2,NOM,tata lpt 710 38 hsd bs 6,641,kolhapur_mpk,,,MPK044,N,953.63,MH09FL5170,NO
+,199,MPK00788L,,CW5275640,44809,45108,pritam lotake,7,47048,3,,"24,46,469",SMA0,SMA0,NOM,eicher pro 2110 l cbc 22ft bs6 cng,779,kolhapur_mpk,,,MPK057,N,,MH09FL5463,
+,200,MPK00790L,,CW5341132,25/04/2022,15/01/2023,megha ram purohit,46,15702,19,,"8,00,802",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,746,kolhapur_mpk,,,MPK057,N,,MH09FL5163,
+,201,MPK00794L,,CW5370028,30/04/2022,15/01/2023,mansur chinchale,18176,17616,19,,"9,16,579",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,752,kolhapur_mpk,,,MPK057,N,,MH09FL8975,
+,202,MPK00795L,,CW5368878,44717,45108,shshikant vadd,18080,17200,34,,"9,12,423",SMA1,SMA1,NOM,ashok leyland dost strong ls hsd bs 6,611,kolhapur_mpk,,,MPK057,N,344.48,MH09FL5323,
+,203,MPK00799L,,CW5372025,44597,45108,laraib attar,37,17087,27,,"8,88,540",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,1,kolhapur_mpk,,,MPK057,N,,MH09FL5294,
+,204,MPK00800L,,CU8341019,44870,45108,vikas yashwant bhagat,8243,8248,27,,"3,38,118",SMA0,SMA0,NOM,ashok leyland dost rlx bs iv,796,kolhapur_mpk,,,MPK057,U,,KA23B0329,
+,205,MPK00802L,,CW5403413,20/05/2022,15/01/2023,ashok jagtap,15,13643,19,,"7,09,422",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,1,kolhapur_mpk,,,MPK057,N,,MH09FL5439,
+,206,MPK00810L,,CW5448667,31/05/2022,21/01/2023,sanjay murkar,34,33581,13,,"17,46,215",SMA0,SMA0,NOM,eicher pro 2059 cbc bs 6,739,kolhapur_mpk,,,MPK044,N,,MH09FL5830,
+,207,MPK00811L,,CW5453134,44598,45108,yuvraj kambale,31982,28640,57,,"15,49,879",SMA1,SMA1,NOM,tata sfc 610tt cabin chassis bs vi,762,kolhapur_mpk,,,MPK044,N,2393.34,MH09FL9325,NO
+,208,MPK00816L,,CW5511048,17/06/2022,15/01/2023,amrut varute,18278,18329,19,,"9,89,696",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,770,kolhapur_mpk,,,MPK044,N,,NA,
+,209,MPK00817L,,CW5509542,44748,45108,sandip sangar,13433,13756,27,,"7,42,476",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,760,kolhapur_mpk,,,MPK057,N,,MH09FL5616,
+,210,MPK00819L,,CW5502480,14/06/2022,45108,mahantesh badagurav,68086,48402,57,,"26,33,359",SMA1,SMA1,NOM,eicher 2114xp hsd 20ft bs 6,1,kolhapur_mpk,,,MPK044,N,16919.88,MH09FL5617,YES
+,211,MPK00823L,,CW5572915,29/06/2022,21/01/2023,dhondiram dhanagar,34203,17009,43,,"7,31,569",SMA1,SMA1,NOM,bolero pik-up fb ps 1.7t xl bs vi,659,kolhapur_mpk,,,MPK044,U,16491.6,MH09FL2890,YES
+,212,MPK00825L,,CW5502646,30/06/2022,21/01/2023,sarjappa ghasti,75354,34511,43,,"19,04,386",SMA1,SMA1,NOM,eicher pro 2059 xp hsd bs 6,728,kolhapur_mpk,,,MPK044,N,37223.75,MH09FL5860,YES
+,213,MPK00828L,,CW5635837,16/07/2022,15/01/2023,pradip chikhalkar,19,18010,3,,"11,88,619",SMA0,SMA0,NOM,ashok leyland bada dost ls fsd 3.49t bs6,728,kolhapur_mpk,,,MPK044,N,,MH09FL5988,
+,214,MPK00830L,,CW5655298,19/07/2022,15/01/2023,amar pawar,16665,15618,19,,"10,47,405",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,661,kolhapur_mpk,,,MPK057,N,,MH09FL5987,
+,215,MPK00831L,,CW3976950,19/07/2022,15/01/2023,bhawani singh,176,46399,19,,"25,05,673",SMA0,SMA0,NOM,al ecomet 1815 he star 22 ft sl cab bs6,707,kolhapur_mpk,,,MPK057,N,,MH09FL6112,
+,216,MPK00832L,,CW3976950,19/07/2022,15/01/2023,bhawani singh,487,46399,19,,"25,05,984",SMA0,SMA0,NOM,al ecomet 1815 he star 22 ft sl cab bs6,707,kolhapur_mpk,,,MPK057,N,,MH09FL6113,
+,217,MPK00834L,,CW5673314,22/07/2022,15/01/2023,uttam gosavi,18612,16793,34,,"9,25,377",SMA1,SMA1,NOM,ashok leyland dost strong ls hsd bs 6,770,kolhapur_mpk,,,MPK044,N,261.03,MH09FL6024,
+,218,MPK00835L,,CU9032841,22/07/2022,15/01/2023,ganesh raghunath sorate,11,11175,19,,"4,69,347",SMA0,SMA0,NOM,ashok leyland dost rlx bs iv,720,kolhapur_mpk,,,MPK057,U,,MH09EM1847,
+,219,MPK00836L,,CW5687689,27/07/2022,21/01/2023,gulab gosavi,133,17690,13,,"9,55,356",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL6143,
+,220,MPK00838L,,CW5716972,30/07/2022,45108,sagar shinde,20,20000,3,,"18,29,756",SMA0,SMA0,NOM,tata sfc 710 dcr 38 hsd 100 bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL9451,
+,221,MPK00842L,,CW5758411,44873,45108,omkar patil,,20000,27,,"29,36,101",SMA0,SMA0,NOM,tata sfc 610tt cabin chassis bs vi,732,kolhapur_mpk,,,MPK044,N,,MH09FL6717,
+,222,MPK00844L,,CU7124958,13/08/2022,45108,mahantesh balappa shivannavar,79,48370,27,,"26,60,429",SMA0,SMA0,NOM,al ecomet 1815 he star 22 ft sl cab bs6,745,kolhapur_mpk,,,MPK057,N,,KA23B4975,
+,223,MPK00848L,,CW5761777,22/08/2022,15/01/2023,manik patil,11051,9729,19,,"4,29,364",SMA0,SMA0,NOM,mahindra bolero maxi truck,733,kolhapur_mpk,,,MPK057,U,,MH13AN8894
+,224,MPK00852L,,CW5841319,29/08/2022,21/01/2023,sunil kamble,17,17655,3,,"9,71,020",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,704,kolhapur_mpk,,,MPK057,N,,MH09GC5535
+,225,MPK00853L,,CW5850610,13/09/2022,45108,amol padavale,17957,17409,34,,"9,92,837",SMA1,SMA1,NOM,mahindra bolero city pickup 1.5t bs6,761,kolhapur_mpk,,,MPK044,N,17.47,MH09FL6723
+,226,MPK00854L,,CW5844278,30/08/2022,21/01/2023,jitendra pol,51,14600,13,,"9,78,193",SMA0,SMA0,NOM,ashok leyland dost strong lx fsd bs 6,679,kolhapur_mpk,,,MPK044,N,,MH09FL6473
+,227,MPK00856L,,CW5854017,30/08/2022,21/01/2023,vaibhav magdum,44,43957,3,,"24,17,633",SMA0,SMA0,NOM,al 1615 he 4750 mm hsd slr cab bs6,729,kolhapur_mpk,,,MPK057,N,,MH09FL6418
+,228,MPK00858L,,CW5773850,44782,45108,magnumtuff india pvt ltd,1494,26907,27,,"15,08,273",SMA0,SMA0,NOM,al partner 14 ft hsd bs6 ls hsd bs 6,,kolhapur_mpk,,,MPK057,N,,KA23B5027
+,229,MPK00859L,,CW5878806,44721,45108,prashant gaikwad,14,14028,27,,"9,53,887",SMA0,SMA0,NOM,ashok leyland dost strong ls hsd bs 6,721,kolhapur_mpk,,,MPK057,N,,MH09FL6483
+,230,MPK00863L,,CW2665951,22/09/2022,15/01/2023,nitin pandurang zanzane zanzane pandurang bhagwan zanzane,719,48600,3,,"26,99,715",SMA0,SMA0,NOM,1615he 4750mm 22 ls dc hsd 16.1t cng bs6,675,kolhapur_mpk,,,MPK057,N,,MH09FL6713
+,231,MPK00864L,,CW5899158,23/09/2022,15/01/2023,shilpa sankpal,20,20350,19,,"11,39,572",SMA0,SMA0,NOM,ashok leyland bada dost ls fsd bs 6,766,kolhapur_mpk,,,MPK044,N,,MH09FL7752
+,232,MPK00865L,,CW5947110,44630,45108,ravindra pujari,1076,16991,27,,"9,69,523",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,1,kolhapur_mpk,,,MPK044,N,,NA
+,233,MPK00866L,,CW2665950,23/09/2022,15/01/2023,bhausaheb waykar vinayak,437,48600,3,,"27,10,811",SMA0,SMA0,NOM,1615he 4750mm 22 ls dc hsd 16.1t cng bs6,667,kolhapur_mpk,,,MPK057,N,,MH09FL6712
+,234,MPK00867L,,CW5899987,28/09/2022,21/01/2023,chaitanya kudale,20,16733,13,,"9,37,049",SMA0,SMA0,NOM,bolero maxx pickup bs6,1,kolhapur_mpk,,,MPK044,N,,MH09FL8575
+,235,MPK00869L,,CW5957209,28/09/2022,21/01/2023,vishal mendake,18618,17366,13,,"9,91,072",SMA0,SMA0,NOM,bolero maxx pickup bs6,724,kolhapur_mpk,,,MPK044,N,,NA
+,236,MPK00871L,,CW5932812,44844,45108,saradar patil,17,17011,3,,"9,69,595",SMA0,SMA0,NOM,m&m bolero pick up 1.3 std bs 6,672,kolhapur_mpk,,,MPK044,N,,NA
+,237,MPK00873L,,CW5996500,44630,45108,vaibhav khade,190,19152,27,,"10,91,821",SMA0,SMA0,NOM,ashok leyland bada dost ls fsd 3.49t bs6,667,kolhapur_mpk,,,MPK044,N,,MH09FL6806
+,238,MPK00874L,,CW5994732,44661,45108,rohan sajane,17,17011,27,,"9,69,595",SMA0,SMA0,NOM,bolero pik-up fb ps 1.3t bs vi,734,kolhapur_mpk,,,MPK057,N,,MH09FL6897
+,239,MPK00875L,,CW5998352,44752,45108,savita chavan,20,20000,3,,"31,32,483",SMA0,SMA0,NOM,eicher 3015 xp m slp hsd 22ft bs 6,653,kolhapur_mpk,,,MPK057,N,,MH09EL8148
+,240,MPK00877L,,CW5999532,44752,45108,rudhayanath shinde,18,18117,3,,"10,32,686",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,755,kolhapur_mpk,,,MPK057,N,,MH09FL6922
+,241,MPK00878L,,CW6021984,44875,45108,shubhangi patil,34550,46787,27,,"27,01,377",SMA0,SMA0,NOM,al 1615 5200wd 22ft sleeper cabin bs 6,819,kolhapur_mpk,,,MPK044,N,,MH09FL7195
+,242,MPK00879L,,CW5967980,15/10/2022,45108,manoj rajapurkar,31,32000,3,,"29,49,757",SMA0,SMA0,NOM,eicher pro 2114 xp h hsd 20ft bs6 ngb 7s,732,kolhapur_mpk,,,MPK044,N,,MH09FL6974
+,243,MPK00880L,,CW6027034,17/10/2022,15/01/2023,ashwini patil,171,20000,19,,"28,98,305",SMA0,SMA0,NOM,tata lpt 1512 hsd bs6,684,kolhapur_mpk,,,MPK057,N,,NA
+,244,MPK00882L,,CW6015100,13/10/2022,45108,suraj parit,18,18130,3,,"10,33,420",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,752,kolhapur_mpk,,,MPK057,N,,MH09FL6946
+,245,MPK00885L,,CW6031500,18/10/2022,15/01/2023,ravi dattavde,17,16334,19,,"11,27,029",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL7049
+,246,MPK00887L,,CW5917396,44845,45108,firoj chinchale,8,9409,3,,"4,32,813",SMA0,SMA0,NOM,ashok leyland dost plus,1,kolhapur_mpk,,,MPK057,U,,MH09EM3887
+,247,MPK00888L,,CW6081755,21/10/2022,15/01/2023,jotiram kisan ghorpade ghorpade,21,20086,19,,"11,44,877",SMA0,SMA0,NOM,ashok leyland dost plus lx hsd bs 6,667,kolhapur_mpk,,,MPK057,N,,MH09GD3777
+,248,MPK00889L,,CW6058266,20/10/2022,15/01/2023,prakash gani gani,17,16128,19,,"9,19,270",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,670,kolhapur_mpk,,,MPK057,N,,MH09FL7998
+,249,MPK00890L,,CW6063729,17/10/2022,15/01/2023,ishwar gundurao sutar sutar,36,35000,3,,"29,48,515",SMA0,SMA0,NOM,eicher 2114xp hsd 20ft bs 6,744,kolhapur_mpk,,,MPK044,N,,NA
+,250,MPK00891L,,CW5933777,30/10/2022,21/01/2023,malkappa mali,21231,20000,34,,"29,71,844",SMA1,SMA1,NOM,tata lpt 1512 hsd bs6,725,kolhapur_mpk,,,MPK057,N,20.44,MH09FL7339
+,251,MPK00893L,,CW6099965,28/10/2022,21/01/2023,jeevan kishor shirage shirage,34,35000,3,,"27,88,467",SMA0,SMA0,NOM,tata ultra t18/49 hd,766,kolhapur_mpk,,,MPK044,N,,KA22AA0512
+,252,MPK00894L,,CW3530330,31/10/2022,21/01/2023,maruti jadhav,45,18102,13,,"10,31,834",SMA0,SMA0,NOM,ashok leyland dost plus bs 6,695,kolhapur_mpk,,,MPK057,N,,MH09FL7398
+,253,MPK00895L,,CW6102256,28/10/2022,21/01/2023,prakash ramayya swami swami,16,15681,3,,"10,81,957",SMA0,SMA0,NOM,ashok leyland dost strong ls fsd bs 6,729,kolhapur_mpk,,,MPK057,N,,MH09FL7307
+,254,MPK00903L,,CW6224175,18/11/2022,15/01/2023,gangadhar maruti gubbi gubbi,21,25000,3,,"25,82,232",SMA0,SMA0,NOM,eicher pro 2110 hsd 22ft bs 6,1,kolhapur_mpk,,,MPK044,N,,KA22AA0829
+,255,MPK00905L,,CW6223331,17/11/2022,15/01/2023,abrar kayum gavandi gavandi,24,20273,3,,"11,75,852",SMA0,SMA0,NOM,mahindra bolero big pickup fb1.7t ps bs6,789,kolhapur_mpk,,,MPK044,N,,MH09FL7637,
+,256,MPK00908L,,CW6162147,23/11/2022,21/01/2023,pravin madhukar patil patil,30,36836,3,,"21,36,496",SMA0,SMA0,NOM,al 1015 te 2850 mm wb tipper bs 6,1,kolhapur_mpk,,,MPK044,N,,MH09FL7880,
+,257,MPK00909L,,CU1420149,28/11/2022,21/01/2023,sandeep appaso patil,7,13261,3,,"4,50,855",SMA0,SMA0,NOM,sml isuzu sartaj,776,kolhapur_mpk,,,MPK057,U,,MH09CU6608,
+,258,MPK00910L,,CU3226626,24/11/2022,15/01/2023,abasaheb bhagwan kamble,17,20945,3,,"12,14,827",SMA0,SMA0,NOM,ashok leyland bada dost ls fsd 3.49t bs6,686,kolhapur_mpk,,,MPK057,N,,NA,
+,259,MPK00912L,,CW6082334,28/11/2022,21/01/2023,abdulrahaman hasanali shaikh shaikh,29,35000,3,,"31,55,760",SMA0,SMA0,NOM,eicher pro 3015 s hsd 22 ft bs6,721,kolhapur_mpk,,,MPK044,N,,MH09FL7817,
+,260,MPK00913L,,CW6081694,29/11/2022,21/01/2023,azad appalal patel,29,35000,3,,"32,08,098",SMA0,SMA0,NOM,eicher pro 3015 s hsd 22 ft bs6,693,kolhapur_mpk,,,MPK044,N,,MH09FL7816,
+,261,MPK00917L,,CU9577647,30/11/2022,21/01/2023,annappa kalgonda patil,103,14480,3,,"6,66,151",SMA0,SMA0,NOM,ashok leyland dost rlx bs iv,724,kolhapur_mpk,,,MPK044,U,,MH09EM3204,
+,Total,,,,,,,"48,98,098","53,27,288",,35298,"22,58,65,575",,,,,,,,,,,,

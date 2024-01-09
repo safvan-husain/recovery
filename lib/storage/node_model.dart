@@ -4,7 +4,7 @@ import 'dart:convert';
 class Node {
   final String charecter;
   final int dbId;
-  final int rowId;
+  final List<int> rowId;
   final Map<String, int> children;
   Node({
     required this.charecter,
@@ -24,10 +24,11 @@ class Node {
 
   factory Node.fromMap(Map<String, dynamic> map) {
     return Node(
-      charecter: map['charecter'] as String,
+      charecter: map['charecter'] ?? "",
       dbId: map['id'] as int,
-      rowId: map['rowId'] as int,
-      children: Map<String, int>.from((map['children'] as Map<String, int>)),
+      rowId: (jsonDecode(map['rowId']) as List).map((e) => e as int).toList(),
+      children: Map<String, dynamic>.from(jsonDecode(map['children']))
+          .map((key, value) => MapEntry(key, value as int)),
     );
   }
 
@@ -35,4 +36,14 @@ class Node {
 
   factory Node.fromJson(String source) =>
       Node.fromMap(json.decode(source) as Map<String, dynamic>);
+}
+
+class SearchResultItem {
+  final String item;
+  final Node node;
+
+  SearchResultItem({
+    required this.item,
+    required this.node,
+  });
 }

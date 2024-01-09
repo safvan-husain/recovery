@@ -17,6 +17,7 @@ import 'package:recovery_app/screens/HomePage/widgets/vehical_owner_tile.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/screens/title_configure/title_configure_screen.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
+import 'package:recovery_app/storage/database_helper.dart';
 
 import '../../resources/color_manager.dart';
 
@@ -130,7 +131,8 @@ class _HomePageState extends State<HomePage> {
                       // ExcelStore.processExcelInChunks();
                       // JsonDataServices.readJsonFromFileChunked();
                       // await CsvFileServices.copyAssetToDocumentDir();
-                      await CsvFileServices.getExcelFiles();
+                      // await CsvFileServices.getExcelFiles();
+                      await DatabaseHelper.deleteAllData();
                       CsvFileServices.proccessFiles();
                       // print(await CsvFileServices.search("SWIFT DZIRE"));
                     },

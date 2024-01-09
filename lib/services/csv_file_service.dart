@@ -17,6 +17,7 @@ class CsvFileServices {
         final decoder = utf8.decoder;
         var buffer = '';
         int? titleDBId;
+        int count = 0;
         await for (var data in reader) {
           buffer += decoder.convert(data);
           while (buffer.contains('\n')) {
@@ -32,6 +33,7 @@ class CsvFileServices {
               titleDBId = await DatabaseHelper.inseartTitles(titles);
             } else {
               await DatabaseHelper.inseartRow(items, titleDBId);
+              print("inserted row ${count++} times");
             }
 
             // Process your line here
@@ -127,7 +129,7 @@ class CsvFileServices {
 
   static Future<void> copyAssetToDocumentDir() async {
     // Load the file from the assets folder
-    ByteData byteData = await rootBundle.load('assets/icons/large.csv');
+    ByteData byteData = await rootBundle.load('assets/icons/x.csv');
 
     // Create a new file in the documents directory
     File file = await _localFile;
