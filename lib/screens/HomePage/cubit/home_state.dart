@@ -9,28 +9,20 @@ enum ChangeType {
 }
 
 class HomeState {
-  final List<DetailsModel> vehichalOwnerList;
   final UserModel? user;
   final List<String> couselImages;
   final ChangeType changeType;
-  final double? downloadProgress;
-  final List<File> files;
 
   HomeState({
-    required this.vehichalOwnerList,
     required this.couselImages,
     required this.changeType,
-    required this.files,
-    this.downloadProgress,
     this.user,
   });
 
   factory HomeState.initial() {
     return HomeState(
-      vehichalOwnerList: [],
       couselImages: [],
       changeType: ChangeType.loading,
-      files: [],
     );
   }
 
@@ -43,12 +35,9 @@ class HomeState {
     List<File>? files,
   }) {
     return HomeState(
-      vehichalOwnerList: vehichalOwnerList ?? this.vehichalOwnerList,
       user: user ?? this.user,
       couselImages: couselImages ?? this.couselImages,
       changeType: changeType ?? this.changeType,
-      downloadProgress: downloadProgress ?? this.downloadProgress,
-      files: files ?? this.files,
     );
   }
 }

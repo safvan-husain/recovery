@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
-  static void proccessFiles() async {
+  static Future<void> _proccessFiles([List<File>? csvFiles]) async {
     try {
-      var files = await getExcelFiles();
+      var files = csvFiles ?? await getExcelFiles();
       for (var file in files) {
         late List<String> titles;
         final reader = file.openRead();
@@ -48,25 +50,27 @@ class CsvFileServices {
 
   static Future<void> downloadFile(
     String url,
-    String savePath,
+    String fileName,
     void Function(int, int)? onReceiveProgress,
   ) async {
     Dio dio = Dio();
     try {
-      await dio.download(url, savePath, onReceiveProgress: onReceiveProgress);
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String savePath = '${appDocDir.path}/vehicle details/$fileName';
+      await dio.download(url, savePath, onReceiveProgress: (i, x) {});
     } catch (e) {
       print(e);
     }
   }
 
-  static Future<Map<String, String>> fetchDownloadLinksAndNames(
-    String agencyId,
-    StreamController<double> downloadProgress,
-  ) async {
-    String url = "http://192.168.43.32:3000/data";
+  static Future<void> _fetchDownloadLinksAndNames(
+    String agencyId, [
+    List<String> fileNames = const [],
+  ]) async {
+    String url = "https://converter.starkinsolutions.com/data";
     final dio = Dio();
-    final response =
-        await dio.post(url, data: {"filenames": [], "agencyId": agencyId});
+    final response = await dio
+        .post(url, data: {"filenames": fileNames, "agencyId": agencyId});
 
     if (response.statusCode == 200) {
       Map<String, String> downloadLinksAndNames = {};
@@ -76,17 +80,34 @@ class CsvFileServices {
         String fileName = uri.pathSegments.last;
         downloadLinksAndNames[fileName] = link;
       });
-      downloadLinksAndNames.forEach((key, value) async {
-        await downloadFile(value, key, (received, total) {
+      for (var i = 0; i < downloadLinksAndNames.entries.length; i++) {
+        var map = downloadLinksAndNames.entries.toList().elementAt(i);
+        await downloadFile(
+            map.value.replaceAll('/home/starkina/', 'https://www.'), map.key,
+            (received, total) {
           if (total != -1) {
-            print('${(received / total * 100).toStringAsFixed(0)}%');
+            // print('${(received / total * 100).toStringAsFixed(0)}%');
           }
         });
-      });
-      return downloadLinksAndNames;
+      }
     } else {
-      throw Exception('Failed to load download links');
+      print('Failed to load download links');
+      // throw Exception('Failed to load download links');
     }
+  }
+
+  static Future<void> updateData(String agencyId) async {
+    var files = await getExcelFiles();
+    List<String> fileNames =
+        files.map((e) => basenameWithoutExtension(e.path)).toList();
+    await _fetchDownloadLinksAndNames(agencyId, fileNames);
+
+    files = await getExcelFiles();
+    List<File> res = files
+        .where((element) =>
+            !fileNames.contains(basenameWithoutExtension(element.path)))
+        .toList();
+    await _proccessFiles(res);
   }
 
   static List<String> _splitStringIgnoringQuotes(String input) {
@@ -119,19 +140,22 @@ class CsvFileServices {
     return result;
   }
 
-  static Future<File> get _localFile async {
-    final path = await _localPath;
-    var uuid = const Uuid();
-    final dir = Directory('$path/vehicle details');
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
-    }
-    return File('$path/vehicle details/${uuid.v1()}.csv');
-  }
-
   static Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
+  }
+
+  static Future<void> deleteAllFilesInVehicleDetails() async {
+    final path = await _localPath;
+    final directory = Directory('$path/vehicle details');
+    if (await directory.exists()) {
+      final files = directory.listSync();
+      for (var file in files) {
+        if (file is File && file.path.endsWith('.csv')) {
+          await file.delete();
+        }
+      }
+    }
   }
 
   static Future<List<File>> getExcelFiles() async {
@@ -151,33 +175,16 @@ class CsvFileServices {
     }
   }
 
-  static Future<List<List<String>>> readCSVFromDocumentDir() async {
-    List<List<String>> list = [];
-    try {
-      final files = await getExcelFiles();
-      for (var file in files) {
-        String contents = await file.readAsString();
-        var rows = contents.split("\n");
-        print("${file.path} have ${rows.length} rows");
-        list.add(rows[1].split(","));
-      }
-      print(list[0].length);
-    } catch (e) {
-      print("readCSVFromDocumentDir" + e.toString());
-    }
-    return list;
-  }
-
   static Future<void> copyAssetToDocumentDir() async {
     // Load the file from the assets folder
     ByteData byteData = await rootBundle.load('assets/icons/x.csv');
 
     // Create a new file in the documents directory
-    File file = await _localFile;
+    // File file = await _localFile;
 
     // Write the contents of the loaded file to the new file
-    await file.writeAsBytes(byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    // await file.writeAsBytes(byteData.buffer
+    //     .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
   }
 }
 

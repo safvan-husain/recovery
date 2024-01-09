@@ -48,22 +48,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   void downloadData() async {
     emit(state.copywith(changeType: ChangeType.loading));
-    // print(state.user!.agencyId!); //TODO: agencyId is hard coded.
-    StreamController<double> downloadProgress = StreamController<double>();
 
-    CsvFileServices.fetchDownloadLinksAndNames('2', downloadProgress);
-    // CsvFileServices.fetchDownloadLinksAndNames(
-    //     state.user!.agencyId!, downloadProgress);
-
-    downloadProgress.stream.listen((p) {
-      if (p >= 100) {
-        homeInitialization();
-      } else {
-        emit(
-          state.copywith(downloadProgress: p),
-        );
-      }
-    });
+    await CsvFileServices.updateData('2');
+    emit(state.copywith(changeType: ChangeType.vehichelOwnerListUpdated));
   }
 }
 

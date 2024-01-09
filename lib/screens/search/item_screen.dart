@@ -36,7 +36,7 @@ class _ItemScreenState extends State<ItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:const Text("Details"),
+        title: const Text("Details"),
       ),
       body: SafeArea(
           child: Padding(
@@ -45,33 +45,58 @@ class _ItemScreenState extends State<ItemScreen> {
             ? const Center(
                 child: Text("No details available"),
               )
-            : Column(
-                children: [
-                  Container(
-                    child: Text("Item $currentIndex / ${widget.rowIds.length}"),
-                  ),
-                  GestureDetector(
-                    onHorizontalDragEnd: (details) {
-                      if (details.primaryVelocity! > 0) {
-                        // Swipe Right
-                        print('Swiped Right');
-                      } else if (details.primaryVelocity! < 0) {
-                        // Swipe Left
-                        print('Swiped Left');
-                      }
-                    },
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height - 200,
-                      child: PageView(
-                        controller: controller,
-                        children: widget.rowIds
-                            .map((e) => SingleItemScreen(
-                                rowId: e, heroTag: widget.heroTag))
-                            .toList(),
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 30,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              controller.previousPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut);
+                            },
+                            child: const Icon(Icons.arrow_back_ios_new),
+                          ),
+                          Text("Item $currentIndex / ${widget.rowIds.length}"),
+                          InkWell(
+                            onTap: () {
+                              controller.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut);
+                            },
+                            child: const Icon(Icons.arrow_forward_ios),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    GestureDetector(
+                      onHorizontalDragEnd: (details) {
+                        if (details.primaryVelocity! > 0) {
+                          // Swipe Right
+                          print('Swiped Right');
+                        } else if (details.primaryVelocity! < 0) {
+                          // Swipe Left
+                          print('Swiped Left');
+                        }
+                      },
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height - 200,
+                        child: PageView(
+                          controller: controller,
+                          children: widget.rowIds
+                              .map((e) => SingleItemScreen(
+                                  rowId: e, heroTag: widget.heroTag))
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
       )),
     );

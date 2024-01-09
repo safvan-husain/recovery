@@ -1,21 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:recovery_app/models/detail_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
-import 'package:recovery_app/screens/HomePage/notification_screen.dart';
-import 'package:recovery_app/screens/HomePage/widgets/bottom_sheet.dart';
-import 'package:recovery_app/screens/HomePage/widgets/vehical_owner_tile.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
-import 'package:recovery_app/screens/title_configure/title_configure_screen.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 
@@ -30,26 +26,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentCarouselIndex = 0;
-  int currentCategoryIndex = 0;
-  final ScrollController _listScrollController = ScrollController();
   final ScrollController _scrollController = ScrollController();
-  List<String> categoryList() => ["Bike", "Home", "Car"];
-  String? currentCatValue = "USED LCV";
-  bool isSubscribed = false;
+
   @override
   void initState() {
     context.read<HomeCubit>().homeInitialization();
     context.read<HomeCubit>().getCrouselImages();
-    // ExcelStore.downloadAndStore(context.read<HomeCubit>().getVehichelOwners);
     super.initState();
-    _listScrollController.addListener(() {
-      if (_listScrollController.position.pixels == 0) {
-        _scrollController.jumpTo(_scrollController.position.minScrollExtent);
-      } else if (_listScrollController.position.pixels > 100) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-      if (_listScrollController.position.atEdge) {}
-    });
   }
 
   List<DetailsModel> filterdItems = [];
@@ -130,111 +113,107 @@ class _HomePageState extends State<HomePage> {
                       // context.read<HomeCubit>().downloadData();
                       // ExcelStore.processExcelInChunks();
                       // JsonDataServices.readJsonFromFileChunked();
-                      // await CsvFileServices.fetchDownloadLinksAndNames();
+                      // await CsvFileServices.copyAssetToDocumentDir();
                       // await CsvFileServices.getExcelFiles();
-                      await DatabaseHelper.deleteAllData();
-                      CsvFileServices.proccessFiles();
+                      // await DatabaseHelper.deleteAllData();
+                      // CsvFileServices.proccessFiles();
                       // print(await CsvFileServices.search("SWIFT DZIRE"));
                     },
                     child: Text(
-                      "Item count : ${filterdItems.isNotEmpty ? filterdItems.length : context.read<HomeCubit>().state.vehichalOwnerList.length}",
+                      "Item count",
                       style: TextStyle(color: Colors.grey, fontSize: 15),
                     ),
                   )
                 ],
               ),
-              // _getCategoryTabs(),
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
-                  if (state.vehichalOwnerList.isEmpty) {
-                    // log("progress : ${(state.downloadProgress ?? 0) / 10}");
-                    return ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: 200),
-                      child: Center(
-                        child: state.changeType == ChangeType.loading
-                            ? Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  CircularProgressIndicator(
-                                    value: (state.downloadProgress ?? 0) / 100,
-                                  ),
-                                  if (state.downloadProgress != null)
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                          "${state.downloadProgress!.floor()} %"),
-                                    )
-                                ],
-                              )
-                            : Container(
-                                margin: const EdgeInsets.all(5),
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 162, 190, 248),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: Colors.grey, width: 1.0)),
-                                child: Column(
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: 200),
+                    child: Center(
+                      child: state.changeType == ChangeType.loading
+                          // child: true
+                          ? Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Please keep your app open, it may take a while.",
+                                  style: GoogleFonts.poppins(),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Container(
-                                      padding: EdgeInsets.all(20),
-                                      child: Text(
-                                        isSubscribed
-                                            ? "Search to see the data"
-                                            : "Take a Subscription to see the data",
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.black),
-                                      ),
+                                    Text(
+                                      "Dowloading...",
+                                      style: GoogleFonts.poppins(),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        if (state.files.isEmpty) {
-                                          showSnackbar(
-                                            "Started to download data",
-                                            context,
-                                            Icons.downloading,
-                                          );
-
-                                          context
-                                              .read<HomeCubit>()
-                                              .downloadData();
-                                        } else {
-                                          //TODO: loading.
-                                        }
-                                      },
-                                      child: Text(
-                                        state.files.isEmpty
-                                            ? "DOwnload"
-                                            : "Configure",
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.white),
-                                      ),
-                                    ),
+                                    CircularProgressIndicator(),
                                   ],
                                 ),
-                              ),
-                      ),
-                    );
-                  }
-                  return ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height,
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        context
+                                            .read<HomeCubit>()
+                                            .downloadData();
+                                      },
+                                      child: Card(
+                                        child: Container(
+                                          height: 70,
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "Download",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        CsvFileServices
+                                            .deleteAllFilesInVehicleDetails();
+                                      },
+                                      child: Card(
+                                        child: Container(
+                                            height: 70,
+                                            alignment: Alignment.center,
+                                            child: Icon(FontAwesomeIcons.user)),
+                                      ),
+                                    ),
+                                  ].map((e) => Expanded(child: e)).toList(),
+                                ),
+                                Row(
+                                  children: [
+                                    Card(
+                                      child: Container(
+                                        height: 70,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          "Download",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                    Card(
+                                      child: Container(
+                                          height: 70,
+                                          alignment: Alignment.center,
+                                          child: Icon(Icons.settings)),
+                                    ),
+                                  ].map((e) => Expanded(child: e)).toList(),
+                                ),
+                              ],
+                            ),
                     ),
-                    child: ListView.builder(
-                        controller: _listScrollController,
-                        itemCount: filterdItems.isNotEmpty
-                            ? filterdItems.length
-                            : state.vehichalOwnerList.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return VehichelOwnerTile(
-                            detailsModel: filterdItems.isNotEmpty
-                                ? filterdItems.elementAt(index)
-                                : state.vehichalOwnerList.elementAt(index),
-                          );
-                        }),
                   );
                 },
               )
@@ -249,46 +228,6 @@ class _HomePageState extends State<HomePage> {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return InkWell(
-          // onTap: () => showSearchForCustomiseSearchDelegate<DetailsModel>(
-          //   context: context,
-          //   delegate: SearchScreen(
-          //     items: filterdItems.isNotEmpty
-          //         ? filterdItems
-          //         : state.vehichalOwnerList,
-          //     filter: (item) => [item.name, item.engineNo, item.vehicalNo],
-          //     itemBuilder: (item) {
-          //       return Padding(
-          //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          //         child: VehichelOwnerTile(detailsModel: item),
-          //       );
-          //     },
-          //     appBarBuilder:
-          //         (controller, onSubmitted, textInputAction, focusNode) {
-          //       return PreferredSize(
-          //         preferredSize: Size(double.infinity, 80),
-          //         child: Padding(
-          //           padding: const EdgeInsets.only(top: 20.0),
-          //           child: SearchBar(
-          //             elevation: MaterialStatePropertyAll(0),
-          //             shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-          //                 borderRadius: BorderRadius.circular(10))),
-          //             controller: controller,
-          //             hintText: "Search",
-          //             hintStyle: MaterialStatePropertyAll(
-          //                 TextStyle(color: ColorManager.grey)),
-          //             onSubmitted: onSubmitted,
-          //             leading: IconButton(
-          //                 onPressed: () => onSubmitted,
-          //                 icon: Icon(
-          //                   Icons.search,
-          //                   color: ColorManager.grey,
-          //                 )),
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
           onTap: () {
             PersistentNavBarNavigator.pushNewScreen(
               context,
@@ -330,57 +269,6 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-  }
-
-  Widget _getCategoryTabs() {
-    return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: List.generate(categoryList().length, (index) {
-            return InkWell(
-              onTap: () async {
-                setState(() {
-                  currentCategoryIndex = index;
-                });
-                // PersistentNavBarNavigator.pushNewScreen(
-                //   context,
-                //   screen: const CategoryListView(),
-                //   withNavBar: true, // OPTIONAL VALUE. True by default.
-                //   pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                // );
-                // await ExcelStore.downloadFile(
-                //     "https://www.recovery.starkinsolutions.com//uploads/bank_proof/ADI1dt9RG5/REPO%20LIST%20MARCH%202023%20-PUNE%20HUB.xlsx");
-                // context.read<HomeCubit>().getVehichelOwners();
-              },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: currentCategoryIndex == index
-                        ? ColorManager.primary
-                        : ColorManager.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(0.2), //New
-                          blurRadius: 5.0,
-                          offset: Offset(0, 10))
-                    ]),
-                child: Text(
-                  categoryList()[index],
-                  style: TextStyle(
-                      color: currentCategoryIndex == index
-                          ? ColorManager.white
-                          : Colors.black,
-                      fontSize: 15),
-                ),
-              ),
-            );
-          }),
-        ));
   }
 
   Widget _getCarousel() {

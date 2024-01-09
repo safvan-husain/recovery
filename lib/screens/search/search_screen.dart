@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/screens/search/item_screen.dart';
 import 'package:recovery_app/screens/search/widgets/searched_items_view.dart';
@@ -64,68 +65,148 @@ class SearchScreen1State extends State<SearchScreen1> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: PreferredSize(
-        preferredSize:
-            Size(MediaQuery.of(context).size.width, _isSearch ? 80 : 60),
-        child: AppBar(
-          leading: InkWell(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: const Icon(Icons.arrow_back_ios),
-          ),
-          title: Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(
-                  color: Colors.black,
-                  width: 1,
-                  strokeAlign: BorderSide.strokeAlignOutside),
-              // color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: TextField(
-              decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "search here",
-                  prefixIcon: Icon(Icons.search)),
-              controller: _controller,
-              onChanged: (value) async {
-                items = value.isEmpty
-                    ? []
-                    : await DatabaseHelper.showForPrefix(removeHyphens(value));
-                if (context.mounted) setState(() {});
-              },
-            ),
-          ),
-        ),
-      ),
+      // appBar: PreferredSize(
+      //   preferredSize:
+      //       Size(MediaQuery.of(context).size.width, _isSearch ? 80 : 60),
+      //   child: AppBar(
+      //     leading: InkWell(
+      //       onTap: () {
+      //         Navigator.of(context).pop();
+      //       },
+      //       child: const Icon(Icons.arrow_back_ios),
+      //     ),
+      //     title: Container(
+      //       alignment: Alignment.center,
+      //       padding: const EdgeInsets.symmetric(horizontal: 10),
+      //       height: 40,
+      //       width: MediaQuery.of(context).size.width,
+      //       decoration: BoxDecoration(
+      //         color: Colors.white,
+      //         border: Border.all(
+      //             color: Colors.black,
+      //             width: 1,
+      //             strokeAlign: BorderSide.strokeAlignOutside),
+      //         // color: Colors.red,
+      //         borderRadius: BorderRadius.circular(10),
+      //       ),
+      //       child: TextField(
+      //         decoration: const InputDecoration(
+      //             border: InputBorder.none,
+      //             hintText: "search here",
+      //             prefixIcon: Icon(Icons.search)),
+      //         controller: _controller,
+      //         onChanged: (value) async {
+      //           items = value.isEmpty
+      //               ? []
+      //               : await DatabaseHelper.showForPrefix(removeHyphens(value));
+      //           if (context.mounted) setState(() {});
+      //         },
+      //       ),
+      //     ),
+      //   ),
+      // ),
       body: SafeArea(
-        child: _isSearchComplete && items.isEmpty
-            ? Center(
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              height: 60,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5), // Color of the shadow
+                    spreadRadius: 2, // Spread radius
+                    blurRadius: 4, // Blur radius
+                    offset: const Offset(0, 3), // Shadow offset
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 100,
+                    child: TextField(
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "search here",
+                          prefixIcon:
+                              const CircleAvatar(child: Icon(Icons.search)),
+                          prefixIconConstraints:
+                              const BoxConstraints(minWidth: 50),
+                          suffixIconConstraints:
+                              const BoxConstraints(minWidth: 80),
+                          suffix: InkWell(
+                            onTap: () {
+                              _controller.text = '';
+                            },
+                            child: const Icon(
+                              FontAwesomeIcons.x,
+                              color: Colors.grey,
+                            ),
+                          )),
+                      controller: _controller,
+                      onChanged: (value) async {
+                        items = value.isEmpty
+                            ? []
+                            : await DatabaseHelper.showForPrefix(
+                                removeHyphens(value));
+                        if (context.mounted) setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            if (items.isEmpty && _controller.text.isNotEmpty) ...[
+              const SizedBox(
+                height: 200,
+              ),
+              Center(
                 child: Text("No search results for ${_controller.text}"),
               )
-            : ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () async {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (c) => ItemScreen(
-                            rowIds: items[index].node.rowId,
-                            heroTag: 'item-$index',
+            ] else
+              SizedBox(
+                height: MediaQuery.of(context).size.height - 150,
+                child: ListView.separated(
+                  separatorBuilder: (context, index) {
+                    return Divider(
+                      indent: 20,
+                      endIndent: 20,
+                      color: Colors.grey[300],
+                    );
+                  },
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () async {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (c) => ItemScreen(
+                              rowIds: items[index].node.rowId,
+                              heroTag: 'item-$index',
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Hero(
-                      tag: 'item-$index',
-                      child: Card(
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: ListTile(
                           title: Text(items[index].item),
                           trailing: CircleAvatar(
@@ -135,10 +216,12 @@ class SearchScreen1State extends State<SearchScreen1> {
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
+          ],
+        ),
       ),
     );
   }
