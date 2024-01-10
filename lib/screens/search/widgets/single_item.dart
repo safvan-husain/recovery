@@ -37,7 +37,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
   }
 
   bool _isReporting = false;
-  String vehicleDetails = '';
+  Map<String, String> vehicleDetails = {};
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                         child: Text("No data availible"),
                       );
                     }
-                    vehicleDetails = jsonEncode(snp.data);
+                    vehicleDetails = snp.data!;
                     return SingleChildScrollView(
                       child: Card(
                         child: Padding(
@@ -172,8 +172,8 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                           // maxLength: 1000,
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            labelText: 'street, area, locality...',
-                            labelStyle: GoogleFonts.poppins(fontSize: 13),
+                            hintText: 'street, area, locality...',
+                            hintStyle: GoogleFonts.poppins(fontSize: 13),
                           ),
                         ),
                       ),
@@ -209,8 +209,8 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                           // maxLength: 1000,
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            labelText: 'Carries goods, load...',
-                            labelStyle: GoogleFonts.poppins(fontSize: 13),
+                            hintText: 'Carries goods, load...',
+                            hintStyle: GoogleFonts.poppins(fontSize: 13),
                           ),
                         ),
                       ),
@@ -223,45 +223,45 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (_addressController.text.isNotEmpty) {
-                                    Utils.sendSMS(
-                                        '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
-                                  } else {
-                                    _showAddressWarning().show(context);
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        side: BorderSide(
-                                            color: ColorManager.primary,
-                                            width: 2)),
-                                    backgroundColor: ColorManager.primary,
-                                    alignment: Alignment.center),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    const Text(
-                                      "Send ",
-                                      style: TextStyle(color: Colors.white),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    Image.asset(IconAssets.sms_ic)
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
+                            // Expanded(
+                            //   child: ElevatedButton(
+                            //     onPressed: () {
+                            //       if (_addressController.text.isNotEmpty) {
+                            //         Utils.sendSMS(
+                            //             '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
+                            //       } else {
+                            //         _showAddressWarning().show(context);
+                            //       }
+                            //     },
+                            //     style: ElevatedButton.styleFrom(
+                            //         shape: RoundedRectangleBorder(
+                            //             borderRadius: BorderRadius.circular(10),
+                            //             side: BorderSide(
+                            //                 color: ColorManager.primary,
+                            //                 width: 2)),
+                            //         backgroundColor: ColorManager.primary,
+                            //         alignment: Alignment.center),
+                            //     child: Row(
+                            //       mainAxisAlignment:
+                            //           MainAxisAlignment.spaceEvenly,
+                            //       children: [
+                            //         const Text(
+                            //           "Send ",
+                            //           style: TextStyle(color: Colors.white),
+                            //           textAlign: TextAlign.center,
+                            //         ),
+                            //         Image.asset(IconAssets.sms_ic)
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            // const SizedBox(width: 10),
                             Expanded(
                               child: ElevatedButton(
                                   onPressed: () {
                                     if (_addressController.text.isNotEmpty) {
                                       var message =
-                                          '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}';
+                                          '${Utils.formatMap(vehicleDetails)} \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}';
                                       String url =
                                           'whatsapp://send?phone=+917907320942&text=$message';
                                       Utils.launchURL(url);

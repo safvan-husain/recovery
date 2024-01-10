@@ -25,6 +25,7 @@ class DatabaseHelper {
   id INTEGER PRIMARY KEY,
   $charColum TEXT,
   rowId TEXT,
+  og TEXT,
   children TEXT, 
   FOREIGN KEY(rowId) REFERENCES $jsonStore(id)
 )''');
@@ -46,8 +47,8 @@ class DatabaseHelper {
     );
     if (node.isEmpty) {
       if (id == 1) {
-        await _database
-            .insert(trie, {charColum: 'root', 'children': '{}', 'rowId': '[]'});
+        await _database.insert(trie,
+            {charColum: 'root', 'children': '{}', 'rowId': '[]', 'og': '[]'});
         node = await _database.query(
           trie,
           where: '$charColum = ?',
@@ -69,13 +70,14 @@ class DatabaseHelper {
     );
   }
 
-  static Future<int> _createNode(String char, [int? rowId]) async {
+  static Future<int> _createNode(String char, [int? rowId, String? og]) async {
     var id = await _database.insert(
       trie,
       {
         charColum: char,
         'children': '{}',
-        'rowId': rowId == null ? "[]" : jsonEncode([rowId])
+        'rowId': rowId == null ? "[]" : jsonEncode([rowId]),
+        'og': rowId == null ? "[]" : jsonEncode([og])
       },
     );
     return id;
@@ -90,11 +92,21 @@ class DatabaseHelper {
       List<String> row, int titlesId, int vehicalNumbrColumIndex) async {
     int rowId = await _database.insert(
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
-    await _inseartString(
-        Utils.removeHyphens(row.elementAt(vehicalNumbrColumIndex)), rowId);
+    var s = Utils.removeHyphens(row.elementAt(vehicalNumbrColumIndex));
+
+    await _inseartString(s, rowId);
+
+    var res = Utils.checkLastFourChars(s);
+    if (res.$1) {
+      await _inseartString(res.$2, rowId, s);
+    }
   }
 
-  static Future<void> _inseartString(String word, int rowId) async {
+  static Future<void> _inseartString(
+    String word,
+    int rowId, [
+    String? og,
+  ]) async {
     Node? node;
     int nodeId = 1;
     late Map<String, dynamic> children;
@@ -114,11 +126,22 @@ class DatabaseHelper {
       }
       if (i == word.length - 1) {
         node = await _getNode(nodeId);
+        List<String> ogs = [];
+        if (og != null) {
+          ogs = node.og;
+        }
         List<int> rowIds = node.rowId;
         if (!rowIds.contains(rowId)) {
           rowIds.add(rowId);
-          await _database.update(trie, {"rowId": jsonEncode(rowIds)},
-              where: 'id = ?', whereArgs: [node.dbId]);
+          if (og != null && !ogs.contains(og)) {
+            ogs.add(og);
+            await _database.update(
+                trie, {"rowId": jsonEncode(rowIds), 'og': jsonEncode(ogs)},
+                where: 'id = ?', whereArgs: [node.dbId]);
+          } else {
+            await _database.update(trie, {"rowId": jsonEncode(rowIds)},
+                where: 'id = ?', whereArgs: [node.dbId]);
+          }
         }
       }
     }
@@ -159,7 +182,6 @@ class DatabaseHelper {
       print(node.children);
       var children = node.children;
       if (!children.containsKey(character)) {
-        log("retrn showprefic");
         return [];
       }
       nodeId = children[character]!;
@@ -185,7 +207,13 @@ class DatabaseHelper {
             children[childCharacter]!, prefix + childCharacter, results);
       }
     } else {
-      results.add(SearchResultItem(item: prefix, node: node));
+      if (node.og.isNotEmpty) {
+        for (var element in node.og) {
+          results.add(SearchResultItem(item: element, node: node));
+        }
+      } else {
+        results.add(SearchResultItem(item: prefix, node: node));
+      }
     }
   }
 }

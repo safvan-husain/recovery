@@ -23,6 +23,15 @@ class Utils {
     return false;
   }
 
+  static (bool isNumber, String number) checkLastFourChars(String str) {
+    if (str.length < 5) {
+      return (false, '');
+    }
+    String lastFour = str.substring(str.length - 4);
+    bool isAllNumbers = RegExp(r'^\d+$').hasMatch(lastFour);
+    return (isAllNumbers, lastFour);
+  }
+
   static Future<bool> sendSMS(String message) async {
     final Uri url = Uri(
       scheme: 'sms',
@@ -37,5 +46,11 @@ class Utils {
       return true;
     }
     return false;
+  }
+
+  static String formatMap(Map<String, String> map) {
+    return map.entries
+        .map((entry) => '${entry.key} : ${entry.value}')
+        .join('\n');
   }
 }

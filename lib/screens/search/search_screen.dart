@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,20 +24,22 @@ class SearchScreen1State extends State<SearchScreen1> {
   bool _isSearch = false;
   bool _isSearchComplete = false;
   final TextEditingController _controller = TextEditingController();
-  final _streamController = StreamController<Map<String, dynamic>>();
+  // final _streamController = StreamController<Map<String, dynamic>>();
 
   @override
   void initState() {
     super.initState();
   }
 
+  CancelableOperation<List<SearchResultItem>>? operation;
   List<SearchResultItem> items = [];
   @override
   void dispose() {
-    _streamController.close();
+    // _streamController.close();
     super.dispose();
   }
 
+  bool isAllNumbers = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,21 +81,9 @@ class SearchScreen1State extends State<SearchScreen1> {
                     child: TextField(
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "search here eg: MH09CA1301",
+                          hintText: " eg: MH09CA1301 or 1301",
                           prefixIcon: InkWell(
-                              onTap: () async {
-                                if (_controller.text.isNotEmpty) {
-                                  setState(() {
-                                    _isSearch = true;
-                                  });
-                                  await DatabaseHelper.showForPrefix(
-                                      Utils.removeHyphens(_controller.text));
-                                  setState(() {
-                                    _isSearchComplete = true;
-                                    _isSearch = false;
-                                  });
-                                }
-                              },
+                              onTap: () async {},
                               child: const CircleAvatar(
                                   child: Icon(Icons.search))),
                           prefixIconConstraints:
@@ -110,18 +101,103 @@ class SearchScreen1State extends State<SearchScreen1> {
                           )),
                       controller: _controller,
                       onChanged: (value) async {
-                        var operation = CancelableOperation.fromFuture(
+                        if (context.mounted) {
+                          setState(() {
+                            isAllNumbers = RegExp(r'^\d+$').hasMatch(value);
+                            _isSearchComplete = false;
+                          });
+                        }
+                        if (operation != null) {
+                          operation!.cancel();
+                        }
+                        if (value.isNotEmpty) {
+                          operation = CancelableOperation.fromFuture(
                             DatabaseHelper.showForPrefix(
-                                Utils.removeHyphens(_controller.text)));
-                        items = await operation.value;
-                        _isSearchComplete = false;
-                        if (context.mounted) setState(() {});
+                              Utils.removeHyphens(_controller.text),
+                            ),
+                          );
+                        }
+
+                        if (operation != null) {
+                          try {
+                            items = await operation!.value;
+                            _isSearchComplete = true;
+                            if (context.mounted) setState(() {});
+                          } catch (e) {
+                            log("guss the operation canceld");
+                          }
+                        }
                       },
                     ),
                   ),
                 ],
               ),
             ),
+            if (isAllNumbers && _isSearchComplete) ...[
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                height: 60,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          Colors.grey.withOpacity(0.5), // Color of the shadow
+                      spreadRadius: 2, // Spread radius
+                      blurRadius: 4, // Blur radius
+                      offset: const Offset(0, 3), // Shadow offset
+                    ),
+                  ],
+                ),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width - 100,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "filter here eg: MH or RJ",
+                      prefixIcon: InkWell(
+                          onTap: () async {},
+                          child: const CircleAvatar(child: Icon(Icons.search))),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 50),
+                    ),
+                    onChanged: (value) async {
+                      if (value.isEmpty) {
+                        if (operation != null) {
+                          operation!.cancel();
+                        }
+                        if (_controller.text.isNotEmpty) {
+                          operation = CancelableOperation.fromFuture(
+                            DatabaseHelper.showForPrefix(
+                              Utils.removeHyphens(_controller.text),
+                            ),
+                          );
+                        }
+
+                        if (operation != null) {
+                          try {
+                            items = await operation!.value;
+                            _isSearchComplete = true;
+                            if (context.mounted) setState(() {});
+                          } catch (e) {
+                            log("guss the operation canceld");
+                          }
+                        }
+                      } else {
+                        items = items
+                            .where((element) => element.item.contains(value))
+                            .toList();
+                      }
+                      setState(() {});
+                    },
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(
               height: 10,
             ),
@@ -129,37 +205,13 @@ class SearchScreen1State extends State<SearchScreen1> {
               const SizedBox(
                 height: 100,
               ),
-              if (_isSearchComplete)
-                Center(
-                  child: Text("No search results for ${_controller.text}"),
-                )
-              else
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_controller.text.isNotEmpty) {
-                        setState(() {
-                          _isSearch = true;
-                        });
-                        items = await DatabaseHelper.showForPrefix(
-                            Utils.removeHyphens(_controller.text));
-                        setState(() {
-                          _isSearchComplete = true;
-                          _isSearch = false;
-                        });
-                      }
-                    },
-                    child: _isSearch
-                        ? const CircularProgressIndicator()
-                        : Text(
-                            "Get results",
-                            style: GoogleFonts.poppins(color: Colors.white),
-                          ),
-                  ),
-                )
+              Center(
+                child: Text("No search results for ${_controller.text}"),
+              )
             ] else
               SizedBox(
-                height: MediaQuery.of(context).size.height - 150,
+                height: MediaQuery.of(context).size.height -
+                    (isAllNumbers && _isSearchComplete ? 250 : 150),
                 child: ListView.separated(
                   separatorBuilder: (context, index) {
                     return Divider(

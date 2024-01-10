@@ -120,24 +120,24 @@ class _HomePageState extends State<HomePage> {
           //     ),
           //   ),
           //   const SizedBox(width: 10),
-          InkWell(
-            onTap: () async {
-              await CsvFileServices.deleteAllFilesInVehicleDetails();
-              await DatabaseHelper.deleteAllData();
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (c) => const NotificationScreen(),
-              //   ),
-              // );
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(
-                FontAwesomeIcons.solidBell,
-                color: Color.fromARGB(255, 0, 0, 0),
-              ),
-            ),
-          ),
+          // InkWell(
+          //   onTap: () async {
+          //     await CsvFileServices.deleteAllFilesInVehicleDetails();
+          //     await DatabaseHelper.deleteAllData();
+          //     // Navigator.of(context).push(
+          //     //   MaterialPageRoute(
+          //     //     builder: (c) => const NotificationScreen(),
+          //     //   ),
+          //     // );
+          //   },
+          //   child: const Padding(
+          //     padding: EdgeInsets.all(8.0),
+          //     child: Icon(
+          //       FontAwesomeIcons.solidBell,
+          //       color: Color.fromARGB(255, 0, 0, 0),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       body: SingleChildScrollView(
@@ -198,7 +198,10 @@ class _HomePageState extends State<HomePage> {
                                         style: GoogleFonts.poppins(),
                                       );
                                     }),
-                                CircularProgressIndicator(),
+                                Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: CircularProgressIndicator(),
+                                ),
                               ],
                             )
                           : Column(
@@ -321,22 +324,22 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           );
                                         }),
-                                    Card(
-                                      child: Container(
-                                          height: 80,
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Icon(Icons.settings),
-                                              Text(
-                                                "Settings",
-                                                style: GoogleFonts.poppins(),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
+                                    // Card(
+                                    //   child: Container(
+                                    //       height: 80,
+                                    //       alignment: Alignment.center,
+                                    //       child: Column(
+                                    //         mainAxisAlignment:
+                                    //             MainAxisAlignment.spaceEvenly,
+                                    //         children: [
+                                    //           Icon(Icons.settings),
+                                    //           Text(
+                                    //             "Settings",
+                                    //             style: GoogleFonts.poppins(),
+                                    //           ),
+                                    //         ],
+                                    //       )),
+                                    // ),
                                   ].map((e) => Expanded(child: e)).toList(),
                                 ),
                                 // Row(
@@ -382,7 +385,7 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {
         return InkWell(
           onTap: () {
-            if (!isHaveSubscription) {
+            if (isHaveSubscription) {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (c) => SearchScreen1()),
               );

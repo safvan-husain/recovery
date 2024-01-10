@@ -53,7 +53,8 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       await CsvFileServices.updateData("2", state.streamController);
     } catch (e) {
-      error = e.toString();
+      print(e);
+      // error = e.toString();
     }
     emit(state.copywith(changeType: ChangeType.vehichelOwnerListUpdated));
     return error;
