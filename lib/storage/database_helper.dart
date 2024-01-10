@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/storage/node_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -83,12 +84,12 @@ class DatabaseHelper {
         .insert(jsonStore, {'json_string': jsonEncode(titles)});
   }
 
-  static Future<void> inseartRow(List<String> row, int titlesId) async {
+  static Future<void> inseartRow(
+      List<String> row, int titlesId, int vehicalNumbrColumIndex) async {
     int rowId = await _database.insert(
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
-    for (var element in row) {
-      await _inseartString(element, rowId);
-    }
+    await _inseartString(
+        removeHyphens(row.elementAt(vehicalNumbrColumIndex)), rowId);
   }
 
   static Future<void> _inseartString(String word, int rowId) async {

@@ -19,21 +19,32 @@ class CsvFileServices {
         final decoder = utf8.decoder;
         var buffer = '';
         int? titleDBId;
+        int? vehicalNumbrColumIndex;
         await for (var data in reader) {
           buffer += decoder.convert(data);
           while (buffer.contains('\n')) {
             var lineEndIndex = buffer.indexOf('\n');
             var line = buffer.substring(0, lineEndIndex);
 
-            var items = _splitStringIgnoringQuotes(line)
-                .map((e) => removeHyphens(e))
-                .toList();
+            var items = _splitStringIgnoringQuotes(line);
+            // .map((e) => removeHyphens(e))
+            // .toList();
 
             if (titleDBId == null) {
               titles = items;
-              titleDBId = await DatabaseHelper.inseartTitles(titles);
+              if (titles.contains('veh_no')) {
+                vehicalNumbrColumIndex = titles.indexOf('veh_no');
+                titleDBId = await DatabaseHelper.inseartTitles(titles);
+              } else {
+                break;
+              }
             } else {
-              await DatabaseHelper.inseartRow(items, titleDBId);
+              if (vehicalNumbrColumIndex != null) {
+                await DatabaseHelper.inseartRow(
+                    items, titleDBId, vehicalNumbrColumIndex);
+              } else {
+                break;
+              }
             }
 
             // Process your line here

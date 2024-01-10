@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +15,7 @@ import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
+import 'package:recovery_app/services/home_service.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 
 import '../../resources/color_manager.dart';
@@ -27,15 +30,18 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentCarouselIndex = 0;
   final ScrollController _scrollController = ScrollController();
+  late Future<int> daysRemaining;
 
   @override
   void initState() {
     context.read<HomeCubit>().homeInitialization();
     context.read<HomeCubit>().getCrouselImages();
+    daysRemaining = HomeServices.getSubsction();
     super.initState();
   }
 
   List<DetailsModel> filterdItems = [];
+  bool isHaveSubscription = false;
 
   @override
   Widget build(BuildContext context) {
@@ -176,9 +182,10 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     InkWell(
-                                      onTap: () {
-                                        CsvFileServices
+                                      onTap: () async {
+                                        await CsvFileServices
                                             .deleteAllFilesInVehicleDetails();
+                                        await DatabaseHelper.deleteAllData();
                                       },
                                       child: Card(
                                         child: Container(
@@ -191,18 +198,27 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Row(
                                   children: [
-                                    Card(
-                                      child: Container(
-                                        height: 70,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          "Download",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.poppins(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
+                                    FutureBuilder(
+                                        future: daysRemaining,
+                                        builder: (context, snp) {
+                                          if (snp.data != null) {
+                                            isHaveSubscription = snp.data! > 0;
+                                          }
+                                          return Card(
+                                            child: Container(
+                                              height: 70,
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                snp.data == null
+                                                    ? "-"
+                                                    : snp.data.toString(),
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.poppins(
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                          );
+                                        }),
                                     Card(
                                       child: Container(
                                           height: 70,
@@ -229,12 +245,35 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {
         return InkWell(
           onTap: () {
-            PersistentNavBarNavigator.pushNewScreen(
-              context,
-              screen: SearchScreen1(),
-              withNavBar: false, // OPTIONAL VALUE. True by default.
-              pageTransitionAnimation: PageTransitionAnimation.cupertino,
-            );
+            if (isHaveSubscription) {
+              PersistentNavBarNavigator.pushNewScreen(
+                context,
+                screen: SearchScreen1(),
+                withNavBar: false, // OPTIONAL VALUE. True by default.
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+              );
+            } else {
+              DelightToastBar(
+                autoDismiss: true,
+                snackbarDuration: Duration(seconds: 3),
+                builder: (context) => const ToastCard(
+                  color: Colors.red,
+                  leading: Icon(
+                    Icons.flutter_dash,
+                    size: 28,
+                    color: Colors.red,
+                  ),
+                  title: Text(
+                    "You don't have a subscription",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ).show(context);
+            }
           },
           child: Container(
             alignment: Alignment.center,

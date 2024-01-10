@@ -15,4 +15,20 @@ class Storage {
     }
     return null;
   }
+
+  static Future<void> storeEndData(String data) async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    await sharedPreference.setString("date", data);
+  }
+
+  static Future<int?> getRemaingDays() async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    var date = sharedPreference.getString("date");
+    if (date != null) {
+      DateTime endDate = DateTime.parse(date);
+      int daysRemaining = endDate.difference(DateTime.now()).inDays;
+      return daysRemaining < 0 ? 0 : daysRemaining;
+    }
+    return null;
+  }
 }
