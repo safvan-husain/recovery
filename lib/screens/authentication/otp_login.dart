@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/resources/text_fiealds.dart';
-import 'package:recovery_app/screens/BottomNav/bottom_nav.dart';
+import 'package:recovery_app/screens/HomePage/home_page.dart';
 import 'package:recovery_app/screens/authentication/agency_code_screen.dart';
 import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/sign_up_screen.dart';
@@ -24,14 +24,14 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
   String? otp;
   UserModel? user;
   var isCountComplete = false;
-  late AnimationController _controller;
+  AnimationController? _controller;
   int levelClock = 10; // Set your countdown time here
 
   void _startCountDown() {
     _controller = AnimationController(
         vsync: this, duration: Duration(seconds: levelClock));
-    _controller.forward();
-    _controller.addStatusListener((status) {
+    _controller!.forward();
+    _controller!.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
           isCountComplete = true;
@@ -44,13 +44,13 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
     setState(() {
       isCountComplete = false;
     });
-    _controller.reset();
-    _controller.forward();
+    _controller!.reset();
+    _controller!.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_controller != null) _controller!.dispose();
     super.dispose();
   }
 
@@ -188,46 +188,47 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(8.0),
-                        //   child: Text(
-                        //     "OR",
-                        //     textAlign: TextAlign.center,
-                        //     style: GoogleFonts.poppins(
-                        //       color: Colors.black,
-                        //       fontSize: 16,
-                        //       // fontWeight: FontWeight.bold, // Makes the text bold
-                        //       letterSpacing:
-                        //           1.2, // Increases spacing between letters
-                        //     ),
-                        //   ),
-                        // ),
-                        // InkWell(
-                        //   child: Container(
-                        //     padding: const EdgeInsets.symmetric(
-                        //         horizontal: 20, vertical: 5),
-                        //     decoration: BoxDecoration(
-                        //       border: Border.all(color: Colors.blue),
-                        //       borderRadius: BorderRadius.circular(15),
-                        //     ),
-                        //     child: Text(
-                        //       "Login With Password",
-                        //       textAlign: TextAlign.center,
-                        //       style: GoogleFonts.poppins(
-                        //         color: Colors.blue,
-                        //         fontSize: 16,
-                        //         fontWeight: FontWeight.w400, // Makes the text bold
-                        //         letterSpacing:
-                        //             1.2, // Increases spacing between letters
-                        //       ),
-                        //     ),
-                        //   ),
-                        //   onTap: () {
-                        //     Navigator.of(context).push(
-                        //       MaterialPageRoute(builder: (c) => const Login()),
-                        //     );
-                        //   },
-                        // ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "OR",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              color: Colors.black,
+                              fontSize: 16,
+                              // fontWeight: FontWeight.bold, // Makes the text bold
+                              letterSpacing:
+                                  1.2, // Increases spacing between letters
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 5),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.blue),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Text(
+                              "Login With Password",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                color: Colors.blue,
+                                fontSize: 16,
+                                fontWeight:
+                                    FontWeight.w400, // Makes the text bold
+                                letterSpacing:
+                                    1.2, // Increases spacing between letters
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (c) => const Login()),
+                            );
+                          },
+                        ),
                         const SizedBox(height: 40),
                       ] else
                         ..._enterPinScreen,
@@ -317,7 +318,7 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
             if (user != null) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const BottomNavView()),
+                MaterialPageRoute(builder: (context) => const HomePage()),
               );
               showSnackbar(
                   "Welcome back ${user!.agent_name}", context, Icons.warning);
@@ -372,7 +373,7 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
                 animation: StepTween(
                   begin: levelClock,
                   end: 0,
-                ).animate(_controller),
+                ).animate(_controller!),
               ),
             ],
           ),

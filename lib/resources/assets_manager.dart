@@ -1,14 +1,14 @@
-
 const String ICON_PATH = "assets/icons";
 
-class IconAssets{
+class IconAssets {
   static const String account_ic = "${ICON_PATH}/account.svg";
   static const String account_active_ic = "${ICON_PATH}/account_active.svg";
   static const String add_records_ic = "${ICON_PATH}/add_records.svg";
   static const String app_users_ic = "${ICON_PATH}/app_users.svg";
   static const String blacklist_ic = "${ICON_PATH}/blacklist.svg";
   static const String control_panel_ic = "${ICON_PATH}/control_panel.svg";
-  static const String control_panel_active_ic = "${ICON_PATH}/control_panel_active.svg";
+  static const String control_panel_active_ic =
+      "${ICON_PATH}/control_panel_active.svg";
   static const String details_views_ic = "${ICON_PATH}/details_views.svg";
   static const String finances_ic = "${ICON_PATH}/finances.svg";
   static const String home_ic = "${ICON_PATH}/home.svg";
@@ -27,7 +27,4 @@ class IconAssets{
   static const String idCard_ic = "${ICON_PATH}/idCard.svg";
   static const String acTransaction_ic = "${ICON_PATH}/acTransaction.svg";
   static const String check_ic = "${ICON_PATH}/check.png";
-
-
-
 }

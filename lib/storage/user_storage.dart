@@ -7,10 +7,15 @@ class Storage {
     await sharedPreference.setString("user", user.toJson());
   }
 
+  static Future<void> logOutUser() async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    await sharedPreference.setString("user", '');
+  }
+
   static Future<UserModel?> getUser() async {
     var sharedPreference = await SharedPreferences.getInstance();
     var jsonUser = sharedPreference.getString("user");
-    if (jsonUser != null) {
+    if (jsonUser != null && jsonUser.isNotEmpty) {
       return UserModel.fromJson(jsonUser);
     }
     return null;

@@ -10,74 +10,80 @@ import 'package:recovery_app/storage/database_helper.dart';
 import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
-  static Future<void> _proccessFiles([List<File>? csvFiles]) async {
-    try {
-      var files = csvFiles ?? await getExcelFiles();
-      for (var file in files) {
-        late List<String> titles;
-        final reader = file.openRead();
-        final decoder = utf8.decoder;
-        var buffer = '';
-        int? titleDBId;
-        int? vehicalNumbrColumIndex;
-        await for (var data in reader) {
-          buffer += decoder.convert(data);
-          while (buffer.contains('\n')) {
-            var lineEndIndex = buffer.indexOf('\n');
-            var line = buffer.substring(0, lineEndIndex);
+  static Future<void> _proccessFiles(
+    StreamController streamController, [
+    List<File>? csvFiles,
+  ]) async {
+    streamController.sink.add("Processing");
 
-            var items = _splitStringIgnoringQuotes(line);
-            // .map((e) => removeHyphens(e))
-            // .toList();
+    var files = csvFiles ?? await getExcelFiles();
+    for (var i = 0; i < files.length; i++) {
+      streamController.sink.add("Processing ${i + 1} / ${files.length} files");
+      var file = files[i];
+      late List<String> titles;
+      final reader = file.openRead();
+      final decoder = utf8.decoder;
+      var buffer = '';
+      int? titleDBId;
+      int? vehicalNumbrColumIndex;
+      await for (var data in reader) {
+        buffer += decoder.convert(data);
+        while (buffer.contains('\n')) {
+          var lineEndIndex = buffer.indexOf('\n');
+          var line = buffer.substring(0, lineEndIndex);
 
-            if (titleDBId == null) {
-              titles = items;
-              if (titles.contains('veh_no')) {
-                vehicalNumbrColumIndex = titles.indexOf('veh_no');
-                titleDBId = await DatabaseHelper.inseartTitles(titles);
-              } else {
-                break;
-              }
+          var items = _splitStringIgnoringQuotes(line);
+          // .map((e) => removeHyphens(e))
+          // .toList();
+          print(items);
+          if (titleDBId == null) {
+            log(items.toString());
+            //TODO: vehivle column title.
+            titles = items.map((e) => e.toLowerCase()).toList();
+            if (titles.contains('REGDNUM'.toLowerCase())) {
+              vehicalNumbrColumIndex = titles.indexOf('REGDNUM'.toLowerCase());
+              log('got vehicle title at $vehicalNumbrColumIndex');
+              titleDBId = await DatabaseHelper.inseartTitles(items);
             } else {
-              if (vehicalNumbrColumIndex != null) {
-                await DatabaseHelper.inseartRow(
-                    items, titleDBId, vehicalNumbrColumIndex);
-              } else {
-                break;
-              }
+              break;
             }
-
-            // Process your line here
-            buffer = buffer.substring(lineEndIndex + 1);
+          } else {
+            if (vehicalNumbrColumIndex != null) {
+              await DatabaseHelper.inseartRow(
+                  items, titleDBId, vehicalNumbrColumIndex);
+            } else {
+              break;
+            }
           }
+
+          // Process your line here
+          buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-    } catch (e) {
-      print(e);
+      streamController.sink.add("Processed ${i + 1} / ${files.length} files");
     }
 
-    print("No row found for the search term");
+    streamController.sink.add("Please wait...");
   }
 
-  static Future<void> downloadFile(
+  static Future<void> _downloadFile(
     String url,
     String fileName,
     void Function(int, int)? onReceiveProgress,
   ) async {
     Dio dio = Dio();
-    try {
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      String savePath = '${appDocDir.path}/vehicle details/$fileName';
-      await dio.download(url, savePath, onReceiveProgress: (i, x) {});
-    } catch (e) {
-      print(e);
-    }
+
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String savePath = '${appDocDir.path}/vehicle details/$fileName';
+    await dio.download(url, savePath, onReceiveProgress: (i, x) {});
   }
 
   static Future<void> _fetchDownloadLinksAndNames(
-    String agencyId, [
+    String agencyId,
+    StreamController streamController, [
     List<String> fileNames = const [],
   ]) async {
+    streamController.sink.add('Getting Download Links');
     String url = "https://converter.starkinsolutions.com/data";
     final dio = Dio();
     final response = await dio
@@ -93,13 +99,15 @@ class CsvFileServices {
       });
       for (var i = 0; i < downloadLinksAndNames.entries.length; i++) {
         var map = downloadLinksAndNames.entries.toList().elementAt(i);
-        await downloadFile(
+        await _downloadFile(
             map.value.replaceAll('/home/starkina/', 'https://www.'), map.key,
             (received, total) {
           if (total != -1) {
             // print('${(received / total * 100).toStringAsFixed(0)}%');
           }
         });
+        streamController.sink.add(
+            'Downloaded ${i + 1} / ${downloadLinksAndNames.entries.length}');
       }
     } else {
       print('Failed to load download links');
@@ -107,18 +115,24 @@ class CsvFileServices {
     }
   }
 
-  static Future<void> updateData(String agencyId) async {
+  static Future<void> updateData(
+    String agencyId,
+    StreamController streamController,
+  ) async {
     var files = await getExcelFiles();
     List<String> fileNames =
         files.map((e) => basenameWithoutExtension(e.path)).toList();
-    await _fetchDownloadLinksAndNames(agencyId, fileNames);
+    await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);
 
     files = await getExcelFiles();
     List<File> res = files
         .where((element) =>
             !fileNames.contains(basenameWithoutExtension(element.path)))
         .toList();
-    await _proccessFiles(res);
+    await _proccessFiles(
+      streamController,
+      res,
+    );
   }
 
   static List<String> _splitStringIgnoringQuotes(String input) {
@@ -197,8 +211,4 @@ class CsvFileServices {
     // await file.writeAsBytes(byteData.buffer
     //     .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
   }
-}
-
-String removeHyphens(String input) {
-  return input.replaceAll('-', '').replaceAll(' ', '').toLowerCase();
 }

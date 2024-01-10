@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:recovery_app/models/detail_model.dart';
 import 'package:dio/dio.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
 class HomeServices {
@@ -12,14 +13,14 @@ class HomeServices {
         "https://images.unsplash.com/photo-1682686581663-179efad3cd2f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxNnx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1682695797873-aa4cb6edd613?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwyMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
       ];
-  static Future<int> getSubsction() async {
+  static Future<int> getSubsction(void Function() onOffline) async {
     int? remaingDays = await Storage.getRemaingDays();
     if (remaingDays != null && remaingDays > 0) {
       return remaingDays;
     } else {
       try {
-        final connectivityResult = await (Connectivity().checkConnectivity());
-        if (connectivityResult == ConnectivityResult.none) {
+        if (!await Utils.isConnected()) {
+          onOffline();
         } else {
           Dio dio = Dio();
 

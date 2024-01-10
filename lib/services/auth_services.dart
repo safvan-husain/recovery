@@ -6,9 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
-import 'package:recovery_app/screens/BottomNav/bottom_nav.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:dio/dio.dart';
+import 'package:recovery_app/screens/HomePage/home_page.dart';
 import 'package:recovery_app/screens/authentication/unapproved_screen.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -29,43 +29,15 @@ class AuthServices {
         data: {"email": email, "password": password},
       );
       if (response.statusCode == 200) {
-        try {
-          var re = await dio.post(
-            "https://www.recovery.starkinsolutions.com/protectedpage.php",
-            data: response.data,
+        print(response.data);
+        var user = UserModel.fromServerJson2(response.data);
+        await Storage.storeUser(user);
+        if (context.mounted) {
+          context.read<HomeCubit>().setUser(user);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
           );
-          if (re.statusCode == 200) {
-            if (context.mounted) {
-              // if (context.mounted) context.read<HomeCubit>().setUser(user);
-              // await Storage.storeUser(user);
-              showSnackbar(
-                "Welcome back user",
-                context,
-                FontAwesomeIcons.thumbsUp,
-                Colors.greenAccent,
-              );
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const BottomNavView()),
-              );
-            }
-          } else {
-            if (context.mounted) {
-              showSnackbar(
-                "Got non-200 status code",
-                context,
-                Icons.warning,
-              );
-            }
-          }
-        } catch (e) {
-          if (context.mounted) {
-            showSnackbar(
-              "failed to get response from the server",
-              context,
-              Icons.warning,
-            );
-          }
         }
       } else {
         if (context.mounted) {
@@ -178,52 +150,52 @@ class AuthServices {
               (s) => false,
             );
           }
-          // try {
-          //   FormData formData = FormData();
-          //   String fileName = panCard.path.split('/').last;
-          //   formData.files.add(
-          //     MapEntry(
-          //       'image1', // Use a unique key for each image
-          //       await MultipartFile.fromFile(
-          //         panCard.path,
-          //         filename: fileName,
-          //       ),
-          //     ),
-          //   );
-          //   String adharFileName = adharCard.path.split('/').last;
-          //   formData.files.add(
-          //     MapEntry(
-          //       'image2', // Use a unique key for each image
-          //       await MultipartFile.fromFile(
-          //         adharCard.path,
-          //         filename: adharFileName,
-          //       ),
-          //     ),
-          //   );
-          //   formData.fields.add(MapEntry('agentName', userName));
+          try {
+            FormData formData = FormData();
+            String fileName = panCard.path.split('/').last;
+            formData.files.add(
+              MapEntry(
+                'image1', // Use a unique key for each image
+                await MultipartFile.fromFile(
+                  panCard.path,
+                  filename: fileName,
+                ),
+              ),
+            );
+            String adharFileName = adharCard.path.split('/').last;
+            formData.files.add(
+              MapEntry(
+                'image2', // Use a unique key for each image
+                await MultipartFile.fromFile(
+                  adharCard.path,
+                  filename: adharFileName,
+                ),
+              ),
+            );
+            formData.fields.add(MapEntry('agentName', userName));
 
-          //   Response re = await dio.post(
-          //     'https://www.recovery.starkinsolutions.com/addImage.php',
-          //     data: formData,
-          //     options: Options(
-          //       headers: {'Content-Type': 'multipart/form-data'},
-          //     ),
-          //   );
-          //   if (result['status'] == true) {
-          //     if (context.mounted) {
-          //       Navigator.pushAndRemoveUntil(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) => const UnApprovedScreen()),
-          //         (s) => false,
-          //       );
-          //     }
-          //   } else {
-          //     print(re.data);
-          //   }
-          // } catch (e) {
-          //   print(e);
-          // }
+            Response re = await dio.post(
+              'https://www.recovery.starkinsolutions.com/addImage.php',
+              data: formData,
+              options: Options(
+                headers: {'Content-Type': 'multipart/form-data'},
+              ),
+            );
+            if (result['status'] == true) {
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UnApprovedScreen()),
+                  (s) => false,
+                );
+              }
+            } else {
+              print(re.data);
+            }
+          } catch (e) {
+            print(e);
+          }
         } else {
           if (context.mounted) {
             showSnackbar(result['message'], context, Icons.warning);

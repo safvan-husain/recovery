@@ -46,11 +46,17 @@ class HomeCubit extends Cubit<HomeState> {
     ));
   }
 
-  void downloadData() async {
+  Future<String> downloadData() async {
     emit(state.copywith(changeType: ChangeType.loading));
-
-    await CsvFileServices.updateData('2');
+    log("agency id : ${state.user!.agencyId}"); //TODO: agencyid.
+    String error = '';
+    try {
+      await CsvFileServices.updateData("2", state.streamController);
+    } catch (e) {
+      error = e.toString();
+    }
     emit(state.copywith(changeType: ChangeType.vehichelOwnerListUpdated));
+    return error;
   }
 }
 

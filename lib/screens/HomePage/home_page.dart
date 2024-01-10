@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
@@ -9,10 +11,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:recovery_app/models/detail_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/screens/HomePage/notification_screen.dart';
+import 'package:recovery_app/screens/profile_sc/profile_sc.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/home_service.dart';
@@ -31,13 +34,44 @@ class _HomePageState extends State<HomePage> {
   int currentCarouselIndex = 0;
   final ScrollController _scrollController = ScrollController();
   late Future<int> daysRemaining;
+  bool _isDownloaded = false;
 
   @override
   void initState() {
     context.read<HomeCubit>().homeInitialization();
     context.read<HomeCubit>().getCrouselImages();
-    daysRemaining = HomeServices.getSubsction();
+    daysRemaining = HomeServices.getSubsction(() {
+      DelightToastBar(
+        autoDismiss: true,
+        snackbarDuration: Duration(seconds: 3),
+        builder: (context) => const ToastCard(
+          color: Colors.red,
+          leading: Icon(
+            Icons.flutter_dash,
+            size: 28,
+            color: Colors.red,
+          ),
+          title: Text(
+            "You are offline, Can't check subscription",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ).show(context);
+    });
+    getFileCount();
+
     super.initState();
+  }
+
+  void getFileCount() async {
+    List<File> files = await CsvFileServices.getExcelFiles();
+    setState(() {
+      _isDownloaded = files.isNotEmpty;
+    });
   }
 
   List<DetailsModel> filterdItems = [];
@@ -57,52 +91,54 @@ class _HomePageState extends State<HomePage> {
           statusBarIconBrightness: Brightness.dark,
         ),
         title: _buildSearchBar(context, scWidth),
-        // actions: [
-        //   InkWell(
-        //     onTap: () {
-        //       if (context.read<HomeCubit>().state.vehichalOwnerList.isEmpty) {
-        //         return;
-        //       }
-        //       showBottomSheet(
-        //         context: context,
-        //         builder: (context) {
-        //           return FilterBottomSheet(
-        //             onFilter: (list) {
-        //               _listScrollController.jumpTo(0);
-        //               setState(() {
-        //                 filterdItems = list;
-        //               });
-        //             },
-        //           );
-        //         },
-        //       );
-        //     },
-        //     child: Padding(
-        //       padding: const EdgeInsets.all(8.0),
-        //       child: Icon(
-        //         FontAwesomeIcons.filter,
-        //         color: filterdItems.isEmpty ? Colors.grey : Colors.blue,
-        //       ),
-        //     ),
-        //   ),
-        //   const SizedBox(width: 10),
-        //   InkWell(
-        //     onTap: () {
-        //       Navigator.of(context).push(
-        //         MaterialPageRoute(
-        //           builder: (c) => const NotificationScreen(),
-        //         ),
-        //       );
-        //     },
-        //     child: const Padding(
-        //       padding: EdgeInsets.all(8.0),
-        //       child: Icon(
-        //         FontAwesomeIcons.solidBell,
-        //         color: Color.fromARGB(255, 0, 0, 0),
-        //       ),
-        //     ),
-        //   ),
-        // ],
+        actions: [
+          //   InkWell(
+          //     onTap: () {
+          //       if (context.read<HomeCubit>().state.vehichalOwnerList.isEmpty) {
+          //         return;
+          //       }
+          //       showBottomSheet(
+          //         context: context,
+          //         builder: (context) {
+          //           return FilterBottomSheet(
+          //             onFilter: (list) {
+          //               _listScrollController.jumpTo(0);
+          //               setState(() {
+          //                 filterdItems = list;
+          //               });
+          //             },
+          //           );
+          //         },
+          //       );
+          //     },
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(8.0),
+          //       child: Icon(
+          //         FontAwesomeIcons.filter,
+          //         color: filterdItems.isEmpty ? Colors.grey : Colors.blue,
+          //       ),
+          //     ),
+          //   ),
+          //   const SizedBox(width: 10),
+          InkWell(
+            onTap: () async {
+              await CsvFileServices.deleteAllFilesInVehicleDetails();
+              await DatabaseHelper.deleteAllData();
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(
+              //     builder: (c) => const NotificationScreen(),
+              //   ),
+              // );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(
+                FontAwesomeIcons.solidBell,
+                color: Color.fromARGB(255, 0, 0, 0),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
@@ -110,29 +146,36 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.all(20),
           child: Column(
             children: [
-              _getCarousel(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: () async {
-                      // context.read<HomeCubit>().downloadData();
-                      // ExcelStore.processExcelInChunks();
-                      // JsonDataServices.readJsonFromFileChunked();
-                      // await CsvFileServices.copyAssetToDocumentDir();
-                      // await CsvFileServices.getExcelFiles();
-                      // await DatabaseHelper.deleteAllData();
-                      // CsvFileServices.proccessFiles();
-                      // print(await CsvFileServices.search("SWIFT DZIRE"));
-                    },
-                    child: Text(
-                      "Item count",
-                      style: TextStyle(color: Colors.grey, fontSize: 15),
-                    ),
-                  )
-                ],
-              ),
-              BlocBuilder<HomeCubit, HomeState>(
+              _getCarousel(), SizedBox(height: 20),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.end,
+              //   children: [
+              //     InkWell(
+              //       onTap: () async {
+              //         // context.read<HomeCubit>().downloadData();
+              //         // ExcelStore.processExcelInChunks();
+              //         // JsonDataServices.readJsonFromFileChunked();
+              //         // await CsvFileServices.copyAssetToDocumentDir();
+              //         // await CsvFileServices.getExcelFiles();
+              //         // await DatabaseHelper.deleteAllData();
+              //         // CsvFileServices.proccessFiles();
+              //         // print(await CsvFileServices.search("SWIFT DZIRE"));
+              //       },
+              //       child: Text(
+              //         "Item count",
+              //         style: TextStyle(color: Colors.grey, fontSize: 15),
+              //       ),
+              //     )
+              //   ],
+              // ),
+              BlocConsumer<HomeCubit, HomeState>(
+                listener: (context, state) {
+                  getFileCount();
+                },
+                listenWhen: (prev, state) {
+                  return prev.changeType == ChangeType.loading &&
+                      state.changeType == ChangeType.vehichelOwnerListUpdated;
+                },
                 builder: (context, state) {
                   return ConstrainedBox(
                     constraints: BoxConstraints(minHeight: 200),
@@ -144,18 +187,18 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Text(
                                   "Please keep your app open, it may take a while.",
+                                  textAlign: TextAlign.center,
                                   style: GoogleFonts.poppins(),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "Dowloading...",
-                                      style: GoogleFonts.poppins(),
-                                    ),
-                                    CircularProgressIndicator(),
-                                  ],
-                                ),
+                                StreamBuilder(
+                                    stream: state.streamController.stream,
+                                    builder: (context, snp) {
+                                      return Text(
+                                        snp.data ?? "Downloading...",
+                                        style: GoogleFonts.poppins(),
+                                      );
+                                    }),
+                                CircularProgressIndicator(),
                               ],
                             )
                           : Column(
@@ -163,35 +206,79 @@ class _HomePageState extends State<HomePage> {
                                 Row(
                                   children: [
                                     InkWell(
-                                      onTap: () {
-                                        context
+                                      onTap: () async {
+                                        var error = await context
                                             .read<HomeCubit>()
                                             .downloadData();
+                                        if (context.mounted &&
+                                            error.isNotEmpty) {
+                                          DelightToastBar(
+                                            autoDismiss: true,
+                                            snackbarDuration:
+                                                Duration(seconds: 3),
+                                            builder: (context) => ToastCard(
+                                              color: Colors.red,
+                                              leading: Icon(
+                                                Icons.flutter_dash,
+                                                size: 28,
+                                                color: Colors.red,
+                                              ),
+                                              title: Text(
+                                                error,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ).show(context);
+                                        }
                                       },
                                       child: Card(
                                         child: Container(
-                                          height: 70,
+                                          height: 80,
                                           alignment: Alignment.center,
-                                          child: Text(
-                                            "Download",
-                                            textAlign: TextAlign.center,
-                                            style: GoogleFonts.poppins(
-                                                color: Colors.black),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Icon(FontAwesomeIcons.download),
+                                              Text(
+                                                _isDownloaded
+                                                    ? "Update Data"
+                                                    : "Download",
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.poppins(
+                                                    color: Colors.black),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
                                     ),
                                     InkWell(
                                       onTap: () async {
-                                        await CsvFileServices
-                                            .deleteAllFilesInVehicleDetails();
-                                        await DatabaseHelper.deleteAllData();
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (c) => ProfileScView()),
+                                        );
                                       },
                                       child: Card(
                                         child: Container(
-                                            height: 70,
+                                            height: 80,
                                             alignment: Alignment.center,
-                                            child: Icon(FontAwesomeIcons.user)),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Icon(FontAwesomeIcons.user),
+                                                Text(
+                                                  "My account",
+                                                  style: GoogleFonts.poppins(),
+                                                )
+                                              ],
+                                            )),
                                       ),
                                     ),
                                   ].map((e) => Expanded(child: e)).toList(),
@@ -206,28 +293,78 @@ class _HomePageState extends State<HomePage> {
                                           }
                                           return Card(
                                             child: Container(
-                                              height: 70,
+                                              height: 80,
                                               alignment: Alignment.center,
-                                              child: Text(
-                                                snp.data == null
-                                                    ? "-"
-                                                    : snp.data.toString(),
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.poppins(
-                                                    color: Colors.black),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  Text(
+                                                    snp.data == null
+                                                        ? "-"
+                                                        : snp.data.toString(),
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.poppins(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16),
+                                                  ),
+                                                  Text(
+                                                    "Days Remaining",
+                                                    style:
+                                                        GoogleFonts.poppins(),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           );
                                         }),
                                     Card(
                                       child: Container(
-                                          height: 70,
+                                          height: 80,
                                           alignment: Alignment.center,
-                                          child: Icon(Icons.settings)),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Icon(Icons.settings),
+                                              Text(
+                                                "Settings",
+                                                style: GoogleFonts.poppins(),
+                                              ),
+                                            ],
+                                          )),
                                     ),
                                   ].map((e) => Expanded(child: e)).toList(),
                                 ),
-                              ],
+                                // Row(
+                                //   children: [
+                                //     Card(
+                                //       child: Container(
+                                //           height: 80,
+                                //           alignment: Alignment.center,
+                                //           child: Column(
+                                //             mainAxisAlignment:
+                                //                 MainAxisAlignment.spaceEvenly,
+                                //             children: [
+                                //               Icon(FontAwesomeIcons.car),
+                                //               Text(
+                                //                 "Vehicle Confirmed",
+                                //                 style: GoogleFonts.poppins(),
+                                //               ),
+                                //             ],
+                                //           )),
+                                //     ),
+                                //   ].map((e) => Expanded(child: e)).toList(),
+                                // ),
+                              ]
+                                  .map((e) => Padding(
+                                        padding: const EdgeInsets.all(5),
+                                        child: e,
+                                      ))
+                                  .toList(),
                             ),
                     ),
                   );
@@ -245,12 +382,9 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {
         return InkWell(
           onTap: () {
-            if (isHaveSubscription) {
-              PersistentNavBarNavigator.pushNewScreen(
-                context,
-                screen: SearchScreen1(),
-                withNavBar: false, // OPTIONAL VALUE. True by default.
-                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+            if (!isHaveSubscription) {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (c) => SearchScreen1()),
               );
             } else {
               DelightToastBar(

@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:recovery_app/services/csv_file_service.dart';
+import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/node_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -89,7 +91,7 @@ class DatabaseHelper {
     int rowId = await _database.insert(
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
     await _inseartString(
-        removeHyphens(row.elementAt(vehicalNumbrColumIndex)), rowId);
+        Utils.removeHyphens(row.elementAt(vehicalNumbrColumIndex)), rowId);
   }
 
   static Future<void> _inseartString(String word, int rowId) async {
@@ -148,13 +150,16 @@ class DatabaseHelper {
   }
 
   static Future<List<SearchResultItem>> showForPrefix(String prefix) async {
+    log(prefix);
     List<SearchResultItem> results = [];
     int nodeId = 1; // Assuming the root node has id 1
     for (var i = 0; i < prefix.length; i++) {
       var character = prefix[i];
       var node = await _getNode(nodeId);
+      print(node.children);
       var children = node.children;
       if (!children.containsKey(character)) {
+        log("retrn showprefic");
         return [];
       }
       nodeId = children[character]!;
@@ -162,6 +167,7 @@ class DatabaseHelper {
     // Now we have the node corresponding to the last character of the prefix
     // We need to collect all words that start with this prefix
     await _collectWords(nodeId, prefix, results);
+    print(results.length);
     return results;
   }
 

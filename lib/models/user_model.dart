@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
+import 'dart:developer';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class UserModel {
@@ -11,7 +12,7 @@ class UserModel {
   String? avatarUrl;
   String? adharUrl;
   String? panUrl;
-  String? agencyId;
+  String agencyId;
 
   UserModel({
     required this.agent_name,
@@ -21,8 +22,22 @@ class UserModel {
     this.avatarUrl,
     this.adharUrl,
     this.panUrl,
-    this.agencyId,
+    required this.agencyId,
   });
+
+  factory UserModel.fromServerJson2(Map<String, dynamic> map) {
+    log(map['Add_data']['agency_id']);
+    return UserModel(
+      agent_name: map['Add_data']['agent_name'] as String,
+      number: map['user_data']['phone'] as String,
+      email: map['user_data']['email'] as String,
+      address: map['Add_data']['address'] as String,
+      avatarUrl: map['Add_data']['profile'] as String,
+      adharUrl: map['Add_data']['aadhaar_card'] as String,
+      panUrl: map['Add_data']['pan_card'] as String,
+      agencyId: map['Add_data']['agency_id'].toString(),
+    );
+  }
 
   factory UserModel.fromServerJson(Map<String, dynamic> map) {
     return UserModel(
@@ -45,6 +60,7 @@ class UserModel {
       'avatarUrl': avatarUrl,
       'adharUrl': adharUrl,
       'panUrl': panUrl,
+      'agency_id': agencyId
     };
   }
 
@@ -55,7 +71,7 @@ class UserModel {
       email: map['email'] as String,
       address: map['address'] as String,
       avatarUrl: map['avatarUrl'] != null ? map['avatarUrl'] as String : null,
-      agencyId: map['agency_id'] != null ? map['agency_id'] as String : null,
+      agencyId: map['agency_id'] as String,
     );
   }
 

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:recovery_app/screens/BottomNav/bottom_nav.dart';
 import 'package:recovery_app/screens/authentication/sign_up_screen.dart';
 import 'package:recovery_app/services/auth_services.dart';
 

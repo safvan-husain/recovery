@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:recovery_app/models/user_model.dart';
+import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/screens/HomePage/home_page.dart';
+import 'package:recovery_app/screens/authentication/otp_login.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InitialScreen extends StatefulWidget {
@@ -16,17 +22,20 @@ class _InitialScreenState extends State<InitialScreen> {
   }
 
   void checkUserExists() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userJson = prefs.getString('user');
-    if (userJson != null && userJson.isNotEmpty) {
+    var user = await Storage.getUser();
+
+    if (user != null) {
       if (context.mounted) {
-        Navigator.pushReplacementNamed(context, '/otp-login');
+        context.read<HomeCubit>().setUser(user);
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (c) => const HomePage()),
+        );
       }
-      //TODO: when user exist in shared pref.
     } else {
-      await Future.delayed(const Duration(seconds: 1));
       if (context.mounted) {
-        Navigator.pushReplacementNamed(context, '/otp-login');
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (c) => const OtpLogin()),
+        );
       }
     }
   }

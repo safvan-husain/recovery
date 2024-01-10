@@ -15,6 +15,7 @@ import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/screens/common_widgets/count_down_ui.dart';
 import 'package:recovery_app/services/auth_services.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 
 import '../../resources/color_manager.dart';
 
@@ -485,12 +486,15 @@ class _ProfileScViewState extends State<ProfileScView>
                             ),
                           ),
                           InkWell(
-                            onTap: () {
-                              Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (c) => const OtpLogin()),
-                                (route) => false,
-                              );
+                            onTap: () async {
+                              await Storage.logOutUser();
+                              if (context.mounted) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (c) => const OtpLogin()),
+                                  (route) => false,
+                                );
+                              }
                             },
                             child: Container(
                               alignment: Alignment.center,

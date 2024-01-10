@@ -16,9 +16,9 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController =
-      TextEditingController(text: "vsah1@gmail.com");
+      TextEditingController(text: "vsah2@gmail.com");
   final TextEditingController _passwordController =
-      TextEditingController(text: "pass");
+      TextEditingController(text: "12321");
   bool passwordObscure = true;
   @override
   Widget build(BuildContext context) {
@@ -68,14 +68,23 @@ class _LoginState extends State<Login> {
                       icon: Icons.lock_outline,
                       isSensitive: passwordObscure,
                     ),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          'Forgot Password ?',
-                          style: TextStyle(
-                            color: Color(0xff2c65d8),
-                            fontWeight: FontWeight.w400,
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (c) => const OtpLogin()),
+                              (route) => false,
+                            );
+                          },
+                          child: const Text(
+                            'Forgot Password ?',
+                            style: TextStyle(
+                              color: Color(0xff2c65d8),
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
                       ],
