@@ -85,7 +85,7 @@ class _ItemScreenState extends State<ItemScreen> {
                         }
                       },
                       child: SizedBox(
-                        height: MediaQuery.of(context).size.height - 120,
+                        height: MediaQuery.of(context).size.height - 50,
                         child: PageView(
                           controller: controller,
                           children: widget.rowIds

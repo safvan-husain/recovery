@@ -6,7 +6,7 @@ class Node {
   final int dbId;
   final List<int> rowId;
   final Map<String, int> children;
-  final Map<String, String> og;
+  final Map<String, int> og;
   Node({
     required this.charecter,
     required this.dbId,
@@ -46,9 +46,7 @@ class Node {
 class SearchResultItem {
   final String item;
   final Node node;
+  final int? rowId;
 
-  SearchResultItem({
-    required this.item,
-    required this.node,
-  });
+  SearchResultItem({required this.item, required this.node, this.rowId});
 }

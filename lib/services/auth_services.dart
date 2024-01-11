@@ -87,7 +87,7 @@ class AuthServices {
     try {
       var response = await dio.post(
         "https://www.recovery.starkinsolutions.com/smsapi.php",
-        data: {"phone_number": phone},
+        data: jsonEncode({"phone_number": phone}),
       );
       print(response.data);
       if (response.statusCode == 200) {
@@ -143,13 +143,6 @@ class AuthServices {
       if (response.statusCode == 200) {
         var result = jsonDecode(response.data);
         if (result['status'] == true) {
-          if (context.mounted) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const UnApprovedScreen()),
-              (s) => false,
-            );
-          }
           try {
             FormData formData = FormData();
             String fileName = panCard.path.split('/').last;

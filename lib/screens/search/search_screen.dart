@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/search/item_screen.dart';
 import 'package:recovery_app/screens/search/widgets/searched_items_view.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
@@ -79,9 +81,10 @@ class SearchScreen1State extends State<SearchScreen1> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width - 100,
                     child: TextField(
+                      keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: " eg: MH09CA1301 or 1301",
+                          hintText: " eg: 1301",
                           prefixIcon: InkWell(
                               onTap: () async {},
                               child: const CircleAvatar(
@@ -209,7 +212,8 @@ class SearchScreen1State extends State<SearchScreen1> {
                 child: Text("No search results for ${_controller.text}"),
               )
             ] else
-              SizedBox(
+              Container(
+                padding: EdgeInsets.all(10),
                 height: MediaQuery.of(context).size.height -
                     (isAllNumbers && _isSearchComplete ? 250 : 150),
                 child: ListView.separated(
@@ -220,33 +224,67 @@ class SearchScreen1State extends State<SearchScreen1> {
                       color: Colors.grey[300],
                     );
                   },
-                  itemCount: items.length,
+                  itemCount: context.read<HomeCubit>().state.isTwoColumnSearch
+                      ? (items.length / 2.ceil()).round()
+                      : items.length,
                   itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () async {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (c) => ItemScreen(
-                              rowIds: items[index].node.rowId,
-                              heroTag: 'item-$index',
-                            ),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ListTile(
-                          title: Text(items[index].item.toUpperCase()),
-                          trailing: CircleAvatar(
-                            radius: 10,
-                            child:
-                                Text(items[index].node.rowId.length.toString()),
-                          ),
+                    if (context.read<HomeCubit>().state.isTwoColumnSearch) {
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 40,
+                        child: Row(
+                          children: [
+                            Expanded(child: _itemListTile(context, index)),
+                            if (items.length % 2 == 0) ...[
+                              VerticalDivider(
+                                color: Colors.grey[300],
+                              ),
+                              Expanded(child: _itemListTile(context, index * 2))
+                            ],
+                          ],
                         ),
-                      ),
-                    );
+                      );
+                    }
+                    return _itemListTile(context, index);
                   },
                 ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  InkWell _itemListTile(BuildContext context, int index) {
+    return InkWell(
+      onTap: () async {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (c) => ItemScreen(
+              rowIds: items[index].rowId != null
+                  ? [items[index].rowId!]
+                  : items[index].node.rowId,
+              heroTag: items[index].item.toUpperCase(),
+            ),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              items[index].item.toUpperCase(),
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (items[index].rowId == null)
+              CircleAvatar(
+                radius: 10,
+                child: Text(items[index].node.rowId.length.toString()),
               ),
           ],
         ),

@@ -57,12 +57,16 @@ class Utils {
         .join('\n');
   }
 
-  static DelightToastBar toastBar(String message) {
+  static double calculatePercentage(int current, int total) {
+    return ((current / total) * 100).toDouble();
+  }
+
+  static DelightToastBar toastBar(String message, [Color? color]) {
     return DelightToastBar(
       autoDismiss: true,
       snackbarDuration: const Duration(seconds: 3),
       builder: (context) => ToastCard(
-        color: Colors.red,
+        color: color ?? Colors.red,
         leading: const Icon(
           Icons.flutter_dash,
           size: 28,

@@ -1,24 +1,31 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
   static Future<void> _proccessFiles(
-    StreamController streamController, [
+    StreamController<Map<String, int>?> streamController, [
     List<File>? csvFiles,
   ]) async {
-    streamController.sink.add("Processing");
-
+    int count = 0;
+    int fileCOunt = 0;
+    streamController.sink.add(null);
+    List<String> titleList = ['REGDNUM', 'veh_no', 'vehicle Number'];
     var files = csvFiles ?? await getExcelFiles();
     for (var i = 0; i < files.length; i++) {
-      streamController.sink.add("Processing ${i + 1} / ${files.length} files");
+      int countFIle = 0;
+      fileCOunt++;
+      streamController.sink.add({
+        "processing": Utils.calculatePercentage(i + 1, files.length).toInt()
+      });
       var file = files[i];
       late List<String> titles;
       final reader = file.openRead();
@@ -35,22 +42,33 @@ class CsvFileServices {
           var items = _splitStringIgnoringQuotes(line);
           // .map((e) => removeHyphens(e))
           // .toList();
-          print(items);
+          // print(items);
           if (titleDBId == null) {
-            log(items.toString());
             //TODO: vehivle column title.
             titles = items.map((e) => e.toLowerCase()).toList();
-            if (titles.contains('REGDNUM'.toLowerCase())) {
-              vehicalNumbrColumIndex = titles.indexOf('REGDNUM'.toLowerCase());
-              log('got vehicle title at $vehicalNumbrColumIndex');
-              titleDBId = await DatabaseHelper.inseartTitles(items);
-            } else {
+            bool found = false;
+            for (var title in titleList) {
+              if (titles.contains(title.toLowerCase())) {
+                vehicalNumbrColumIndex = titles.indexOf(title.toLowerCase());
+                titleDBId = await DatabaseHelper.inseartTitles(items);
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
               break;
             }
+            // if (titles.contains('REGDNUM'.toLowerCase())) {
+            //   vehicalNumbrColumIndex = titles.indexOf('REGDNUM'.toLowerCase());
+            //   titleDBId = await DatabaseHelper.inseartTitles(items);
+            // } else {
+            //   break;
+            // }
           } else {
             if (vehicalNumbrColumIndex != null) {
               await DatabaseHelper.inseartRow(
                   items, titleDBId, vehicalNumbrColumIndex);
+              count++;
             } else {
               break;
             }
@@ -60,10 +78,11 @@ class CsvFileServices {
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-      streamController.sink.add("Processed ${i + 1} / ${files.length} files");
     }
-
-    streamController.sink.add("Please wait...");
+    print("file count : $fileCOunt");
+    print(" record : $count");
+    streamController.sink.add(null);
+    await Storage.addEntryCount(count);
   }
 
   static Future<void> _downloadFile(
@@ -80,10 +99,10 @@ class CsvFileServices {
 
   static Future<void> _fetchDownloadLinksAndNames(
     String agencyId,
-    StreamController streamController, [
+    StreamController<Map<String, int>?> streamController, [
     List<String> fileNames = const [],
   ]) async {
-    streamController.sink.add('Getting Download Links');
+    streamController.sink.add(null);
     String url = "https://converter.starkinsolutions.com/data";
     final dio = Dio();
     final response = await dio
@@ -106,8 +125,11 @@ class CsvFileServices {
             // print('${(received / total * 100).toStringAsFixed(0)}%');
           }
         });
-        streamController.sink.add(
-            'Downloaded ${i + 1} / ${downloadLinksAndNames.entries.length}');
+        streamController.sink.add({
+          "Downloading": Utils.calculatePercentage(
+                  i + 1, downloadLinksAndNames.entries.length)
+              .toInt()
+        });
       }
     } else {
       print('Failed to load download links');
@@ -117,7 +139,7 @@ class CsvFileServices {
 
   static Future<void> updateData(
     String agencyId,
-    StreamController streamController,
+    StreamController<Map<String, int>?> streamController,
   ) async {
     var files = await getExcelFiles();
     List<String> fileNames =

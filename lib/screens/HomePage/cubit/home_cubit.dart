@@ -11,6 +11,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
+
+import 'package:recovery_app/storage/database_helper.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -22,21 +25,12 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copywith(user: user));
   }
 
-  void getVehichelOwners() async {
-    // emit(HomeState(
-    //   changeType: ChangeType,
-    // ));
-    getCrouselImages();
-    // emit(state.copywith(
-    //   vehichalOwnerList: await ExcelStore.getVehichalMapList(),
-    //   changeType: ChangeType.vehichelOwnerListUpdated,
-    // ));
-  }
-
   void homeInitialization() async {
-    // emit(state.copywith(files: await ExcelStore.getFiles()));
-    getVehichelOwners();
-    //TODO: needd optimization here.
+    getCrouselImages();
+    emit(state.copywith(
+      isTwoColumnSearch: await Storage.getIsTwoColumnSearch(),
+      entryCount: await Storage.getEntryCount(),
+    ));
   }
 
   void getCrouselImages() {
@@ -56,8 +50,27 @@ class HomeCubit extends Cubit<HomeState> {
       print(e);
       // error = e.toString();
     }
-    emit(state.copywith(changeType: ChangeType.vehichelOwnerListUpdated));
+    emit(state.copywith(
+      changeType: ChangeType.vehichelOwnerListUpdated,
+      entryCount: await Storage.getEntryCount(),
+    ));
     return error;
+  }
+
+  void updateIsColumSearch(bool isColumSearch) {
+    Storage.setIsTwoColumSearch(isColumSearch);
+    emit(
+      state.copywith(isTwoColumnSearch: isColumSearch),
+    );
+  }
+
+  void deleteAllData() async {
+    emit(state.copywith(changeType: ChangeType.loading));
+    await CsvFileServices.deleteAllFilesInVehicleDetails();
+    await DatabaseHelper.deleteAllData();
+    await Storage.emptyEntryCount();
+    emit(state.copywith(
+        changeType: ChangeType.vehichelOwnerListUpdated, entryCount: 0));
   }
 }
 

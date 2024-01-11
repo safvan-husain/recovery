@@ -17,6 +17,7 @@ import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/HomePage/notification_screen.dart';
 import 'package:recovery_app/screens/profile_sc/profile_sc.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
+import 'package:recovery_app/screens/settings_sc/settings_sc.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/home_service.dart';
 import 'package:recovery_app/storage/database_helper.dart';
@@ -39,7 +40,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     context.read<HomeCubit>().homeInitialization();
-    context.read<HomeCubit>().getCrouselImages();
     daysRemaining = HomeServices.getSubsction(() {
       DelightToastBar(
         autoDismiss: true,
@@ -74,100 +74,23 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  List<DetailsModel> filterdItems = [];
   bool isHaveSubscription = false;
 
   @override
   Widget build(BuildContext context) {
-    double scWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: ColorManager.statusbarColor,
-          statusBarBrightness: Brightness.light,
-          statusBarIconBrightness: Brightness.dark,
-        ),
-        title: _buildSearchBar(context, scWidth),
-        actions: [
-          //   InkWell(
-          //     onTap: () {
-          //       if (context.read<HomeCubit>().state.vehichalOwnerList.isEmpty) {
-          //         return;
-          //       }
-          //       showBottomSheet(
-          //         context: context,
-          //         builder: (context) {
-          //           return FilterBottomSheet(
-          //             onFilter: (list) {
-          //               _listScrollController.jumpTo(0);
-          //               setState(() {
-          //                 filterdItems = list;
-          //               });
-          //             },
-          //           );
-          //         },
-          //       );
-          //     },
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Icon(
-          //         FontAwesomeIcons.filter,
-          //         color: filterdItems.isEmpty ? Colors.grey : Colors.blue,
-          //       ),
-          //     ),
-          //   ),
-          //   const SizedBox(width: 10),
-          // InkWell(
-          //   onTap: () async {
-          //     await CsvFileServices.deleteAllFilesInVehicleDetails();
-          //     await DatabaseHelper.deleteAllData();
-          //     // Navigator.of(context).push(
-          //     //   MaterialPageRoute(
-          //     //     builder: (c) => const NotificationScreen(),
-          //     //   ),
-          //     // );
-          //   },
-          //   child: const Padding(
-          //     padding: EdgeInsets.all(8.0),
-          //     child: Icon(
-          //       FontAwesomeIcons.solidBell,
-          //       color: Color.fromARGB(255, 0, 0, 0),
-          //     ),
-          //   ),
-          // ),
-        ],
-      ),
+      backgroundColor: Color.fromARGB(255, 242, 244, 255),
       body: SingleChildScrollView(
         controller: _scrollController,
         child: Container(
           padding: EdgeInsets.all(20),
           child: Column(
             children: [
-              _getCarousel(), SizedBox(height: 20),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.end,
-              //   children: [
-              //     InkWell(
-              //       onTap: () async {
-              //         // context.read<HomeCubit>().downloadData();
-              //         // ExcelStore.processExcelInChunks();
-              //         // JsonDataServices.readJsonFromFileChunked();
-              //         // await CsvFileServices.copyAssetToDocumentDir();
-              //         // await CsvFileServices.getExcelFiles();
-              //         // await DatabaseHelper.deleteAllData();
-              //         // CsvFileServices.proccessFiles();
-              //         // print(await CsvFileServices.search("SWIFT DZIRE"));
-              //       },
-              //       child: Text(
-              //         "Item count",
-              //         style: TextStyle(color: Colors.grey, fontSize: 15),
-              //       ),
-              //     )
-              //   ],
-              // ),
+              SizedBox(height: 10),
+              _buildSearchBar(context, MediaQuery.of(context).size.width),
+              SizedBox(height: 20),
+              _getCarousel(),
+              SizedBox(height: 20),
               BlocConsumer<HomeCubit, HomeState>(
                 listener: (context, state) {
                   getFileCount();
@@ -180,6 +103,7 @@ class _HomePageState extends State<HomePage> {
                   return ConstrainedBox(
                     constraints: BoxConstraints(minHeight: 200),
                     child: Center(
+                      // child: true
                       child: state.changeType == ChangeType.loading
                           // child: true
                           ? Column(
@@ -188,63 +112,136 @@ class _HomePageState extends State<HomePage> {
                                 Text(
                                   "Please keep your app open, it may take a while.",
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(),
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w500),
                                 ),
+                                const SizedBox(height: 10),
                                 StreamBuilder(
                                     stream: state.streamController.stream,
                                     builder: (context, snp) {
-                                      return Text(
-                                        snp.data ?? "Downloading...",
-                                        style: GoogleFonts.poppins(),
-                                      );
+                                      return Center(
+                                          child: Container(
+                                        margin: EdgeInsets.all(10),
+                                        padding: EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(
+                                                  0.5), // Color of the shadow
+                                              spreadRadius: 2, // Spread radius
+                                              blurRadius: 4, // Blur radius
+                                              offset: const Offset(
+                                                  0, 3), // Shadow offset
+                                            ),
+                                          ],
+                                        ),
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                50,
+                                        height: 80,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                                snp.data == null
+                                                    ? "Please Wait..."
+                                                    : "${(100 - snp.data!.values.toList()[0])}% To Complete ${snp.data!.keys.toList()[0]}",
+                                                style: GoogleFonts.poppins(
+                                                    color: ColorManager.primary,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            const SizedBox(height: 10),
+                                            LinearProgressIndicator(
+                                              value: snp.data == null
+                                                  ? null
+                                                  : (snp.data!.values
+                                                          .toList()[0] /
+                                                      100),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              minHeight: 10,
+                                              color: ColorManager.primary,
+                                              backgroundColor: Color.fromARGB(
+                                                220,
+                                                169,
+                                                211,
+                                                255,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ));
                                     }),
-                                Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ],
+                              ].reversed.toList(),
                             )
                           : Column(
                               children: [
-                                Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () async {
-                                        var error = await context
-                                            .read<HomeCubit>()
-                                            .downloadData();
-                                        if (context.mounted &&
-                                            error.isNotEmpty) {
-                                          DelightToastBar(
-                                            autoDismiss: true,
-                                            snackbarDuration:
-                                                Duration(seconds: 3),
-                                            builder: (context) => ToastCard(
-                                              color: Colors.red,
-                                              leading: Icon(
-                                                Icons.flutter_dash,
-                                                size: 28,
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 80,
+                                  child: Row(
+                                    children: [
+                                      InkWell(
+                                        onTap: () async {
+                                          var error = await context
+                                              .read<HomeCubit>()
+                                              .downloadData();
+                                          if (context.mounted &&
+                                              error.isNotEmpty) {
+                                            DelightToastBar(
+                                              autoDismiss: true,
+                                              snackbarDuration:
+                                                  Duration(seconds: 3),
+                                              builder: (context) => ToastCard(
                                                 color: Colors.red,
-                                              ),
-                                              title: Text(
-                                                error,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 14,
-                                                  color: Colors.white,
+                                                leading: Icon(
+                                                  Icons.flutter_dash,
+                                                  size: 28,
+                                                  color: Colors.red,
+                                                ),
+                                                title: Text(
+                                                  error,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ).show(context);
-                                        }
-                                      },
-                                      child: Card(
+                                            ).show(context);
+                                          }
+                                        },
                                         child: Container(
+                                          margin: EdgeInsets.only(right: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withOpacity(
+                                                    0.5), // Color of the shadow
+                                                spreadRadius:
+                                                    2, // Spread radius
+                                                blurRadius: 4, // Blur radius
+                                                offset: const Offset(
+                                                    0, 3), // Shadow offset
+                                              ),
+                                            ],
+                                          ),
                                           height: 80,
                                           alignment: Alignment.center,
                                           child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Icon(FontAwesomeIcons.download),
                                               Text(
@@ -259,19 +256,36 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    InkWell(
-                                      onTap: () async {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (c) => ProfileScView()),
-                                        );
-                                      },
-                                      child: Card(
+                                      InkWell(
+                                        onTap: () async {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (c) =>
+                                                    ProfileScView()),
+                                          );
+                                        },
                                         child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(
+                                                      0.5), // Color of the shadow
+                                                  spreadRadius:
+                                                      2, // Spread radius
+                                                  blurRadius: 4, // Blur radius
+                                                  offset: const Offset(
+                                                      0, 3), // Shadow offset
+                                                ),
+                                              ],
+                                            ),
                                             height: 80,
                                             alignment: Alignment.center,
+                                            margin: EdgeInsets.only(left: 10),
                                             child: Column(
+                                              mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
@@ -283,8 +297,8 @@ class _HomePageState extends State<HomePage> {
                                               ],
                                             )),
                                       ),
-                                    ),
-                                  ].map((e) => Expanded(child: e)).toList(),
+                                    ].map((e) => Expanded(child: e)).toList(),
+                                  ),
                                 ),
                                 Row(
                                   children: [
@@ -294,53 +308,127 @@ class _HomePageState extends State<HomePage> {
                                           if (snp.data != null) {
                                             isHaveSubscription = snp.data! > 0;
                                           }
-                                          return Card(
-                                            child: Container(
-                                              height: 80,
-                                              alignment: Alignment.center,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    snp.data == null
-                                                        ? "-"
-                                                        : snp.data.toString(),
-                                                    textAlign: TextAlign.center,
-                                                    style: GoogleFonts.poppins(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16),
-                                                  ),
-                                                  Text(
-                                                    "Days Remaining",
-                                                    style:
-                                                        GoogleFonts.poppins(),
-                                                  ),
-                                                ],
-                                              ),
+                                          return Container(
+                                            height: 80,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(
+                                                      0.5), // Color of the shadow
+                                                  spreadRadius:
+                                                      2, // Spread radius
+                                                  blurRadius: 4, // Blur radius
+                                                  offset: const Offset(
+                                                      0, 3), // Shadow offset
+                                                ),
+                                              ],
+                                            ),
+                                            alignment: Alignment.center,
+                                            margin: EdgeInsets.only(right: 10),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                  snp.data == null
+                                                      ? "-"
+                                                      : snp.data.toString(),
+                                                  textAlign: TextAlign.center,
+                                                  style: GoogleFonts.poppins(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16),
+                                                ),
+                                                Text(
+                                                  "Days Remaining",
+                                                  style: GoogleFonts.poppins(),
+                                                ),
+                                              ],
                                             ),
                                           );
                                         }),
-                                    // Card(
-                                    //   child: Container(
-                                    //       height: 80,
-                                    //       alignment: Alignment.center,
-                                    //       child: Column(
-                                    //         mainAxisAlignment:
-                                    //             MainAxisAlignment.spaceEvenly,
-                                    //         children: [
-                                    //           Icon(Icons.settings),
-                                    //           Text(
-                                    //             "Settings",
-                                    //             style: GoogleFonts.poppins(),
-                                    //           ),
-                                    //         ],
-                                    //       )),
-                                    // ),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (c) => SettingsScView(),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                          margin: EdgeInsets.only(left: 10),
+                                          height: 80,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withOpacity(
+                                                    0.5), // Color of the shadow
+                                                spreadRadius:
+                                                    2, // Spread radius
+                                                blurRadius: 4, // Blur radius
+                                                offset: const Offset(
+                                                    0, 3), // Shadow offset
+                                              ),
+                                            ],
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Icon(Icons.settings),
+                                              Text(
+                                                "Settings",
+                                                style: GoogleFonts.poppins(),
+                                              ),
+                                            ],
+                                          )),
+                                    ),
                                   ].map((e) => Expanded(child: e)).toList(),
+                                ),
+                                Container(
+                                  // margin: EdgeInsets.only(left: 10),
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(
+                                            0.5), // Color of the shadow
+                                        spreadRadius: 2, // Spread radius
+                                        blurRadius: 4, // Blur radius
+                                        offset:
+                                            const Offset(0, 3), // Shadow offset
+                                      ),
+                                    ],
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(
+                                        '${context.watch<HomeCubit>().state.entryCount}',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      Text(
+                                        'Offline Records',
+                                        style: GoogleFonts.poppins(),
+                                      )
+                                    ],
+                                  ),
                                 ),
                                 // Row(
                                 //   children: [
@@ -381,69 +469,69 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSearchBar(BuildContext context, double scWidth) {
-    return BlocBuilder<HomeCubit, HomeState>(
-      builder: (context, state) {
-        return InkWell(
-          onTap: () {
-            if (isHaveSubscription) {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (c) => SearchScreen1()),
-              );
-            } else {
-              DelightToastBar(
-                autoDismiss: true,
-                snackbarDuration: Duration(seconds: 3),
-                builder: (context) => const ToastCard(
-                  color: Colors.red,
-                  leading: Icon(
-                    Icons.flutter_dash,
-                    size: 28,
-                    color: Colors.red,
-                  ),
-                  title: Text(
-                    "You don't have a subscription",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
+    return InkWell(
+      onTap: () {
+        if (isHaveSubscription) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (c) => SearchScreen1()),
+          );
+        } else {
+          DelightToastBar(
+            autoDismiss: true,
+            snackbarDuration: Duration(seconds: 3),
+            builder: (context) => const ToastCard(
+              color: Colors.red,
+              leading: Icon(
+                Icons.flutter_dash,
+                size: 28,
+                color: Colors.red,
+              ),
+              title: Text(
+                "You don't have a subscription",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: Colors.white,
                 ),
-              ).show(context);
-            }
-          },
-          child: Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            margin: EdgeInsets.symmetric(vertical: 30),
-            // padding: EdgeInsets.symmetric(horizontal: 10),
-            height: 40, width: scWidth,
-            decoration: BoxDecoration(
-              border: Border.all(
-                  color: Colors.black,
-                  width: 1,
-                  strokeAlign: BorderSide.strokeAlignOutside),
-              // color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
+              ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Search here',
-                  style: GoogleFonts.poppins(
-                    color: Colors.black,
-                  ),
-                ),
-                Icon(
-                  Icons.search,
-                  color: Colors.black,
-                )
-              ],
-            ),
-          ),
-        );
+          ).show(context);
+        }
       },
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        height: 60,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5), // Color of the shadow
+              spreadRadius: 2, // Spread radius
+              blurRadius: 4, // Blur radius
+              offset: const Offset(0, 3), // Shadow offset
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const CircleAvatar(child: Icon(Icons.search)),
+            const SizedBox(
+              width: 20,
+            ),
+            Text(
+              'Search here',
+              style: GoogleFonts.poppins(
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

@@ -48,7 +48,7 @@ class DatabaseHelper {
     if (node.isEmpty) {
       if (id == 1) {
         await _database.insert(trie,
-            {charColum: 'root', 'children': '{}', 'rowId': '[]', 'og': '[]'});
+            {charColum: 'root', 'children': '{}', 'rowId': '[]', 'og': '{}'});
         node = await _database.query(
           trie,
           where: '$charColum = ?',
@@ -77,7 +77,7 @@ class DatabaseHelper {
         charColum: char,
         'children': '{}',
         'rowId': rowId == null ? "[]" : jsonEncode([rowId]),
-        'og': rowId == null ? "[]" : jsonEncode([og])
+        'og': og == null ? "{}" : jsonEncode({og: rowId})
       },
     );
     return id;
@@ -94,7 +94,7 @@ class DatabaseHelper {
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
     var s = Utils.removeHyphens(row.elementAt(vehicalNumbrColumIndex));
 
-    await _inseartString(s, rowId);
+    // await _inseartString(s, rowId);
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
@@ -126,15 +126,15 @@ class DatabaseHelper {
       }
       if (i == word.length - 1) {
         node = await _getNode(nodeId);
-        List<String> ogs = [];
+        Map<String, int> ogs = {};
         if (og != null) {
           ogs = node.og;
         }
         List<int> rowIds = node.rowId;
         if (!rowIds.contains(rowId)) {
           rowIds.add(rowId);
-          if (og != null && !ogs.contains(og)) {
-            ogs.add(og);
+          if (og != null && !ogs.entries.map((e) => e.key).contains(og)) {
+            ogs[og] = rowId;
             await _database.update(
                 trie, {"rowId": jsonEncode(rowIds), 'og': jsonEncode(ogs)},
                 where: 'id = ?', whereArgs: [node.dbId]);
@@ -179,7 +179,7 @@ class DatabaseHelper {
     for (var i = 0; i < prefix.length; i++) {
       var character = prefix[i];
       var node = await _getNode(nodeId);
-      print(node.children);
+      // print(node.children);
       var children = node.children;
       if (!children.containsKey(character)) {
         return [];
@@ -189,7 +189,7 @@ class DatabaseHelper {
     // Now we have the node corresponding to the last character of the prefix
     // We need to collect all words that start with this prefix
     await _collectWords(nodeId, prefix, results);
-    print(results.length);
+    // print(results.length);
     return results;
   }
 
@@ -208,8 +208,9 @@ class DatabaseHelper {
       }
     } else {
       if (node.og.isNotEmpty) {
-        for (var element in node.og) {
-          results.add(SearchResultItem(item: element, node: node));
+        for (var element in node.og.entries) {
+          results.add(SearchResultItem(
+              item: element.key, node: node, rowId: element.value));
         }
       } else {
         results.add(SearchResultItem(item: prefix, node: node));

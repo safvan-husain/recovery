@@ -26,6 +26,48 @@ class Storage {
     await sharedPreference.setString("date", data);
   }
 
+  static Future<void> addEntryCount(int count) async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    int? currentCunt = sharedPreference.getInt('count');
+    if (currentCunt != null) {
+      await sharedPreference.setInt("count", currentCunt + count);
+    } else {
+      await sharedPreference.setInt("count", count);
+    }
+  }
+
+  static Future<void> emptyEntryCount() async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    int? currentCunt = sharedPreference.getInt('count');
+    if (currentCunt != null) {
+      await sharedPreference.setInt("count", 0);
+    } else {
+      await sharedPreference.setInt("count", 0);
+    }
+  }
+
+  static Future<void> setIsTwoColumSearch(bool value) async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    await sharedPreference.setBool("twoColumSearch", value);
+  }
+
+  static Future<bool> getIsTwoColumnSearch() async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    bool? isTwo = sharedPreference.getBool('twoColumSearch');
+    if (isTwo == null) {
+      await sharedPreference.setBool("twoColumSearch", false);
+      return false;
+    } else {
+      return isTwo;
+    }
+  }
+
+  static Future<int> getEntryCount() async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    int? currentCunt = sharedPreference.getInt('count');
+    return currentCunt ?? 0;
+  }
+
   static Future<int?> getRemaingDays() async {
     var sharedPreference = await SharedPreferences.getInstance();
     var date = sharedPreference.getString("date");

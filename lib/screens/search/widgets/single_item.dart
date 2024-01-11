@@ -6,10 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/assets_manager.dart';
 import 'package:recovery_app/resources/color_manager.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/services/loation.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 
@@ -36,6 +38,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
     super.initState();
   }
 
+  String? locationUrl;
   bool _isReporting = false;
   Map<String, String> vehicleDetails = {};
 
@@ -47,12 +50,11 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
           child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ConstrainedBox(
               constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height -
-                      (_isReporting ? 500 : 300)),
+                      (_isReporting ? 500 : 230)),
               child: FutureBuilder(
                   future: ftutureDetails,
                   builder: (context, snp) {
@@ -227,8 +229,8 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                             //   child: ElevatedButton(
                             //     onPressed: () {
                             //       if (_addressController.text.isNotEmpty) {
-                            //         Utils.sendSMS(
-                            //             '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
+                            // Utils.sendSMS(
+                            //     '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
                             //       } else {
                             //         _showAddressWarning().show(context);
                             //       }
@@ -258,24 +260,82 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                             // const SizedBox(width: 10),
                             Expanded(
                               child: ElevatedButton(
+                                onPressed: () async {
+                                  if (locationUrl != null) {
+                                    locationUrl = null;
+                                    if (context.mounted) {
+                                      Utils.toastBar(
+                                              "Removed Currentl Location")
+                                          .show(context);
+                                    }
+                                  } else {
+                                    locationUrl = await LocationService.share();
+                                    if (context.mounted) {
+                                      Utils.toastBar("Added Currentl Location",
+                                              Colors.greenAccent)
+                                          .show(context);
+                                    }
+                                  }
+
+                                  setState(() {});
+                                },
+                                style: locationUrl == null
+                                    ? ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          side: BorderSide(
+                                              color: ColorManager.primary,
+                                              width: 2),
+                                        ),
+                                        backgroundColor: ColorManager.white,
+                                      )
+                                    : ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            side: BorderSide(
+                                                color: ColorManager.primary,
+                                                width: 2)),
+                                        backgroundColor: ColorManager.primary,
+                                        alignment: Alignment.center),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      "${locationUrl == null ? "Add" : "Remove"} Location ",
+                                      style: TextStyle(
+                                          color: locationUrl == null
+                                              ? Colors.blue
+                                              : Colors.white),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const Icon(
+                                      FontAwesomeIcons.locationPin,
+                                      color: Colors.greenAccent,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: ElevatedButton(
                                   onPressed: () {
                                     if (_addressController.text.isNotEmpty) {
-                                      var message =
-                                          '${Utils.formatMap(vehicleDetails)} \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}';
-                                      String url =
-                                          'whatsapp://send?phone=+917907320942&text=$message';
-                                      Utils.launchURL(url);
+                                      _showShareDialog();
                                     } else {
                                       _showAddressWarning().show(context);
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
                                       shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          side: BorderSide(
-                                              color: ColorManager.primary,
-                                              width: 2)),
+                                        borderRadius: BorderRadius.circular(10),
+                                        side: BorderSide(
+                                            color: ColorManager.primary,
+                                            width: 2),
+                                      ),
                                       backgroundColor: ColorManager.white,
                                       alignment: Alignment.center),
                                   child: Row(
@@ -288,7 +348,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                                             color: ColorManager.primary),
                                         textAlign: TextAlign.center,
                                       ),
-                                      SvgPicture.asset(IconAssets.whatsapp_ic)
+                                      const Icon(FontAwesomeIcons.share)
                                     ],
                                   )),
                             ),
@@ -340,6 +400,59 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showShareDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Share details of ${widget.heroTag}',
+                  style: GoogleFonts.russoOne(),
+                ),
+              ),
+              ElevatedButton.icon(
+                icon: SvgPicture.asset(IconAssets.whatsapp_ic),
+                style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 40)),
+                label: Text(
+                  'Share on WhatsApp',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+                onPressed: () {
+                  var message =
+                      '${Utils.formatMap(vehicleDetails)} ${locationUrl != null ? "location : $locationUrl" : ""}\n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}';
+                  String url =
+                      'whatsapp://send?phone=+917907320942&text=$message';
+                  Utils.launchURL(url);
+                },
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 40)),
+                label: Text(
+                  'Share on Message App',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+                icon: Image.asset(IconAssets.sms_ic),
+                onPressed: () {
+                  Utils.sendSMS(
+                      '${Utils.formatMap(vehicleDetails)}  ${locationUrl != null ? "location : $locationUrl" : ""} \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
