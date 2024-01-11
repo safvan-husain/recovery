@@ -1,4 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
@@ -52,5 +55,28 @@ class Utils {
     return map.entries
         .map((entry) => '${entry.key} : ${entry.value}')
         .join('\n');
+  }
+
+  static DelightToastBar toastBar(String message) {
+    return DelightToastBar(
+      autoDismiss: true,
+      snackbarDuration: const Duration(seconds: 3),
+      builder: (context) => ToastCard(
+        color: Colors.red,
+        leading: const Icon(
+          Icons.flutter_dash,
+          size: 28,
+          color: Colors.red,
+        ),
+        title: Text(
+          message,
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
   }
 }

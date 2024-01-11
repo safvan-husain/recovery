@@ -6,7 +6,7 @@ class Node {
   final int dbId;
   final List<int> rowId;
   final Map<String, int> children;
-  final List<String> og;
+  final Map<String, String> og;
   Node({
     required this.charecter,
     required this.dbId,
@@ -30,7 +30,8 @@ class Node {
       charecter: map['charecter'] ?? "",
       dbId: map['id'] as int,
       rowId: (jsonDecode(map['rowId']) as List).map((e) => e as int).toList(),
-      og: (jsonDecode(map['og']) as List).whereType<String>().toList(),
+      og: Map<String, dynamic>.from(jsonDecode(map['og']))
+          .map((key, value) => MapEntry(key, value as int)),
       children: Map<String, dynamic>.from(jsonDecode(map['children']))
           .map((key, value) => MapEntry(key, value as int)),
     );

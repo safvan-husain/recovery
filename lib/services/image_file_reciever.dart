@@ -2,6 +2,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:recovery_app/services/utils.dart';
 
 class ImageFile {
   static final ImagePicker _picker = ImagePicker();
@@ -29,7 +30,10 @@ class ImageFile {
                       ),
                       onTap: () async {
                         PermissionStatus status =
-                            await Permission.storage.request();
+                            await Permission.storage.status;
+                        if (!status.isGranted) {
+                          status = await Permission.storage.request();
+                        }
                         if (status.isGranted) {
                           var image = await _picker.pickImage(
                               source: ImageSource.camera);
@@ -37,6 +41,10 @@ class ImageFile {
                             imageFile = File(image.path);
                           }
                         } else {
+                          if (context.mounted) {
+                            Utils.toastBar("Permission denied").show(context);
+                          }
+
                           // Handle when the permission is not granted
                         }
 
@@ -55,7 +63,10 @@ class ImageFile {
                       ),
                       onTap: () async {
                         PermissionStatus status =
-                            await Permission.storage.request();
+                            await Permission.storage.status;
+                        if (!status.isGranted) {
+                          status = await Permission.storage.request();
+                        }
                         if (status.isGranted) {
                           var image = await _picker.pickImage(
                               source: ImageSource.gallery);
@@ -63,6 +74,9 @@ class ImageFile {
                             imageFile = File(image.path);
                           }
                         } else {
+                          if (context.mounted) {
+                            Utils.toastBar("Permission denied").show(context);
+                          }
                           // Handle when the permission is not granted
                         }
 
