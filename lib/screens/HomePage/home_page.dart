@@ -20,6 +20,7 @@ import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/screens/settings_sc/settings_sc.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/home_service.dart';
+import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 
 import '../../resources/color_manager.dart';
@@ -190,32 +191,18 @@ class _HomePageState extends State<HomePage> {
                                     children: [
                                       InkWell(
                                         onTap: () async {
-                                          var error = await context
-                                              .read<HomeCubit>()
-                                              .downloadData();
-                                          if (context.mounted &&
-                                              error.isNotEmpty) {
-                                            DelightToastBar(
-                                              autoDismiss: true,
-                                              snackbarDuration:
-                                                  Duration(seconds: 3),
-                                              builder: (context) => ToastCard(
-                                                color: Colors.red,
-                                                leading: Icon(
-                                                  Icons.flutter_dash,
-                                                  size: 28,
-                                                  color: Colors.red,
-                                                ),
-                                                title: Text(
-                                                  error,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ).show(context);
+                                          if (await Utils.isConnected()) {
+                                            if (context.mounted) {
+                                              await context
+                                                  .read<HomeCubit>()
+                                                  .downloadData();
+                                            }
+                                          } else {
+                                            if (context.mounted) {
+                                              Utils.toastBar(
+                                                      'No internet connection')
+                                                  .show(context);
+                                            }
                                           }
                                         },
                                         child: Container(

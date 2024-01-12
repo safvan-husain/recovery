@@ -24,10 +24,8 @@ class DatabaseHelper {
         await db.execute('''CREATE TABLE $trie (
   id INTEGER PRIMARY KEY,
   $charColum TEXT,
-  rowId TEXT,
   og TEXT,
-  children TEXT, 
-  FOREIGN KEY(rowId) REFERENCES $jsonStore(id)
+  children TEXT
 )''');
       },
       version: 1,
@@ -40,16 +38,16 @@ class DatabaseHelper {
   }
 
   static Future<Node> _getNode(int id) async {
-    var node = await _database.query(
+    var nodeList = await _database.query(
       trie,
       where: 'id = ?',
       whereArgs: [id],
     );
-    if (node.isEmpty) {
+    if (nodeList.isEmpty) {
       if (id == 1) {
-        await _database.insert(trie,
-            {charColum: 'root', 'children': '{}', 'rowId': '[]', 'og': '{}'});
-        node = await _database.query(
+        await _database
+            .insert(trie, {charColum: 'root', 'children': '{}', 'og': '{}'});
+        nodeList = await _database.query(
           trie,
           where: '$charColum = ?',
           whereArgs: ['root'],
@@ -58,7 +56,7 @@ class DatabaseHelper {
         throw ("no node with $id");
       }
     }
-    return Node.fromMap(node[0]);
+    return Node.fromMap(nodeList[0]);
   }
 
   static Future<void> _updateNode(int id, String children) async {
@@ -76,7 +74,6 @@ class DatabaseHelper {
       {
         charColum: char,
         'children': '{}',
-        'rowId': rowId == null ? "[]" : jsonEncode([rowId]),
         'og': og == null ? "{}" : jsonEncode({og: rowId})
       },
     );
@@ -104,45 +101,41 @@ class DatabaseHelper {
 
   static Future<void> _inseartString(
     String word,
-    int rowId, [
-    String? og,
-  ]) async {
+    int rowId,
+    String og,
+  ) async {
     Node? node;
     int nodeId = 1;
-    late Map<String, dynamic> children;
+    Map<String, dynamic> children = {};
+
     for (var i = 0; i < word.length; i++) {
       var charecter = word[i];
+      bool isLastChar = i == word.length - 1;
       node = await _getNode(nodeId);
       children = node.children;
       if (children.containsKey(charecter)) {
         nodeId = children[charecter];
-        children = {};
-      } else {
-        var newNodeId =
-            await _createNode(charecter, i == word.length - 1 ? rowId : null);
-        children[charecter] = newNodeId;
-        await _updateNode(nodeId, jsonEncode(children));
-        nodeId = newNodeId;
-      }
-      if (i == word.length - 1) {
-        node = await _getNode(nodeId);
-        Map<String, int> ogs = {};
-        if (og != null) {
+        if (isLastChar) {
+          node = await _getNode(nodeId);
+          Map<String, int> ogs = {};
           ogs = node.og;
-        }
-        List<int> rowIds = node.rowId;
-        if (!rowIds.contains(rowId)) {
-          rowIds.add(rowId);
-          if (og != null && !ogs.entries.map((e) => e.key).contains(og)) {
+          if (!ogs.entries.map((e) => e.key).contains(og)) {
             ogs[og] = rowId;
-            await _database.update(
-                trie, {"rowId": jsonEncode(rowIds), 'og': jsonEncode(ogs)},
-                where: 'id = ?', whereArgs: [node.dbId]);
-          } else {
-            await _database.update(trie, {"rowId": jsonEncode(rowIds)},
+            await _database.update(trie, {'og': jsonEncode(ogs)},
                 where: 'id = ?', whereArgs: [node.dbId]);
           }
         }
+      } else {
+        late int newNodeId;
+        if (isLastChar) {
+          newNodeId = await _createNode(charecter, rowId, og);
+        } else {
+          newNodeId = await _createNode(charecter);
+        }
+
+        children[charecter] = newNodeId;
+        await _updateNode(nodeId, jsonEncode(children));
+        nodeId = newNodeId;
       }
     }
   }
@@ -198,10 +191,6 @@ class DatabaseHelper {
     var node = await _getNode(nodeId);
     var children = node.children;
     if (children.isNotEmpty) {
-      if (node.rowId.isNotEmpty) {
-        results.add(SearchResultItem(item: prefix, node: node));
-      }
-      // This is an internal node, so we recursively collect words from its children
       for (var childCharacter in children.keys) {
         await _collectWords(
             children[childCharacter]!, prefix + childCharacter, results);
@@ -209,11 +198,9 @@ class DatabaseHelper {
     } else {
       if (node.og.isNotEmpty) {
         for (var element in node.og.entries) {
-          results.add(SearchResultItem(
-              item: element.key, node: node, rowId: element.value));
+          results
+              .add(SearchResultItem(item: element.key, rowId: element.value));
         }
-      } else {
-        results.add(SearchResultItem(item: prefix, node: node));
       }
     }
   }

@@ -4,11 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/screens/search/widgets/single_item.dart';
 
 class ItemScreen extends StatefulWidget {
-  final List<int> rowIds;
+  final int rowId;
   final String heroTag;
   const ItemScreen({
     Key? key,
-    required this.rowIds,
+    required this.rowId,
     required this.heroTag,
   }) : super(key: key);
 
@@ -39,66 +39,11 @@ class _ItemScreenState extends State<ItemScreen> {
         title: const Text("Details"),
       ),
       body: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: widget.rowIds.isEmpty
-            ? const Center(
-                child: Text("No details available"),
-              )
-            : SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: 30,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              controller.previousPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut);
-                            },
-                            child: const Icon(Icons.arrow_back_ios_new),
-                          ),
-                          Text("Item $currentIndex / ${widget.rowIds.length}"),
-                          InkWell(
-                            onTap: () {
-                              controller.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut);
-                            },
-                            child: const Icon(Icons.arrow_forward_ios),
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onHorizontalDragEnd: (details) {
-                        if (details.primaryVelocity! > 0) {
-                          // Swipe Right
-                          print('Swiped Right');
-                        } else if (details.primaryVelocity! < 0) {
-                          // Swipe Left
-                          print('Swiped Left');
-                        }
-                      },
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height - 50,
-                        child: PageView(
-                          controller: controller,
-                          children: widget.rowIds
-                              .map((e) => SingleItemScreen(
-                                  rowId: e, heroTag: widget.heroTag))
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-      )),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleItemScreen(rowId: widget.rowId, heroTag: widget.heroTag),
+        ),
+      ),
     );
   }
 }

@@ -16,13 +16,10 @@ class CsvFileServices {
     List<File>? csvFiles,
   ]) async {
     int count = 0;
-    int fileCOunt = 0;
     streamController.sink.add(null);
-    List<String> titleList = ['REGDNUM', 'veh_no', 'vehicle Number'];
+    List<String> titleList = ['veh_no', 'REGDNUM', 'vehicle Number'];
     var files = csvFiles ?? await getExcelFiles();
     for (var i = 0; i < files.length; i++) {
-      int countFIle = 0;
-      fileCOunt++;
       streamController.sink.add({
         "processing": Utils.calculatePercentage(i + 1, files.length).toInt()
       });
@@ -58,12 +55,6 @@ class CsvFileServices {
             if (!found) {
               break;
             }
-            // if (titles.contains('REGDNUM'.toLowerCase())) {
-            //   vehicalNumbrColumIndex = titles.indexOf('REGDNUM'.toLowerCase());
-            //   titleDBId = await DatabaseHelper.inseartTitles(items);
-            // } else {
-            //   break;
-            // }
           } else {
             if (vehicalNumbrColumIndex != null) {
               await DatabaseHelper.inseartRow(
@@ -79,8 +70,6 @@ class CsvFileServices {
         }
       }
     }
-    print("file count : $fileCOunt");
-    print(" record : $count");
     streamController.sink.add(null);
     await Storage.addEntryCount(count);
   }
@@ -147,14 +136,22 @@ class CsvFileServices {
     await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);
 
     files = await getExcelFiles();
-    List<File> res = files
-        .where((element) =>
-            !fileNames.contains(basenameWithoutExtension(element.path)))
-        .toList();
-    await _proccessFiles(
-      streamController,
-      res,
-    );
+    int entryCount = await Storage.getEntryCount();
+    if (entryCount > 0) {
+      List<File> res = files
+          .where((element) =>
+              !fileNames.contains(basenameWithoutExtension(element.path)))
+          .toList();
+      await _proccessFiles(
+        streamController,
+        res,
+      );
+    } else {
+      await _proccessFiles(
+        streamController,
+        files,
+      );
+    }
   }
 
   static List<String> _splitStringIgnoringQuotes(String input) {

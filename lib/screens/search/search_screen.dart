@@ -7,9 +7,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/search/item_screen.dart';
-import 'package:recovery_app/screens/search/widgets/searched_items_view.dart';
-import 'package:recovery_app/services/csv_file_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 import 'package:recovery_app/storage/node_model.dart';
@@ -23,7 +20,6 @@ class SearchScreen1 extends StatefulWidget {
 
 class SearchScreen1State extends State<SearchScreen1> {
   late Future<List<String>> futureTitles;
-  bool _isSearch = false;
   bool _isSearchComplete = false;
   final TextEditingController _controller = TextEditingController();
   // final _streamController = StreamController<Map<String, dynamic>>();
@@ -225,7 +221,8 @@ class SearchScreen1State extends State<SearchScreen1> {
                     );
                   },
                   itemCount: context.read<HomeCubit>().state.isTwoColumnSearch
-                      ? (items.length / 2.ceil()).round()
+                      ? ((items.length + 1) ~/
+                          2) // Corrected itemCount calculation
                       : items.length,
                   itemBuilder: (context, index) {
                     if (context.read<HomeCubit>().state.isTwoColumnSearch) {
@@ -234,12 +231,17 @@ class SearchScreen1State extends State<SearchScreen1> {
                         height: 40,
                         child: Row(
                           children: [
-                            Expanded(child: _itemListTile(context, index)),
-                            if (items.length % 2 == 0) ...[
+                            Expanded(
+                                child: _itemListTile(context,
+                                    index * 2)), // First item in the row
+                            if (index * 2 + 1 < items.length) ...[
+                              // Check if there is a second item
                               VerticalDivider(
                                 color: Colors.grey[300],
                               ),
-                              Expanded(child: _itemListTile(context, index * 2))
+                              Expanded(
+                                  child: _itemListTile(context,
+                                      index * 2 + 1)) // Second item in the row
                             ],
                           ],
                         ),
@@ -261,9 +263,7 @@ class SearchScreen1State extends State<SearchScreen1> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (c) => ItemScreen(
-              rowIds: items[index].rowId != null
-                  ? [items[index].rowId!]
-                  : items[index].node.rowId,
+              rowId: items[index].rowId,
               heroTag: items[index].item.toUpperCase(),
             ),
           ),
@@ -281,11 +281,6 @@ class SearchScreen1State extends State<SearchScreen1> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            if (items[index].rowId == null)
-              CircleAvatar(
-                radius: 10,
-                child: Text(items[index].node.rowId.length.toString()),
-              ),
           ],
         ),
       ),

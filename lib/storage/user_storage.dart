@@ -55,8 +55,8 @@ class Storage {
     var sharedPreference = await SharedPreferences.getInstance();
     bool? isTwo = sharedPreference.getBool('twoColumSearch');
     if (isTwo == null) {
-      await sharedPreference.setBool("twoColumSearch", false);
-      return false;
+      await sharedPreference.setBool("twoColumSearch", true);
+      return true;
     } else {
       return isTwo;
     }
