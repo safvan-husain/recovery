@@ -13,6 +13,7 @@ class UserModel {
   String? adharUrl;
   String? panUrl;
   String agencyId;
+  bool isStaff;
 
   UserModel({
     required this.agent_name,
@@ -23,6 +24,7 @@ class UserModel {
     this.adharUrl,
     this.panUrl,
     required this.agencyId,
+    this.isStaff = true,
   });
 
   factory UserModel.fromServerJson2(Map<String, dynamic> map) {

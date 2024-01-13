@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:dio/dio.dart';
-import 'package:recovery_app/screens/HomePage/home_page.dart';
 import 'package:recovery_app/screens/authentication/unapproved_screen.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -36,7 +36,7 @@ class AuthServices {
           context.read<HomeCubit>().setUser(user);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
+            MaterialPageRoute(builder: (context) => const BottomNavigation()),
           );
         }
       } else {

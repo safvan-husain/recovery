@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/HomePage/home_page.dart';
@@ -28,7 +29,7 @@ class _InitialScreenState extends State<InitialScreen> {
       if (context.mounted) {
         context.read<HomeCubit>().setUser(user);
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (c) => const HomePage()),
+          MaterialPageRoute(builder: (c) => const BottomNavigation()),
         );
       }
     } else {

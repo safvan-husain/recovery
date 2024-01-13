@@ -90,8 +90,17 @@ class _SettingsScViewState extends State<SettingsScView> {
               Divider(
                 color: Colors.grey[300],
               ),
-              // _getRow(title: "Terms and Conditions"),
-              // InkWell(onTap: () {}, child: _getRow(title: "Privacy Policy")),
+              _getRow(
+                title: "Terms and Conditions",
+                icon: Icons.arrow_forward_ios,
+              ),
+              InkWell(
+                onTap: () {},
+                child: _getRow(
+                  title: "Privacy Policy",
+                  icon: Icons.arrow_forward_ios,
+                ),
+              ),
             ],
           ),
         ),
@@ -123,7 +132,7 @@ class _SettingsScViewState extends State<SettingsScView> {
     );
   }
 
-  Widget _getRow({required String title}) {
+  Widget _getRow({required String title, IconData? icon}) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -135,9 +144,9 @@ class _SettingsScViewState extends State<SettingsScView> {
             style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold),
           ),
-          const Icon(
-            Icons.delete,
-            color: Colors.red,
+          Icon(
+            icon ?? Icons.delete,
+            color: icon == null ? Colors.red : Colors.black,
           )
         ],
       ),

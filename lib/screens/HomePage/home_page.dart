@@ -243,112 +243,107 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       ),
-                                      InkWell(
-                                        onTap: () async {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (c) =>
-                                                    ProfileScView()),
-                                          );
-                                        },
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey.withOpacity(
-                                                      0.5), // Color of the shadow
-                                                  spreadRadius:
-                                                      2, // Spread radius
-                                                  blurRadius: 4, // Blur radius
-                                                  offset: const Offset(
-                                                      0, 3), // Shadow offset
-                                                ),
-                                              ],
-                                            ),
-                                            height: 80,
-                                            alignment: Alignment.center,
-                                            margin: EdgeInsets.only(left: 10),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Icon(FontAwesomeIcons.user),
-                                                Text(
-                                                  "My account",
-                                                  style: GoogleFonts.poppins(),
-                                                )
-                                              ],
-                                            )),
-                                      ),
+                                      FutureBuilder(
+                                          future: daysRemaining,
+                                          builder: (context, snp) {
+                                            if (snp.data != null) {
+                                              isHaveSubscription =
+                                                  snp.data! > 0;
+                                            }
+                                            return Container(
+                                              height: 80,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey.withOpacity(
+                                                        0.5), // Color of the shadow
+                                                    spreadRadius:
+                                                        2, // Spread radius
+                                                    blurRadius:
+                                                        4, // Blur radius
+                                                    offset: const Offset(
+                                                        0, 3), // Shadow offset
+                                                  ),
+                                                ],
+                                              ),
+                                              alignment: Alignment.center,
+                                              margin: EdgeInsets.only(left: 10),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  Text(
+                                                    snp.data == null
+                                                        ? "-"
+                                                        : snp.data.toString(),
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.poppins(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16),
+                                                  ),
+                                                  Text(
+                                                    "Days Remaining",
+                                                    style:
+                                                        GoogleFonts.poppins(),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }),
                                     ].map((e) => Expanded(child: e)).toList(),
                                   ),
                                 ),
                                 Row(
                                   children: [
-                                    FutureBuilder(
-                                        future: daysRemaining,
-                                        builder: (context, snp) {
-                                          if (snp.data != null) {
-                                            isHaveSubscription = snp.data! > 0;
-                                          }
-                                          return Container(
-                                            height: 80,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey.withOpacity(
-                                                      0.5), // Color of the shadow
-                                                  spreadRadius:
-                                                      2, // Spread radius
-                                                  blurRadius: 4, // Blur radius
-                                                  offset: const Offset(
-                                                      0, 3), // Shadow offset
-                                                ),
-                                              ],
-                                            ),
-                                            alignment: Alignment.center,
-                                            margin: EdgeInsets.only(right: 10),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(
-                                                  snp.data == null
-                                                      ? "-"
-                                                      : snp.data.toString(),
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.poppins(
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16),
-                                                ),
-                                                Text(
-                                                  "Days Remaining",
-                                                  style: GoogleFonts.poppins(),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        }),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (c) => SettingsScView(),
+                                    Container(
+                                      margin: state.user!.isStaff
+                                          ? EdgeInsets.only(right: 10)
+                                          : null,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(
+                                                0.5), // Color of the shadow
+                                            spreadRadius: 2, // Spread radius
+                                            blurRadius: 4, // Blur radius
+                                            offset: const Offset(
+                                                0, 3), // Shadow offset
                                           ),
-                                        );
-                                      },
-                                      child: Container(
-                                          margin: EdgeInsets.only(left: 10),
+                                        ],
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Text(
+                                            '${context.watch<HomeCubit>().state.entryCount}',
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                          Text(
+                                            'Offline Records',
+                                            style: GoogleFonts.poppins(),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    if (state.user!.isStaff)
+                                      Container(
                                           height: 80,
+                                          margin: EdgeInsets.only(left: 10),
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:
@@ -370,73 +365,15 @@ class _HomePageState extends State<HomePage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              Icon(Icons.settings),
+                                              Icon(FontAwesomeIcons.car),
                                               Text(
-                                                "Settings",
+                                                "Vehicle Confirmed",
                                                 style: GoogleFonts.poppins(),
                                               ),
                                             ],
                                           )),
-                                    ),
                                   ].map((e) => Expanded(child: e)).toList(),
                                 ),
-                                Container(
-                                  // margin: EdgeInsets.only(left: 10),
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(
-                                            0.5), // Color of the shadow
-                                        spreadRadius: 2, // Spread radius
-                                        blurRadius: 4, // Blur radius
-                                        offset:
-                                            const Offset(0, 3), // Shadow offset
-                                      ),
-                                    ],
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(
-                                        '${context.watch<HomeCubit>().state.entryCount}',
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      Text(
-                                        'Offline Records',
-                                        style: GoogleFonts.poppins(),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                // Row(
-                                //   children: [
-                                //     Card(
-                                //       child: Container(
-                                //           height: 80,
-                                //           alignment: Alignment.center,
-                                //           child: Column(
-                                //             mainAxisAlignment:
-                                //                 MainAxisAlignment.spaceEvenly,
-                                //             children: [
-                                //               Icon(FontAwesomeIcons.car),
-                                //               Text(
-                                //                 "Vehicle Confirmed",
-                                //                 style: GoogleFonts.poppins(),
-                                //               ),
-                                //             ],
-                                //           )),
-                                //     ),
-                                //   ].map((e) => Expanded(child: e)).toList(),
-                                // ),
                               ]
                                   .map((e) => Padding(
                                         padding: const EdgeInsets.all(5),

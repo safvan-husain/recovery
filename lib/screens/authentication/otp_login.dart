@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/resources/text_fiealds.dart';
-import 'package:recovery_app/screens/HomePage/home_page.dart';
 import 'package:recovery_app/screens/authentication/agency_code_screen.dart';
 import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/sign_up_screen.dart';
@@ -318,7 +318,8 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
             if (user != null) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const HomePage()),
+                MaterialPageRoute(
+                    builder: (context) => const BottomNavigation()),
               );
               showSnackbar(
                   "Welcome back ${user!.agent_name}", context, Icons.warning);

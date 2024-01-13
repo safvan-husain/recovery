@@ -20,9 +20,8 @@ class CsvFileServices {
     List<String> titleList = ['veh_no', 'REGDNUM', 'vehicle Number'];
     var files = csvFiles ?? await getExcelFiles();
     for (var i = 0; i < files.length; i++) {
-      streamController.sink.add({
-        "processing": Utils.calculatePercentage(i + 1, files.length).toInt()
-      });
+      streamController.sink.add(
+          {"processing": Utils.calculatePercentage(i, files.length).toInt()});
       var file = files[i];
       late List<String> titles;
       final reader = file.openRead();
