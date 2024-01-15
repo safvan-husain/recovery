@@ -54,6 +54,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 242, 244, 255),
       body: pages.elementAt(_currentPageIndex),
       bottomNavigationBar: Container(
         height: 60,

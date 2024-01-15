@@ -1,0 +1,201 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/resources/color_manager.dart';
+import 'package:recovery_app/services/control_panel_services.dart';
+import 'package:recovery_app/services/utils.dart';
+
+class UserView extends StatefulWidget {
+  final Agent agent;
+  const UserView({
+    super.key,
+    required this.agent,
+  });
+
+  @override
+  State<UserView> createState() => _UserViewState();
+}
+
+class _UserViewState extends State<UserView> {
+  bool? isAdmin;
+  bool isActive = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 242, 244, 255),
+      appBar: AppBar(
+        leading: const BackButton(),
+        centerTitle: true,
+        backgroundColor: ColorManager.primary,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: ColorManager.primary,
+          statusBarColor: ColorManager.primary,
+          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.light,
+        ),
+        title: Text(
+          "App Users",
+          style: GoogleFonts.poppins(
+              color: Colors.white, fontWeight: FontWeight.w500, fontSize: 25),
+        ),
+      ),
+      body: SafeArea(
+          child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 100),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 120,
+                  alignment: Alignment.center,
+                  child: Image.asset(
+                    'assets/icons/user.png',
+                    fit: BoxFit.cover,
+                    height: 80,
+                  ),
+                ),
+                const Text('Account Information'),
+                _buildTile('Name', widget.agent.agentName),
+                _buildTile('Mobile Number', "99999999"),
+                _buildTile('Address', widget.agent.address),
+                Container(
+                  margin: const EdgeInsets.only(top: 15),
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.grey.withOpacity(0.5), // Color of the shadow
+                        spreadRadius: 2, // Spread radius
+                        blurRadius: 4, // Blur radius
+                        offset: const Offset(0, 3), // Shadow offset
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(isActive ? "active" : "inactive"),
+                      CupertinoSwitch(
+                        // thumb color (round icon)
+                        activeColor: ColorManager.primary,
+                        thumbColor: Colors.white,
+                        trackColor: isActive == true
+                            ? ColorManager.primary
+                            : Colors.grey,
+                        value: isActive,
+                        // changes the state of the switch
+                        onChanged: (v) {
+                          if (v) {
+                            Utils.toastBar(
+                              "Activated",
+                              Colors.greenAccent,
+                            ).show(context);
+                          } else {
+                            Utils.toastBar(
+                              "Inactivated",
+                              Colors.redAccent,
+                            ).show(context);
+                          }
+                          setState(() {
+                            isActive = v;
+                          });
+                        },
+                      ),
+                      Text((isAdmin ?? widget.agent.staff)
+                          ? "Admin"
+                          : "Not admin"),
+                      CupertinoSwitch(
+                        // thumb color (round icon)
+                        activeColor: ColorManager.primary,
+                        thumbColor: Colors.white,
+                        trackColor: isAdmin == true
+                            ? ColorManager.primary
+                            : Colors.grey,
+                        value: isAdmin ?? widget.agent.staff,
+                        // changes the state of the switch
+                        onChanged: (v) {
+                          ControlPanelService.switchAdminAccess(
+                            v,
+                            widget.agent.id,
+                          );
+                          if (v) {
+                            Utils.toastBar(
+                              "Admin access added",
+                              Colors.greenAccent,
+                            ).show(context);
+                          } else {
+                            Utils.toastBar(
+                              "Admin access removed",
+                              Colors.redAccent,
+                            ).show(context);
+                          }
+                          setState(() {
+                            isAdmin = v;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      )),
+    );
+  }
+
+  Widget _buildTile(
+    String label,
+    String value,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(top: 15),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5), // Color of the shadow
+            spreadRadius: 2, // Spread radius
+            blurRadius: 4, // Blur radius
+            offset: const Offset(0, 3), // Shadow offset
+          ),
+        ],
+      ),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 15,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

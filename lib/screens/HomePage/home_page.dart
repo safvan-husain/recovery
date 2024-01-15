@@ -210,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:
-                                                BorderRadius.circular(10),
+                                                BorderRadius.circular(5),
                                             boxShadow: [
                                               BoxShadow(
                                                 color: Colors.grey.withOpacity(
@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
                                                 borderRadius:
-                                                    BorderRadius.circular(10),
+                                                    BorderRadius.circular(5),
                                                 boxShadow: [
                                                   BoxShadow(
                                                     color: Colors.grey.withOpacity(
@@ -302,13 +302,13 @@ class _HomePageState extends State<HomePage> {
                                 Row(
                                   children: [
                                     Container(
-                                      margin: state.user!.isStaff
-                                          ? EdgeInsets.only(right: 10)
-                                          : null,
+                                      // margin: EdgeInsets.only(
+                                      //     right: state.user!.isStaff ? 10 : 0.0,
+                                      //     top: 5),
                                       height: 80,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(5),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.grey.withOpacity(
@@ -340,38 +340,39 @@ class _HomePageState extends State<HomePage> {
                                         ],
                                       ),
                                     ),
-                                    if (state.user!.isStaff)
-                                      Container(
-                                          height: 80,
-                                          margin: EdgeInsets.only(left: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey.withOpacity(
-                                                    0.5), // Color of the shadow
-                                                spreadRadius:
-                                                    2, // Spread radius
-                                                blurRadius: 4, // Blur radius
-                                                offset: const Offset(
-                                                    0, 3), // Shadow offset
-                                              ),
-                                            ],
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Icon(FontAwesomeIcons.car),
-                                              Text(
-                                                "Vehicle Confirmed",
-                                                style: GoogleFonts.poppins(),
-                                              ),
-                                            ],
-                                          )),
+                                    // if (state.user!.isStaff)
+                                    //   Container(
+                                    //       height: 80,
+                                    //       margin:
+                                    //           EdgeInsets.only(left: 10, top: 5),
+                                    //       decoration: BoxDecoration(
+                                    //         color: Colors.white,
+                                    //         borderRadius:
+                                    //             BorderRadius.circular(5),
+                                    //         boxShadow: [
+                                    //           BoxShadow(
+                                    //             color: Colors.grey.withOpacity(
+                                    //                 0.5), // Color of the shadow
+                                    //             spreadRadius:
+                                    //                 2, // Spread radius
+                                    //             blurRadius: 4, // Blur radius
+                                    //             offset: const Offset(
+                                    //                 0, 3), // Shadow offset
+                                    //           ),
+                                    //         ],
+                                    //       ),
+                                    //       alignment: Alignment.center,
+                                    //       child: Column(
+                                    //         mainAxisAlignment:
+                                    //             MainAxisAlignment.spaceEvenly,
+                                    //         children: [
+                                    //           Icon(FontAwesomeIcons.car),
+                                    //           Text(
+                                    //             "Vehicle Confirmed",
+                                    //             style: GoogleFonts.poppins(),
+                                    //           ),
+                                    //         ],
+                                    //       )),
                                   ].map((e) => Expanded(child: e)).toList(),
                                 ),
                               ]

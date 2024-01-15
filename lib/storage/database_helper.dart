@@ -74,7 +74,11 @@ class DatabaseHelper {
       {
         charColum: char,
         'children': '{}',
-        'og': og == null ? "{}" : jsonEncode({og: rowId})
+        'og': og == null
+            ? "{}"
+            : jsonEncode({
+                og: [rowId]
+              })
       },
     );
     return id;
@@ -95,15 +99,12 @@ class DatabaseHelper {
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
-      await _inseartString(res.$2, rowId, s);
+      await _inseartString(res.$2, rowId, s, true);
     }
   }
 
   static Future<void> _inseartString(
-    String word,
-    int rowId,
-    String og,
-  ) async {
+      String word, int rowId, String og, bool isStaff) async {
     Node? node;
     int nodeId = 1;
     Map<String, dynamic> children = {};
@@ -117,12 +118,19 @@ class DatabaseHelper {
         nodeId = children[charecter];
         if (isLastChar) {
           node = await _getNode(nodeId);
-          Map<String, int> ogs = {};
+          Map<String, List<int>> ogs = {};
           ogs = node.og;
           if (!ogs.entries.map((e) => e.key).contains(og)) {
-            ogs[og] = rowId;
+            ogs[og] = [rowId];
             await _database.update(trie, {'og': jsonEncode(ogs)},
                 where: 'id = ?', whereArgs: [node.dbId]);
+          } else {
+            if (isStaff) {
+              List<int> rowIds = {...ogs[og]!, rowId}.toList();
+              ogs[og] = rowIds;
+              await _database.update(trie, {'og': jsonEncode(ogs)},
+                  where: 'id = ?', whereArgs: [node.dbId]);
+            }
           }
         }
       } else {
@@ -199,11 +207,50 @@ class DatabaseHelper {
       if (node.og.isNotEmpty) {
         for (var element in node.og.entries) {
           results
-              .add(SearchResultItem(item: element.key, rowId: element.value));
+              .add(SearchResultItem(item: element.key, rowIds: element.value));
         }
       }
     }
   }
+
+  static Future<List<String>> getBranches(List<int> rowIds) async {
+    print(rowIds);
+    List<String> branches = [];
+    for (var element in rowIds) {
+      try {
+        var rows = await _database
+            .query(jsonStore, where: 'id = ?', whereArgs: [element]);
+        var tites = await _database
+            .query(jsonStore, where: 'id = ?', whereArgs: [rows[0]['titleId']]);
+        var mapDetails = getObject(rows[0]['json_string'] as String,
+            tites[0]['json_string'] as String);
+        if (mapDetails.containsKey('BRANCH')) {
+          branches.add(mapDetails['BRANCH']!);
+        }
+      } catch (e) {
+        print(e);
+        rethrow;
+      }
+    }
+    // return [];
+    return branches.toSet().toList();
+  }
+}
+
+Map<String, String> getObject(String rowValues, String titles) {
+  List<dynamic> rowMapDynamic = jsonDecode(rowValues);
+  List<String> rowMap = rowMapDynamic.map((e) => e.toString()).toList();
+
+  List<dynamic> titleMapDynamic = jsonDecode(titles);
+  List<String> titleMap = titleMapDynamic.map((e) => e.toString()).toList();
+  Map<String, String> result = {};
+  for (var i = 0; i < titleMap.length; i++) {
+    var title = titleMap[i];
+    String value = rowMap[i];
+    result[title] = value;
+  }
+
+  return result;
 }
 
 void redLog(String s) {

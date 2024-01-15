@@ -316,10 +316,11 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
         onSubmit: (v) {
           if (v == otp) {
             if (user != null) {
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const BottomNavigation()),
+                (s) => false,
               );
               showSnackbar(
                   "Welcome back ${user!.agent_name}", context, Icons.warning);

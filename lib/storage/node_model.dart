@@ -5,7 +5,7 @@ class Node {
   final String charecter;
   final int dbId;
   final Map<String, int> children;
-  final Map<String, int> og;
+  final Map<String, List<int>> og;
   Node({
     required this.charecter,
     required this.dbId,
@@ -26,8 +26,17 @@ class Node {
     return Node(
       charecter: map['charecter'] ?? "",
       dbId: map['id'] as int,
-      og: Map<String, dynamic>.from(jsonDecode(map['og']))
-          .map((key, value) => MapEntry(key, value as int)),
+      og: Map<String, dynamic>.from(jsonDecode(map['og'])).map(
+        (key, value) {
+          if (value is List && value.every((element) => element is int)) {
+            return MapEntry(key, value.cast<int>());
+          } else {
+            throw FormatException('Expected a List<int> but got $value');
+          }
+        },
+      ),
+      // og: Map<String, dynamic>.from(jsonDecode(map['og'])).map(
+      //     (key, value) => MapEntry(key, value.map((e) => e as int).toList())),
       children: Map<String, dynamic>.from(jsonDecode(map['children']))
           .map((key, value) => MapEntry(key, value as int)),
     );
@@ -42,11 +51,11 @@ class Node {
 class SearchResultItem {
   final String item;
   // final Node node;
-  final int rowId;
+  final List<int> rowIds;
 
   SearchResultItem({
     required this.item,
     // required this.node,
-    required this.rowId,
+    required this.rowIds,
   });
 }

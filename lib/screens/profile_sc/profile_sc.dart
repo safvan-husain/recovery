@@ -78,6 +78,7 @@ class _ProfileScViewState extends State<ProfileScView>
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
         // leading: const BackButton(),
         centerTitle: true,
@@ -223,24 +224,38 @@ class _ProfileScViewState extends State<ProfileScView>
   List<Widget> get formAndButtons => [
         Column(
           children: [
-            _buildPhoneInputFieald(
-                controller: _mobNoController,
-                value: context.read<HomeCubit>().state.user!.number),
+            // _buildPhoneInputFieald(
+            //     controller: _mobNoController,
+            //     value: context.read<HomeCubit>().state.user!.number),
+            _inputFieald(
+              controller: _mobNoController,
+              icon: const Padding(
+                padding: EdgeInsets.only(
+                  top: 15,
+                  left: 10,
+                  bottom: 8.0,
+                  right: 10,
+                ),
+                child: Text("🇮🇳  IN  +91"),
+              ),
+              label: 'Phone Number',
+              value: '1234',
+            ),
             _inputFieald(
               controller: _nameController,
-              icon: Icons.mail_outline,
+              icon: Icon(Icons.mail_outline),
               label: 'Full Name',
               value: context.read<HomeCubit>().state.user!.agent_name,
             ),
             _inputFieald(
               controller: _emailController,
-              icon: Icons.mail_outline,
+              icon: Icon(Icons.mail_outline),
               label: 'Email ID',
               value: context.read<HomeCubit>().state.user!.email,
             ),
             _inputFieald(
               controller: _addressController,
-              icon: FontAwesomeIcons.addressCard,
+              icon: Icon(FontAwesomeIcons.addressCard),
               label: 'Address',
               value: context.read<HomeCubit>().state.user!.address,
             ),
@@ -360,6 +375,7 @@ class _ProfileScViewState extends State<ProfileScView>
       ];
 
   PreferredSize _profilePictureSection(BuildContext context) {
+    log(imageUrl ?? "no image");
     return PreferredSize(
         preferredSize: const Size.fromHeight(150),
         child: Column(
@@ -371,10 +387,11 @@ class _ProfileScViewState extends State<ProfileScView>
                 children: [
                   CircleAvatar(
                       minRadius: 50,
-                      backgroundImage: NetworkImage(
-                        imageUrl ??
-                            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60",
-                      )),
+                      backgroundImage: imageUrl == null
+                          ? Image.asset('assets/icons/user.png').image
+                          : NetworkImage(
+                              imageUrl!,
+                            )),
                   if (isEditting)
                     Positioned(
                       bottom: 10,
@@ -540,31 +557,37 @@ class _ProfileScViewState extends State<ProfileScView>
   Widget _inputFieald({
     required TextEditingController controller,
     required String label,
-    required IconData icon,
+    required Widget icon,
     required String value,
   }) {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: 200),
       child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-          ),
+          height: 60,
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.blue, width: 1.0)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5), // Color of the shadow
+                spreadRadius: 1, // Spread radius
+                blurRadius: 4, // Blur radius
+                // offset: const Offset(0, 1), // Shadow offset
+              ),
+            ],
+          ),
+          alignment: Alignment.center,
+          margin: const EdgeInsets.all(10),
           child: TextFormField(
             autofocus: true,
             maxLines: null,
             enabled: isEditting,
             controller: controller,
-            style: GoogleFonts.poppins(color: Colors.black),
+            style: GoogleFonts.poppins(color: Colors.black, fontSize: 16),
             decoration: InputDecoration(
               labelText: label,
               suffixIcon: isEditting ? const Icon(Icons.edit) : null,
-              prefixIcon: Icon(icon),
+              prefixIcon: icon,
               labelStyle: const TextStyle(
                 color: Color(0xff23202a),
                 fontSize: 16,
@@ -580,26 +603,39 @@ class _ProfileScViewState extends State<ProfileScView>
     required String value,
   }) {
     return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-        ),
+        height: 60,
         decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.blue, width: 1.0)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5), // Color of the shadow
+              spreadRadius: 1, // Spread radius
+              blurRadius: 4, // Blur radius
+              // offset: const Offset(0, 1), // Shadow offset
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: TextField(
           focusNode: focusNode,
           enabled: isEditting,
           keyboardType: TextInputType.phone,
           inputFormatters: [LengthLimitingTextInputFormatter(10)],
-          style: GoogleFonts.poppins(color: Colors.black),
+          style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
           decoration: InputDecoration(
+            hintText: "Phone",
             suffixIcon: isEditting ? const Icon(Icons.edit) : null,
             border: InputBorder.none,
-            hintText: "phone",
-            hintStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
+            labelStyle: const TextStyle(
+              color: Color(0xff23202a),
+              fontSize: 16,
+            ),
+            // hintText: "phone",
+            // hintStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
+            // prefixIconConstraints: BoxConstraints(minWidth: 80),
             prefixIcon: const Padding(
               padding: EdgeInsets.only(
                 top: 15,

@@ -19,6 +19,7 @@ class _SettingsScViewState extends State<SettingsScView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
         leading: const BackButton(),
         centerTitle: true,

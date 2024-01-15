@@ -34,9 +34,12 @@ class AuthServices {
         await Storage.storeUser(user);
         if (context.mounted) {
           context.read<HomeCubit>().setUser(user);
-          Navigator.push(
+          Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const BottomNavigation()),
+            MaterialPageRoute(
+              builder: (context) => const BottomNavigation(),
+            ),
+            (s) => false,
           );
         }
       } else {

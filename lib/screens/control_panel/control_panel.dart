@@ -2,9 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path/path.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/screens/control_panel/widgets/app_users_screen.dart';
+import 'package:recovery_app/screens/control_panel/widgets/blocklist_screen.dart';
+import 'package:recovery_app/screens/control_panel/widgets/finances_screen.dart';
 
 import '../../resources/color_manager.dart';
 
@@ -19,6 +23,7 @@ class _ControlPanelScreenState extends State<ControlPanelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
         leading: const BackButton(),
         centerTitle: true,
@@ -29,9 +34,9 @@ class _ControlPanelScreenState extends State<ControlPanelScreen> {
           statusBarBrightness: Brightness.light,
           statusBarIconBrightness: Brightness.light,
         ),
-        title: const Text(
-          "Settings",
-          style: TextStyle(
+        title: Text(
+          "Control Panel",
+          style: GoogleFonts.poppins(
               color: Colors.white, fontWeight: FontWeight.w500, fontSize: 25),
         ),
       ),
@@ -39,69 +44,42 @@ class _ControlPanelScreenState extends State<ControlPanelScreen> {
         child: Container(
           margin: const EdgeInsets.all(20),
           child: Column(
-            children: [
-              _getRowUOS(
-                  value: context.watch<HomeCubit>().state.isTwoColumnSearch,
-                  ctx: context),
-              Divider(
-                color: Colors.grey[300],
-              ),
-              InkWell(
+            children: insertBetweenAll(
+              [
+                _buildListTile(
+                  title: "App Users",
+                  icon: FontAwesomeIcons.users,
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor:
-                              const Color.fromARGB(255, 242, 244, 255),
-                          title: const Text('Confirm Delete'),
-                          content:
-                              const Text('Are you sure you want to delete?'),
-                          actions: <Widget>[
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white),
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white),
-                              child: Text(
-                                'Delete',
-                                style: GoogleFonts.poppins(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              onPressed: () {
-                                context.read<HomeCubit>().deleteAllData();
-                                // Perform delete operation here
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (c) => const AppUsersScreen()),
                     );
                   },
-                  child: _getRow(title: "Delete all data")),
+                ),
+                _buildListTile(
+                  title: "Finance",
+                  icon: FontAwesomeIcons.buildingColumns,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (c) => const FinancesScreen()),
+                    );
+                  },
+                ),
+                _buildListTile(
+                  title: "Blacklist",
+                  icon: FontAwesomeIcons.ban,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (c) => const BlockListScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
               Divider(
                 color: Colors.grey[300],
               ),
-              _getRow(
-                title: "Terms and Conditions",
-                icon: Icons.arrow_forward_ios,
-              ),
-              InkWell(
-                onTap: () {},
-                child: _getRow(
-                  title: "Privacy Policy",
-                  icon: Icons.arrow_forward_ios,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -132,24 +110,47 @@ class _ControlPanelScreenState extends State<ControlPanelScreen> {
     );
   }
 
-  Widget _getRow({required String title, IconData? icon}) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          Icon(
-            icon ?? Icons.delete,
-            color: icon == null ? Colors.red : Colors.black,
-          )
-        ],
+  Widget _buildListTile({
+    required String title,
+    required IconData icon,
+    required void Function() onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Icon(icon),
+            ),
+            Text(
+              title,
+              style: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            const Spacer(),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.blue,
+            )
+          ],
+        ),
       ),
     );
   }
+}
+
+List<Widget> insertBetweenAll(List<Widget> list, Widget itemToInsert) {
+  List<Widget> newList = [];
+  for (int i = 0; i < list.length; i++) {
+    newList.add(list[i]);
+    if (i != list.length - 1) {
+      // Don't add itemToInsert after the last item
+      newList.add(itemToInsert);
+    }
+  }
+  return newList;
 }

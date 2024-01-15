@@ -263,7 +263,10 @@ class SearchScreen1State extends State<SearchScreen1> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (c) => ItemScreen(
-              rowId: items[index].rowId,
+              rowId: items[index].rowIds[0],
+              rowIds: context.read<HomeCubit>().state.user!.isStaff
+                  ? items[index].rowIds
+                  : null,
               heroTag: items[index].item.toUpperCase(),
             ),
           ),
