@@ -102,7 +102,7 @@ class DatabaseHelper {
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
-     await  _inseartString(res.$2, rowId, s, true);
+      _inseartString(res.$2, rowId, s, true);
     }
   }
 
@@ -125,13 +125,13 @@ class DatabaseHelper {
           ogs = node.og;
           if (!ogs.entries.map((e) => e.key).contains(og)) {
             ogs[og] = [rowId];
-            await _database.update(trie, {'og': jsonEncode(ogs)},
+            _database.update(trie, {'og': jsonEncode(ogs)},
                 where: 'id = ?', whereArgs: [node.dbId]);
           } else {
             if (isStaff) {
               List<int> rowIds = {...ogs[og]!, rowId}.toList();
               ogs[og] = rowIds;
-              await _database.update(trie, {'og': jsonEncode(ogs)},
+              _database.update(trie, {'og': jsonEncode(ogs)},
                   where: 'id = ?', whereArgs: [node.dbId]);
             }
           }
@@ -139,14 +139,17 @@ class DatabaseHelper {
       } else {
         late int newNodeId;
         if (isLastChar) {
-          newNodeId = await _createNode(charecter, rowId, og);
+          // saving time of execution, doesn't need new id becuse this is the last in the word.
+          _createNode(charecter, rowId, og).then((newNodeId) {
+            children[charecter] = newNodeId;
+            _updateNode(nodeId, jsonEncode(children));
+          });
         } else {
           newNodeId = await _createNode(charecter);
+          children[charecter] = newNodeId;
+          _updateNode(nodeId, jsonEncode(children));
+          nodeId = newNodeId;
         }
-
-        children[charecter] = newNodeId;
-        await _updateNode(nodeId, jsonEncode(children));
-        nodeId = newNodeId;
       }
     }
   }
