@@ -17,7 +17,11 @@ class CsvFileServices {
   ]) async {
     int count = 0;
     streamController.sink.add(null);
-    List<String> titleList = ['veh_no', 'REGDNUM', 'vehicle Number'];
+    List<String> titleList = [
+      'veh_no',
+      'REGDNUM',
+      'vehicle Number'
+    ]; //supported titles.
     var files = csvFiles ?? await getExcelFiles();
     for (var i = 0; i < files.length; i++) {
       streamController.sink.add(
@@ -46,6 +50,7 @@ class CsvFileServices {
             for (var title in titleList) {
               if (titles.contains(title.toLowerCase())) {
                 vehicalNumbrColumIndex = titles.indexOf(title.toLowerCase());
+                items.add(basenameWithoutExtension(file.path));
                 titleDBId = await DatabaseHelper.inseartTitles(items);
                 found = true;
                 break;

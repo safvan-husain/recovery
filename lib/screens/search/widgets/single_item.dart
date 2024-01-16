@@ -35,6 +35,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
   @override
   void initState() {
     ftutureDetails = DatabaseHelper.getDetails(widget.rowId);
+    DatabaseHelper.getDetails(widget.rowId);
     super.initState();
   }
 
@@ -80,6 +81,13 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                               children: snp.data!.entries
                                   .where((element) =>
                                       element.value.toString().isNotEmpty)
+                                  .map((e) {
+                                    if (e.key == "File name") {
+                                      return MapEntry("File name",
+                                          e.value.split('______').first);
+                                    }
+                                    return e;
+                                  })
                                   .map((e) => Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Row(

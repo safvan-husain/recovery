@@ -90,7 +90,10 @@ class DatabaseHelper {
   }
 
   static Future<void> inseartRow(
-      List<String> row, int titlesId, int vehicalNumbrColumIndex) async {
+    List<String> row,
+    int titlesId,
+    int vehicalNumbrColumIndex,
+  ) async {
     int rowId = await _database.insert(
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
     var s = Utils.removeHyphens(row.elementAt(vehicalNumbrColumIndex));
@@ -99,7 +102,7 @@ class DatabaseHelper {
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
-      await _inseartString(res.$2, rowId, s, true);
+     await  _inseartString(res.$2, rowId, s, true);
     }
   }
 
@@ -164,8 +167,11 @@ class DatabaseHelper {
                 .map((e) => e as String)
                 .toList();
         Map<String, String> output = {};
-        for (var i = 0; i < t.length; i++) {
+        for (var i = 0; i < s.length; i++) {
           output[t[i]] = s[i];
+        }
+        if (t.length > s.length) {
+          output["File name"] = t.last;
         }
         return output;
       }
@@ -244,10 +250,13 @@ Map<String, String> getObject(String rowValues, String titles) {
   List<dynamic> titleMapDynamic = jsonDecode(titles);
   List<String> titleMap = titleMapDynamic.map((e) => e.toString()).toList();
   Map<String, String> result = {};
-  for (var i = 0; i < titleMap.length; i++) {
+  for (var i = 0; i < rowMap.length; i++) {
     var title = titleMap[i];
     String value = rowMap[i];
     result[title] = value;
+  }
+  if (rowMap.length < titleMap.length) {
+    result['File name'] = titleMap.last;
   }
 
   return result;
