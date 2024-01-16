@@ -37,17 +37,41 @@ class DatabaseHelper {
     await _database.delete(trie);
   }
 
-  static Future<Node> _getNode(int id) async {
-    var nodeList = await _database.query(
+  static Future<Node> _getNode(
+    int id,
+    Transaction? txn,
+  ) async {
+    if (txn == null) {
+      var nodeList = await _database.query(
+        trie,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      if (nodeList.isEmpty) {
+        if (id == 1) {
+          await _database
+              .insert(trie, {charColum: 'root', 'children': '{}', 'og': '{}'});
+          nodeList = await _database.query(
+            trie,
+            where: '$charColum = ?',
+            whereArgs: ['root'],
+          );
+        } else {
+          throw ("no node with $id");
+        }
+      }
+      return Node.fromMap(nodeList[0]);
+    }
+    var nodeList = await txn.query(
       trie,
       where: 'id = ?',
       whereArgs: [id],
     );
     if (nodeList.isEmpty) {
       if (id == 1) {
-        await _database
+        await txn
             .insert(trie, {charColum: 'root', 'children': '{}', 'og': '{}'});
-        nodeList = await _database.query(
+        nodeList = await txn.query(
           trie,
           where: '$charColum = ?',
           whereArgs: ['root'],
@@ -59,8 +83,12 @@ class DatabaseHelper {
     return Node.fromMap(nodeList[0]);
   }
 
-  static Future<void> _updateNode(int id, String children) async {
-    await _database.update(
+  static Future<void> _updateNode(
+    int id,
+    String children,
+    Transaction txn,
+  ) async {
+    await txn.update(
       trie,
       {'children': children},
       where: 'id = ?',
@@ -68,8 +96,13 @@ class DatabaseHelper {
     );
   }
 
-  static Future<int> _createNode(String char, [int? rowId, String? og]) async {
-    var id = await _database.insert(
+  static Future<int> _createNode(
+    String char,
+    Transaction txn, [
+    int? rowId,
+    String? og,
+  ]) async {
+    return await txn.insert(
       trie,
       {
         charColum: char,
@@ -81,7 +114,6 @@ class DatabaseHelper {
               })
       },
     );
-    return id;
   }
 
   static Future<int> inseartTitles(List<String> titles) async {
@@ -102,12 +134,44 @@ class DatabaseHelper {
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
-      _inseartString(res.$2, rowId, s, true);
+      // Instead of inserting immediately, accumulate the data
+      // vehicleNumbersToInsert.add({charColum: res.$2, 'rowId': rowId, 'og': s});
+      await _database.transaction((txn) async {
+        var batch = txn.batch();
+        await _inseartString(txn, res.$2, rowId, s, true);
+        await batch.commit();
+      });
+      log("transaction completed");
     }
+    // bulkInsertVehicleNumbers();
   }
 
+  static List<Map<String, dynamic>> vehicleNumbersToInsert = [];
+
+  // static Future<void> bulkInsertVehicleNumbers() async {
+  //   // Begin a transaction
+  //   await _database.transaction((txn) async {
+  //     for (var vehicleNumberData in vehicleNumbersToInsert) {
+  //       await _inseartString(
+  //         txn,
+  //         vehicleNumberData[charColum],
+  //         vehicleNumberData['rowId'],
+  //         vehicleNumberData['og'],
+  //         true,
+  //       );
+  //     }
+  //   });
+  //   // Clear the list after successful insertion
+  //   vehicleNumbersToInsert.clear();
+  // }
+
   static Future<void> _inseartString(
-      String word, int rowId, String og, bool isStaff) async {
+    Transaction txn,
+    String word,
+    int rowId,
+    String og,
+    bool isStaff,
+  ) async {
     Node? node;
     int nodeId = 1;
     Map<String, dynamic> children = {};
@@ -115,23 +179,25 @@ class DatabaseHelper {
     for (var i = 0; i < word.length; i++) {
       var charecter = word[i];
       bool isLastChar = i == word.length - 1;
-      node = await _getNode(nodeId);
+      node = await _getNode(nodeId, txn);
+      // print(node.charecter);
+      // print(node.children);
       children = node.children;
       if (children.containsKey(charecter)) {
         nodeId = children[charecter];
         if (isLastChar) {
-          node = await _getNode(nodeId);
+          node = await _getNode(nodeId, txn);
           Map<String, List<int>> ogs = {};
           ogs = node.og;
           if (!ogs.entries.map((e) => e.key).contains(og)) {
             ogs[og] = [rowId];
-            _database.update(trie, {'og': jsonEncode(ogs)},
+            await txn.update(trie, {'og': jsonEncode(ogs)},
                 where: 'id = ?', whereArgs: [node.dbId]);
           } else {
             if (isStaff) {
               List<int> rowIds = {...ogs[og]!, rowId}.toList();
               ogs[og] = rowIds;
-              _database.update(trie, {'og': jsonEncode(ogs)},
+              await txn.update(trie, {'og': jsonEncode(ogs)},
                   where: 'id = ?', whereArgs: [node.dbId]);
             }
           }
@@ -140,16 +206,13 @@ class DatabaseHelper {
         late int newNodeId;
         if (isLastChar) {
           // saving time of execution, doesn't need new id becuse this is the last in the word.
-          _createNode(charecter, rowId, og).then((newNodeId) {
-            children[charecter] = newNodeId;
-            _updateNode(nodeId, jsonEncode(children));
-          });
+          newNodeId = await _createNode(charecter, txn, rowId, og);
         } else {
-          newNodeId = await _createNode(charecter);
-          children[charecter] = newNodeId;
-          _updateNode(nodeId, jsonEncode(children));
-          nodeId = newNodeId;
+          newNodeId = await _createNode(charecter, txn);
         }
+        children[charecter] = newNodeId;
+        await _updateNode(nodeId, jsonEncode(children), txn);
+        nodeId = newNodeId;
       }
     }
   }
@@ -186,16 +249,23 @@ class DatabaseHelper {
     log(prefix);
     List<SearchResultItem> results = [];
     int nodeId = 1; // Assuming the root node has id 1
+    // await _database.transaction((txn) async {
+    //   var batch = txn.batch();
+    //   await _inseartString(txn, res.$2, rowId, s, true);
+    //   await batch.commit();
+    // });
     for (var i = 0; i < prefix.length; i++) {
       var character = prefix[i];
-      var node = await _getNode(nodeId);
-      // print(node.children);
+      var node = await _getNode(nodeId, null);
+      print(node.charecter);
+      print(node.children);
       var children = node.children;
       if (!children.containsKey(character)) {
         return [];
       }
       nodeId = children[character]!;
     }
+
     // Now we have the node corresponding to the last character of the prefix
     // We need to collect all words that start with this prefix
     await _collectWords(nodeId, prefix, results);
@@ -205,7 +275,7 @@ class DatabaseHelper {
 
   static Future<void> _collectWords(
       int nodeId, String prefix, List<SearchResultItem> results) async {
-    var node = await _getNode(nodeId);
+    var node = await _getNode(nodeId, null);
     var children = node.children;
     if (children.isNotEmpty) {
       for (var childCharacter in children.keys) {
