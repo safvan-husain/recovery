@@ -148,22 +148,22 @@ class DatabaseHelper {
 
   static List<Map<String, dynamic>> vehicleNumbersToInsert = [];
 
-  // static Future<void> bulkInsertVehicleNumbers() async {
-  //   // Begin a transaction
-  //   await _database.transaction((txn) async {
-  //     for (var vehicleNumberData in vehicleNumbersToInsert) {
-  //       await _inseartString(
-  //         txn,
-  //         vehicleNumberData[charColum],
-  //         vehicleNumberData['rowId'],
-  //         vehicleNumberData['og'],
-  //         true,
-  //       );
-  //     }
-  //   });
-  //   // Clear the list after successful insertion
-  //   vehicleNumbersToInsert.clear();
-  // }
+  static Future<void> bulkInsertVehicleNumbers() async {
+    // Begin a transaction
+    await _database.transaction((txn) async {
+      for (var vehicleNumberData in vehicleNumbersToInsert) {
+        await _inseartString(
+          txn,
+          vehicleNumberData[charColum],
+          vehicleNumberData['rowId'],
+          vehicleNumberData['og'],
+          true,
+        );
+      }
+    });
+    // Clear the list after successful insertion
+    vehicleNumbersToInsert.clear();
+  }
 
   static Future<void> _inseartString(
     Transaction txn,
@@ -249,38 +249,40 @@ class DatabaseHelper {
     log(prefix);
     List<SearchResultItem> results = [];
     int nodeId = 1; // Assuming the root node has id 1
-    // await _database.transaction((txn) async {
-    //   var batch = txn.batch();
-    //   await _inseartString(txn, res.$2, rowId, s, true);
-    //   await batch.commit();
-    // });
-    for (var i = 0; i < prefix.length; i++) {
-      var character = prefix[i];
-      var node = await _getNode(nodeId, null);
-      print(node.charecter);
-      print(node.children);
-      var children = node.children;
-      if (!children.containsKey(character)) {
-        return [];
+    await _database.transaction((txn) async {
+      var batch = txn.batch();
+      for (var i = 0; i < prefix.length; i++) {
+        var character = prefix[i];
+        var node = await _getNode(nodeId, txn);
+        var children = node.children;
+        if (!children.containsKey(character)) {
+          return [];
+        }
+        nodeId = children[character]!;
       }
-      nodeId = children[character]!;
-    }
 
-    // Now we have the node corresponding to the last character of the prefix
-    // We need to collect all words that start with this prefix
-    await _collectWords(nodeId, prefix, results);
+      // Now we have the node corresponding to the last character of the prefix
+      // We need to collect all words that start with this prefix
+      await _collectWords(nodeId, prefix, results, txn);
+      await batch.commit();
+    });
+
     // print(results.length);
     return results;
   }
 
   static Future<void> _collectWords(
-      int nodeId, String prefix, List<SearchResultItem> results) async {
-    var node = await _getNode(nodeId, null);
+    int nodeId,
+    String prefix,
+    List<SearchResultItem> results,
+    Transaction txn,
+  ) async {
+    var node = await _getNode(nodeId, txn);
     var children = node.children;
     if (children.isNotEmpty) {
       for (var childCharacter in children.keys) {
         await _collectWords(
-            children[childCharacter]!, prefix + childCharacter, results);
+            children[childCharacter]!, prefix + childCharacter, results, txn);
       }
     } else {
       if (node.og.isNotEmpty) {
