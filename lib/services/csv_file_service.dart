@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 import 'package:recovery_app/storage/user_storage.dart';
-import 'package:uuid/uuid.dart';
 
 class CsvFileServices {
   static Future<void> _proccessFiles(
@@ -24,6 +23,7 @@ class CsvFileServices {
     ]; //supported titles.
     var files = csvFiles ?? await getExcelFiles();
     for (var i = 0; i < files.length; i++) {
+      List<List<String>> rows = [];
       streamController.sink.add(
           {"processing": Utils.calculatePercentage(i, files.length).toInt()});
       var file = files[i];
@@ -61,8 +61,15 @@ class CsvFileServices {
             }
           } else {
             if (vehicalNumbrColumIndex != null) {
-              await DatabaseHelper.inseartRow(
-                  items, titleDBId, vehicalNumbrColumIndex);
+              if (rows.length < 302) {
+                rows.add(items);
+              } else {
+                await DatabaseHelper.bulkInsertVehicleNumbers(
+                    rows, titleDBId, vehicalNumbrColumIndex);
+                rows.clear();
+                rows.add(items);
+              }
+
               count++;
             } else {
               break;
@@ -72,6 +79,11 @@ class CsvFileServices {
           // Process your line here
           buffer = buffer.substring(lineEndIndex + 1);
         }
+      }
+      if (rows.isNotEmpty) {
+        await DatabaseHelper.bulkInsertVehicleNumbers(
+            rows, titleDBId!, vehicalNumbrColumIndex!);
+        rows.clear();
       }
     }
     streamController.sink.add(null);
@@ -85,6 +97,15 @@ class CsvFileServices {
   ) async {
     Dio dio = Dio();
 
+    dio.options.headers['Connection'] = 'keep-alive';
+    dio.options.headers['Accept-Encoding'] = 'gzip, deflate';
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest:
+          (RequestOptions options, RequestInterceptorHandler handler) async {
+        options.headers['Connection'] = 'keep-alive';
+        return handler.next(options); //continue
+      },
+    ));
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String savePath = '${appDocDir.path}/vehicle details/$fileName';
     await dio.download(url, savePath, onReceiveProgress: (i, x) {});
@@ -221,17 +242,5 @@ class CsvFileServices {
       print("No excel files found");
       return [];
     }
-  }
-
-  static Future<void> copyAssetToDocumentDir() async {
-    // Load the file from the assets folder
-    ByteData byteData = await rootBundle.load('assets/icons/x.csv');
-
-    // Create a new file in the documents directory
-    // File file = await _localFile;
-
-    // Write the contents of the loaded file to the new file
-    // await file.writeAsBytes(byteData.buffer
-    //     .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
   }
 }

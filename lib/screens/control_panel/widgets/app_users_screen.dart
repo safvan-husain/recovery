@@ -23,7 +23,8 @@ class _AppUsersScreenState extends State<AppUsersScreen> {
   late Future<List<Agent>> futureAgents;
   @override
   void initState() {
-    futureAgents = ControlPanelService.getAllUsers();
+    futureAgents = ControlPanelService.getAllUsers(
+        context.read<HomeCubit>().state.user!.agencyId);
     super.initState();
   }
 

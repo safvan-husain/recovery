@@ -121,12 +121,13 @@ class DatabaseHelper {
         .insert(jsonStore, {'json_string': jsonEncode(titles)});
   }
 
-  static Future<void> inseartRow(
+  static Future<void> _inseartRow(
     List<String> row,
     int titlesId,
     int vehicalNumbrColumIndex,
+    Transaction txn,
   ) async {
-    int rowId = await _database.insert(
+    int rowId = await txn.insert(
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
     var s = Utils.removeHyphens(row.elementAt(vehicalNumbrColumIndex));
 
@@ -134,35 +135,23 @@ class DatabaseHelper {
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
-      // Instead of inserting immediately, accumulate the data
-      // vehicleNumbersToInsert.add({charColum: res.$2, 'rowId': rowId, 'og': s});
-      await _database.transaction((txn) async {
-        var batch = txn.batch();
-        await _inseartString(txn, res.$2, rowId, s, true);
-        await batch.commit();
-      });
-      log("transaction completed");
+      await _inseartString(txn, res.$2, rowId, s, true);
     }
     // bulkInsertVehicleNumbers();
   }
 
   static List<Map<String, dynamic>> vehicleNumbersToInsert = [];
 
-  static Future<void> bulkInsertVehicleNumbers() async {
-    // Begin a transaction
+  static Future<void> bulkInsertVehicleNumbers(
+    List<List<String>> rows,
+    int titlesId,
+    int vehicalNumbrColumIndex,
+  ) async {
     await _database.transaction((txn) async {
-      for (var vehicleNumberData in vehicleNumbersToInsert) {
-        await _inseartString(
-          txn,
-          vehicleNumberData[charColum],
-          vehicleNumberData['rowId'],
-          vehicleNumberData['og'],
-          true,
-        );
+      for (var row in rows) {
+        await _inseartRow(row, titlesId, vehicalNumbrColumIndex, txn);
       }
     });
-    // Clear the list after successful insertion
-    vehicleNumbersToInsert.clear();
   }
 
   static Future<void> _inseartString(

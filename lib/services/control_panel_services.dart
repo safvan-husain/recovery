@@ -5,13 +5,16 @@ import 'package:dio/dio.dart';
 class ControlPanelService {
   static final Dio dio = Dio();
 
-  static Future<List<Agent>> getAllUsers() async {
+  static Future<List<Agent>> getAllUsers(String agencyId) async {
     var response = await dio.get(
       "https://www.recovery.starkinsolutions.com/alluser.php",
     );
     if (response.statusCode == 200) {
       List<dynamic> data = response.data;
-      List<Agent> agents = data.map((item) => Agent.fromJson(item)).toList();
+      List<Agent> agents = data
+          .where((element) => element['agency_id'] == agencyId)
+          .map((item) => Agent.fromJson(item))
+          .toList();
       return agents;
     } else {
       throw Exception('Failed to load users');
