@@ -18,9 +18,9 @@ class BottomNavigation extends StatefulWidget {
 class _BottomNavigationState extends State<BottomNavigation> {
   int _currentPageIndex = 0;
   List<Widget> pages = [
-    HomePage(),
-    SettingsScView(),
-    ProfileScView(),
+    const HomePage(),
+    const SettingsScView(),
+    const ProfileScView(),
   ];
   Map<String, IconData> navBarItems = {
     "Home": FontAwesomeIcons.house,
@@ -36,10 +36,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
         "Account": FontAwesomeIcons.user,
       };
       pages = [
-        HomePage(),
-        SettingsScView(),
-        ControlPanelScreen(),
-        ProfileScView(),
+        const HomePage(),
+        const SettingsScView(),
+        const ControlPanelScreen(),
+        const ProfileScView(),
       ];
       setState(() {});
     }
@@ -54,7 +54,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 242, 244, 255),
+      backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       body: pages.elementAt(_currentPageIndex),
       bottomNavigationBar: Container(
         height: 60,

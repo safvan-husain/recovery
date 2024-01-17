@@ -202,4 +202,32 @@ class AuthServices {
       print(e);
     }
   }
+
+  static void uploadProfilePicture(File picture, String email) async {
+    try {
+      FormData formData = FormData();
+
+      String adharFileName = picture.path.split('/').last;
+      formData.files.add(
+        MapEntry(
+          'image2', // Use a unique key for each image
+          await MultipartFile.fromFile(
+            picture.path,
+            filename: adharFileName,
+          ),
+        ),
+      );
+      formData.fields.add(MapEntry('email', email));
+
+      Response re = await dio.post(
+        'https://www.recovery.starkinsolutions.com/add_profile.php',
+        data: formData,
+        options: Options(
+          headers: {'Content-Type': 'multipart/form-data'},
+        ),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
 }

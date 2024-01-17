@@ -20,7 +20,7 @@ class SearchScreen1 extends StatefulWidget {
 
 class SearchScreen1State extends State<SearchScreen1> {
   late Future<List<String>> futureTitles;
-  bool _isSearchComplete = false;
+  bool _isSearchComplete = true;
   final TextEditingController _controller = TextEditingController();
   // final _streamController = StreamController<Map<String, dynamic>>();
 
@@ -200,14 +200,16 @@ class SearchScreen1State extends State<SearchScreen1> {
             const SizedBox(
               height: 10,
             ),
-            if (items.isEmpty && _controller.text.isNotEmpty) ...[
+            if (items.isEmpty &&
+                _controller.text.isNotEmpty &&
+                _isSearchComplete) ...[
               const SizedBox(
                 height: 100,
               ),
               Center(
                 child: Text("No search results for ${_controller.text}"),
               )
-            ] else
+            ] else if (_isSearchComplete)
               Container(
                 padding: EdgeInsets.all(10),
                 height: MediaQuery.of(context).size.height -
@@ -250,6 +252,12 @@ class SearchScreen1State extends State<SearchScreen1> {
                     return _itemListTile(context, index);
                   },
                 ),
+              )
+            else
+              Container(
+                height: 500,
+                alignment: Alignment.center,
+                child: const CircularProgressIndicator(),
               ),
           ],
         ),
@@ -272,19 +280,15 @@ class SearchScreen1State extends State<SearchScreen1> {
           ),
         );
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              items[index].item.toUpperCase(),
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+      child: Container(
+        alignment: Alignment.center,
+        // padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Text(
+          items[index].item.toUpperCase(),
+          style: GoogleFonts.poppins(
+            fontSize: 19,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

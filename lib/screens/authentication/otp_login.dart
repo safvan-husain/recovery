@@ -25,7 +25,7 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
   UserModel? user;
   var isCountComplete = false;
   AnimationController? _controller;
-  int levelClock = 10; // Set your countdown time here
+  int levelClock = 120; // Set your countdown time here
 
   void _startCountDown() {
     _controller = AnimationController(

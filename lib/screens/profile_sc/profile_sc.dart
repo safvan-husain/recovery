@@ -9,12 +9,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/assets_manager.dart';
-import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
-import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/screens/common_widgets/count_down_ui.dart';
 import 'package:recovery_app/services/auth_services.dart';
+import 'package:recovery_app/services/image_file_reciever.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
 import '../../resources/color_manager.dart';
@@ -78,9 +77,9 @@ class _ProfileScViewState extends State<ProfileScView>
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromARGB(255, 242, 244, 255),
+      backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
-        // leading: const BackButton(),
+        leading: const BackButton(),
         centerTitle: true,
         backgroundColor: ColorManager.primary,
         systemOverlayStyle: SystemUiOverlayStyle(
@@ -240,22 +239,23 @@ class _ProfileScViewState extends State<ProfileScView>
               ),
               label: 'Phone Number',
               value: '1234',
+              isPhone: true,
             ),
             _inputFieald(
               controller: _nameController,
-              icon: Icon(Icons.mail_outline),
+              icon: const Icon(Icons.mail_outline),
               label: 'Full Name',
               value: context.read<HomeCubit>().state.user!.agent_name,
             ),
             _inputFieald(
               controller: _emailController,
-              icon: Icon(Icons.mail_outline),
+              icon: const Icon(Icons.mail_outline),
               label: 'Email ID',
               value: context.read<HomeCubit>().state.user!.email,
             ),
             _inputFieald(
               controller: _addressController,
-              icon: Icon(FontAwesomeIcons.addressCard),
+              icon: const Icon(FontAwesomeIcons.addressCard),
               label: 'Address',
               value: context.read<HomeCubit>().state.user!.address,
             ),
@@ -439,8 +439,16 @@ class _ProfileScViewState extends State<ProfileScView>
 
   PopupMenuButton<int> _popUpOptions() {
     return PopupMenuButton<int>(
-      onSelected: (value) {
-        print(value);
+      onSelected: (value) async {
+        if (value == 2) {
+          var file = await ImageFile.pick(context);
+          if (file != null && context.mounted) {
+            AuthServices.uploadProfilePicture(
+              file,
+              context.read<HomeCubit>().state.user!.email,
+            );
+          }
+        }
       },
       itemBuilder: (BuildContext context) {
         return <PopupMenuItem<int>>[
@@ -455,8 +463,19 @@ class _ProfileScViewState extends State<ProfileScView>
                   const Text("Download id Card"),
                 ],
               )),
+          const PopupMenuItem(
+              value: 2,
+              child: Row(
+                children: [
+                  Icon(Icons.add_a_photo),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text("Upload profile picture"),
+                ],
+              )),
           PopupMenuItem(
-              value: 1,
+              value: 3,
               child: InkWell(
                 onTap: () {
                   Navigator.of(context).pop();
@@ -559,6 +578,7 @@ class _ProfileScViewState extends State<ProfileScView>
     required String label,
     required Widget icon,
     required String value,
+    bool isPhone = false,
   }) {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: 200),
@@ -582,6 +602,9 @@ class _ProfileScViewState extends State<ProfileScView>
             autofocus: true,
             maxLines: null,
             enabled: isEditting,
+            keyboardType: isPhone ? TextInputType.phone : null,
+            inputFormatters:
+                isPhone ? [LengthLimitingTextInputFormatter(10)] : null,
             controller: controller,
             style: GoogleFonts.poppins(color: Colors.black, fontSize: 16),
             decoration: InputDecoration(

@@ -1,9 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'package:http/http.dart' as http;
-import 'package:recovery_app/models/detail_model.dart';
 import 'package:dio/dio.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 

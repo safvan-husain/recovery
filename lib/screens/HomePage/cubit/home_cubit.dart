@@ -3,14 +3,11 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 
-import 'package:recovery_app/models/detail_model.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/home_service.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:convert';
 
 import 'package:recovery_app/storage/database_helper.dart';
 import 'package:recovery_app/storage/user_storage.dart';
@@ -45,7 +42,7 @@ class HomeCubit extends Cubit<HomeState> {
     log("agency id : ${state.user!.agencyId}"); //TODO: agencyid.
     String error = '';
     // try {
-    await CsvFileServices.updateData("2", state.streamController); 
+    await CsvFileServices.updateData("2", state.streamController);
     // } catch (e) {
     //   print(e);
     //   // error = e.toString();
