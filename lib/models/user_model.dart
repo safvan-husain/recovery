@@ -46,7 +46,8 @@ class UserModel {
     return UserModel(
       agent_name: map['details']['agent_name'] as String,
       number: map['phone'] as String,
-      email: '', // Add the correct key if email is present in the JSON
+      email: map['details']['email']
+          as String, // Add the correct key if email is present in the JSON
       address: map['details']['address'] as String,
       avatarUrl: map['details']['aadhaar_card'] as String,
       adharUrl: map['details']['aadhaar_card'] as String,

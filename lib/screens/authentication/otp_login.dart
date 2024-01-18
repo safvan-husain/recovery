@@ -33,9 +33,11 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
     _controller!.forward();
     _controller!.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        setState(() {
-          isCountComplete = true;
-        });
+        if (mounted) {
+          setState(() {
+            isCountComplete = true;
+          });
+        }
       }
     });
   }

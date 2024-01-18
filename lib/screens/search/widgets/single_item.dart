@@ -27,22 +27,51 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
   late final Future<Map<String, String>?> ftutureDetails;
 
   List<String> titles = [
-    "AGREEMENTNO",
-    "CUSTOMERNAME",
-    "CIF_NO",
-    "PRODUCT",
-    "PRODUCT GRP",
-    "SUB PRODUCT",
-    "SCHEME",
-    "ZONE",
-    "REGION",
-    "AREA",
-    "BRANCH",
-  ];
+    "VEHICAL NO",
+    "CHASSIS NO",
+    "MODEL/MAKE",
+    "ENGINE NO",
+    "AGREEMENT NO",
+    "CUSTOMER NAME",
+    "CUSTOMER ADDRESS",
+  ].map((e) => e.toLowerCase()).toList();
+
   @override
   void initState() {
     ftutureDetails = DatabaseHelper.getDetails(widget.rowId);
     DatabaseHelper.getDetails(widget.rowId);
+    if (context.read<HomeCubit>().state.user!.isStaff) {
+      titles.addAll(
+        [
+          "BUCKET",
+          "GV",
+          "OD REGION",
+          "AREA",
+          'BRANCH YEAR',
+          'LEVEL1 ',
+          'LEVEL 2',
+          'LEVEL 3',
+          'FINANCE',
+          'BRANCH',
+          'CONTACT 1',
+          'CONTACT 2',
+          'CONTACT 3 ',
+          'SEC9AVAILA',
+          'SEC17AVAILABLE',
+          'TBRFLAG',
+          'SEASONING',
+          "MAILID 1",
+          "MAILID2",
+          "EXECUTIVE NAME",
+          "POS",
+          "TOSS",
+          "CUSTOMER CONTACT NO",
+          " REMARK",
+          "UPLOADED ON",
+          'file name',
+        ].map((e) => e.toLowerCase()),
+      );
+    }
     super.initState();
   }
 
@@ -73,6 +102,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       );
                     }
                     vehicleDetails = snp.data!;
+                    // print(vehicleDetails);
                     return SingleChildScrollView(
                       child: Card(
                         child: Padding(

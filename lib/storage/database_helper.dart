@@ -229,12 +229,16 @@ class DatabaseHelper {
                 .map((e) => e as String)
                 .toList();
         Map<String, String> output = {};
-        for (var i = 0; i < s.length; i++) {
+        for (var i = 0; i < t.length; i++) {
           output[t[i]] = s[i];
+          if (i == t.length - 1) {
+            List<String> fileDetails = t.last.split('______');
+            output["file name"] = fileDetails[0];
+            output["finance"] = fileDetails[1];
+            output["branch"] = fileDetails[2];
+          }
         }
-        if (t.length > s.length) {
-          output["File name"] = t.last;
-        }
+
         return output;
       }
     }
@@ -295,15 +299,9 @@ class DatabaseHelper {
       try {
         var rows = await _database
             .query(jsonStore, where: 'id = ?', whereArgs: [element]);
-        var tites = await _database
-            .query(jsonStore, where: 'id = ?', whereArgs: [rows[0]['titleId']]);
-        var mapDetails = getObject(rows[0]['json_string'] as String,
-            tites[0]['json_string'] as String);
-        if (mapDetails.containsKey('BRANCH')) {
-          branches.add(mapDetails['BRANCH']!);
-        } else {
-          branches.add(null);
-        }
+        var list = jsonDecode(rows.last['json_string'] as String);
+        var branch = list.last.split('______')[1];
+        branches.add(branch);
       } catch (e) {
         print(e);
         rethrow;
@@ -312,6 +310,30 @@ class DatabaseHelper {
     // return [];
     return branches;
   }
+
+  // static Future<List<String?>> getBranches(List<int> rowIds) async {
+  //   List<String?> branches = [];
+  //   for (var element in rowIds) {
+  //     try {
+  //       var rows = await _database
+  //           .query(jsonStore, where: 'id = ?', whereArgs: [element]);
+  //       var tites = await _database
+  //           .query(jsonStore, where: 'id = ?', whereArgs: [rows[0]['titleId']]);
+  //       var mapDetails = getObject(rows[0]['json_string'] as String,
+  //           tites[0]['json_string'] as String);
+  //       if (mapDetails.containsKey('BRANCH')) {
+  //         branches.add(mapDetails['BRANCH']!);
+  //       } else {
+  //         branches.add(null);
+  //       }
+  //     } catch (e) {
+  //       print(e);
+  //       rethrow;
+  //     }
+  //   }
+  //   // return [];
+  //   return branches;
+  // }
 }
 
 Map<String, String> getObject(String rowValues, String titles) {

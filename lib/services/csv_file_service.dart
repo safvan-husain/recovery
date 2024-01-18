@@ -16,11 +16,7 @@ class CsvFileServices {
   ]) async {
     int count = 0;
     streamController.sink.add(null);
-    List<String> titleList = [
-      'veh_no',
-      'REGDNUM',
-      'vehicle Number'
-    ]; //supported titles.
+    List<String> titleList = ['VEHICAL NO']; //supported titles.
     var files = csvFiles ?? await getExcelFiles();
     for (var i = 0; i < files.length; i++) {
       List<List<String>> rows = [];
@@ -41,6 +37,7 @@ class CsvFileServices {
           var line = buffer.substring(0, lineEndIndex);
 
           var items = _splitStringIgnoringQuotes(line);
+          items.add(basenameWithoutExtension(file.path));
 
           if (!found) {
             //TODO: vehivle column title.
@@ -49,8 +46,6 @@ class CsvFileServices {
             for (var title in titleList) {
               if (titles.contains(title.toLowerCase())) {
                 vehicalNumbrColumIndex = titles.indexOf(title.toLowerCase());
-                items.add(basenameWithoutExtension(file.path));
-                // titleDBId = await DatabaseHelper.inseartTitles(items);
                 found = true;
                 break;
               }

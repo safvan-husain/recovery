@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
@@ -11,7 +10,6 @@ import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:recovery_app/screens/authentication/unapproved_screen.dart';
 import 'package:recovery_app/storage/user_storage.dart';
-import 'package:uuid/uuid.dart';
 
 class AuthServices {
   static final Dio dio = Dio();
@@ -28,19 +26,27 @@ class AuthServices {
         "https://www.recovery.starkinsolutions.com/loginapi.php",
         data: {"email": email, "password": password},
       );
+      var decoded = jsonDecode(jsonEncode(response.data));
       if (response.statusCode == 200) {
-        print(response.data);
-        var user = UserModel.fromServerJson2(response.data);
-        await Storage.storeUser(user);
-        if (context.mounted) {
-          context.read<HomeCubit>().setUser(user);
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const BottomNavigation(),
-            ),
-            (s) => false,
-          );
+        if (decoded['user_data']['status'] == "1") {
+          var user = UserModel.fromServerJson2(response.data);
+          await Storage.storeUser(user);
+          if (context.mounted) {
+            context.read<HomeCubit>().setUser(user);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BottomNavigation(),
+              ),
+              (s) => false,
+            );
+          }
+        } else {
+          if (context.mounted) {
+            showSnackbar(
+                "Contact the agency for approval", context, Icons.warning);
+            // throw Error();
+          }
         }
       } else {
         if (context.mounted) {
@@ -52,6 +58,7 @@ class AuthServices {
         }
       }
     } catch (e) {
+      print(e);
       if (context.mounted) {
         showSnackbar(
           "Failed to connect to the server",
@@ -97,19 +104,28 @@ class AuthServices {
         Map<String, dynamic> result = jsonDecode(response.data);
         if (result['status'] == true) {
           if (result.containsKey("details")) {
-            var user = UserModel.fromServerJson(result);
-            if (isLogin) {
-              if (context.mounted) context.read<HomeCubit>().setUser(user);
-              await Storage.storeUser(user);
-            }
+            if (result['details']['status'] == "1") {
+              var user = UserModel.fromServerJson(result);
+              if (isLogin) {
+                if (context.mounted) context.read<HomeCubit>().setUser(user);
+                await Storage.storeUser(user);
+              }
 
-            return ("${result["otp"]}", user);
+              return ("${result["otp"]}", user);
+            } else {
+              if (context.mounted) {
+                showSnackbar(
+                    "Contact the agency for approval", context, Icons.warning);
+                // throw Error();
+              }
+            }
           }
           return ("${result["otp"]}", null);
         } else {
           if (context.mounted) {
-            showSnackbar("failed to send otp", context, Icons.warning);
-            throw Error();
+            showSnackbar(
+                "Contact the agency for approval", context, Icons.warning);
+            // throw Error();
           }
         }
       }

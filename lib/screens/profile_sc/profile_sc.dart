@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +73,8 @@ class _ProfileScViewState extends State<ProfileScView>
     _addressController.text = context.read<HomeCubit>().state.user!.address;
     super.initState();
   }
+
+  File? file;
 
   @override
   Widget build(BuildContext context) {
@@ -375,6 +378,7 @@ class _ProfileScViewState extends State<ProfileScView>
       ];
 
   PreferredSize _profilePictureSection(BuildContext context) {
+    // imageUrl = context.read<HomeCubit>().state.user!.avatarUrl;
     log(imageUrl ?? "no image");
     return PreferredSize(
         preferredSize: const Size.fromHeight(150),
@@ -387,11 +391,13 @@ class _ProfileScViewState extends State<ProfileScView>
                 children: [
                   CircleAvatar(
                       minRadius: 50,
-                      backgroundImage: imageUrl == null
-                          ? Image.asset('assets/icons/user.png').image
-                          : NetworkImage(
-                              imageUrl!,
-                            )),
+                      backgroundImage: file != null
+                          ? Image.file(file!).image
+                          : imageUrl == null
+                              ? Image.asset('assets/icons/user.png').image
+                              : NetworkImage(
+                                  "https://www.recovery.starkinsolutions.com/$imageUrl",
+                                )),
                   if (isEditting)
                     Positioned(
                       bottom: 10,
@@ -441,10 +447,11 @@ class _ProfileScViewState extends State<ProfileScView>
     return PopupMenuButton<int>(
       onSelected: (value) async {
         if (value == 2) {
-          var file = await ImageFile.pick(context);
+          file = await ImageFile.pick(context);
+          setState(() {});
           if (file != null && context.mounted) {
             AuthServices.uploadProfilePicture(
-              file,
+              file!,
               context.read<HomeCubit>().state.user!.email,
             );
           }
