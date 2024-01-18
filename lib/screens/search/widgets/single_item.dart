@@ -14,6 +14,7 @@ import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/services/loation.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 
 class SingleItemScreen extends StatefulWidget {
   final int rowId;
@@ -32,11 +33,17 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
   late final Future<Map<String, String>?> ftutureDetails;
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _loadController = TextEditingController();
+  List<String> titles = [];
   @override
   void initState() {
     ftutureDetails = DatabaseHelper.getDetails(widget.rowId);
     DatabaseHelper.getDetails(widget.rowId);
+    getTitles();
     super.initState();
+  }
+
+  void getTitles() async {
+    titles = await Storage.getTitleMap();
   }
 
   String? locationUrl;
@@ -50,85 +57,104 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height -
-                        (_isReporting ? 500 : 230)),
-                child: FutureBuilder(
-                    future: ftutureDetails,
-                    builder: (context, snp) {
-                      if (snp.connectionState != ConnectionState.done) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      if (!snp.hasData) {
-                        return const Center(
-                          child: Text("No data availible"),
-                        );
-                      }
-                      vehicleDetails = snp.data!;
-                      return SingleChildScrollView(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 10),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: snp.data!.entries
-                                  .where((element) =>
-                                      element.value.toString().isNotEmpty)
-                                  .map((e) {
-                                    if (e.key == "File name") {
-                                      return MapEntry("File name",
-                                          e.value.split('______').first);
-                                    }
-                                    return e;
-                                  })
-                                  .map((e) => Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                e.key,
-                                                style: GoogleFonts.poppins(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              " :    ",
+        child: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder(
+                  future: ftutureDetails,
+                  builder: (context, snp) {
+                    if (snp.connectionState != ConnectionState.done) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (!snp.hasData) {
+                      return const Center(
+                        child: Text("No data availible"),
+                      );
+                    }
+                    vehicleDetails = snp.data!;
+                    return SingleChildScrollView(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 10),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: titles
+                                .map((e) => MapEntry(e, vehicleDetails[e]))
+                                // children: snp.data!.entries
+                                //     .where((element) =>
+                                //         element.value.toString().isNotEmpty)
+                                //     .map((e) {
+                                //       if (e.key == "File name") {
+                                //         return MapEntry("File name",
+                                //             e.value.split('______').first);
+                                //       }
+                                //       return e;
+                                //     })
+                                .map((e) => Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              e.key,
                                               style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Expanded(
-                                                flex: 2,
-                                                child: Text(
-                                                  e.value.toString(),
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                )),
-                                          ],
-                                        ),
-                                      ))
-                                  .toList(),
-                            ),
+                                          ),
+                                          Text(
+                                            " :    ",
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Expanded(
+                                              flex: 2,
+                                              child: Text(
+                                                e.value.toString(),
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              )),
+                                        ],
+                                      ),
+                                    ))
+                                .toList(),
                           ),
                         ),
-                      );
-                    }),
-              ),
-              const SizedBox(height: 10),
-              if (!_isReporting)
+                      ),
+                    );
+                  }),
+            ),
+            const SizedBox(height: 10),
+            if (!_isReporting)
+              if (context.read<HomeCubit>().state.user!.isStaff)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: {
+                    "Confirm": Icons.done_outline_rounded,
+                    "Whatsapp": Icons.message,
+                    "Ok Repo": Icons.chair,
+                    "Cancel": Icons.cancel,
+                    "Copy": Icons.copy
+                  }
+                      .entries
+                      .map((e) => Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(e.value),
+                              Text(e.key),
+                            ],
+                          ))
+                      .toList(),
+                )
+              else
                 ElevatedButton(
                     onPressed: () {
                       setState(() {
@@ -141,206 +167,155 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       "Report",
                       style: GoogleFonts.poppins(color: Colors.white),
                     )),
-              if (_isReporting) ...[
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Vehichel Address',
-                            style: GoogleFonts.poppins(),
-                          ),
+            if (_isReporting) ...[
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Vehichel Address',
+                          style: GoogleFonts.poppins(),
                         ),
-                        Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          // margin: const EdgeInsets.symmetric(
-                          //     horizontal: 20, vertical: 10),
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey
-                                    .withOpacity(0.2), // Color of the shadow
-                                spreadRadius: 2, // Spread radius
-                                blurRadius: 4, // Blur radius
-                                offset: const Offset(0, 3), // Shadow offset
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _addressController,
-                            // maxLength: 1000,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'street, area, locality...',
-                              hintStyle: GoogleFonts.poppins(fontSize: 13),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        // margin: const EdgeInsets.symmetric(
+                        //     horizontal: 20, vertical: 10),
+                        width: MediaQuery.of(context).size.width,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey
+                                  .withOpacity(0.2), // Color of the shadow
+                              spreadRadius: 2, // Spread radius
+                              blurRadius: 4, // Blur radius
+                              offset: const Offset(0, 3), // Shadow offset
                             ),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _addressController,
+                          // maxLength: 1000,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'street, area, locality...',
+                            hintStyle: GoogleFonts.poppins(fontSize: 13),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Carries Goods',
-                            style: GoogleFonts.poppins(),
-                          ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Carries Goods',
+                          style: GoogleFonts.poppins(),
                         ),
-                        Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          // margin: const EdgeInsets.symmetric(
-                          //     horizontal: 20, vertical: 10),
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey
-                                    .withOpacity(0.2), // Color of the shadow
-                                spreadRadius: 2, // Spread radius
-                                blurRadius: 4, // Blur radius
-                                offset: const Offset(0, 3), // Shadow offset
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _loadController,
-                            // maxLength: 1000,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Carries goods, load...',
-                              hintStyle: GoogleFonts.poppins(fontSize: 13),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        // margin: const EdgeInsets.symmetric(
+                        //     horizontal: 20, vertical: 10),
+                        width: MediaQuery.of(context).size.width,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey
+                                  .withOpacity(0.2), // Color of the shadow
+                              spreadRadius: 2, // Spread radius
+                              blurRadius: 4, // Blur radius
+                              offset: const Offset(0, 3), // Shadow offset
                             ),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _loadController,
+                          // maxLength: 1000,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Carries goods, load...',
+                            hintStyle: GoogleFonts.poppins(fontSize: 13),
                           ),
                         ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width - 70,
-                          height: 50,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Expanded(
-                              //   child: ElevatedButton(
-                              //     onPressed: () {
-                              //       if (_addressController.text.isNotEmpty) {
-                              // Utils.sendSMS(
-                              //     '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
-                              //       } else {
-                              //         _showAddressWarning().show(context);
-                              //       }
-                              //     },
-                              //     style: ElevatedButton.styleFrom(
-                              //         shape: RoundedRectangleBorder(
-                              //             borderRadius: BorderRadius.circular(10),
-                              //             side: BorderSide(
-                              //                 color: ColorManager.primary,
-                              //                 width: 2)),
-                              //         backgroundColor: ColorManager.primary,
-                              //         alignment: Alignment.center),
-                              //     child: Row(
-                              //       mainAxisAlignment:
-                              //           MainAxisAlignment.spaceEvenly,
-                              //       children: [
-                              //         const Text(
-                              //           "Send ",
-                              //           style: TextStyle(color: Colors.white),
-                              //           textAlign: TextAlign.center,
-                              //         ),
-                              //         Image.asset(IconAssets.sms_ic)
-                              //       ],
-                              //     ),
-                              //   ),
-                              // ),
-                              // const SizedBox(width: 10),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (locationUrl != null) {
-                                      locationUrl = null;
-                                      if (context.mounted) {
-                                        Utils.toastBar(
-                                                "Removed Currentl Location")
-                                            .show(context);
-                                      }
-                                    } else {
-                                      locationUrl =
-                                          await LocationService.share();
-                                      if (context.mounted) {
-                                        Utils.toastBar(
-                                                "Added Currentl Location",
-                                                Colors.greenAccent)
-                                            .show(context);
-                                      }
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 70,
+                        height: 50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Expanded(
+                            //   child: ElevatedButton(
+                            //     onPressed: () {
+                            //       if (_addressController.text.isNotEmpty) {
+                            // Utils.sendSMS(
+                            //     '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
+                            //       } else {
+                            //         _showAddressWarning().show(context);
+                            //       }
+                            //     },
+                            //     style: ElevatedButton.styleFrom(
+                            //         shape: RoundedRectangleBorder(
+                            //             borderRadius: BorderRadius.circular(10),
+                            //             side: BorderSide(
+                            //                 color: ColorManager.primary,
+                            //                 width: 2)),
+                            //         backgroundColor: ColorManager.primary,
+                            //         alignment: Alignment.center),
+                            //     child: Row(
+                            //       mainAxisAlignment:
+                            //           MainAxisAlignment.spaceEvenly,
+                            //       children: [
+                            //         const Text(
+                            //           "Send ",
+                            //           style: TextStyle(color: Colors.white),
+                            //           textAlign: TextAlign.center,
+                            //         ),
+                            //         Image.asset(IconAssets.sms_ic)
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            // const SizedBox(width: 10),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  if (locationUrl != null) {
+                                    locationUrl = null;
+                                    if (context.mounted) {
+                                      Utils.toastBar(
+                                              "Removed Currentl Location")
+                                          .show(context);
                                     }
+                                  } else {
+                                    locationUrl = await LocationService.share();
+                                    if (context.mounted) {
+                                      Utils.toastBar("Added Currentl Location",
+                                              Colors.greenAccent)
+                                          .show(context);
+                                    }
+                                  }
 
-                                    setState(() {});
-                                  },
-                                  style: locationUrl == null
-                                      ? ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            side: BorderSide(
-                                                color: ColorManager.primary,
-                                                width: 2),
-                                          ),
-                                          backgroundColor: ColorManager.white,
-                                        )
-                                      : ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              side: BorderSide(
-                                                  color: ColorManager.primary,
-                                                  width: 2)),
-                                          backgroundColor: ColorManager.primary,
-                                          alignment: Alignment.center),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(
-                                        "${locationUrl == null ? "Add" : "Remove"} Location ",
-                                        style: TextStyle(
-                                            color: locationUrl == null
-                                                ? Colors.blue
-                                                : Colors.white),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const Icon(
-                                        FontAwesomeIcons.locationPin,
-                                        color: Colors.greenAccent,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      if (_addressController.text.isNotEmpty) {
-                                        _showShareDialog();
-                                      } else {
-                                        _showAddressWarning().show(context);
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
+                                  setState(() {});
+                                },
+                                style: locationUrl == null
+                                    ? ElevatedButton.styleFrom(
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
@@ -349,45 +324,92 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                                               width: 2),
                                         ),
                                         backgroundColor: ColorManager.white,
+                                      )
+                                    : ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            side: BorderSide(
+                                                color: ColorManager.primary,
+                                                width: 2)),
+                                        backgroundColor: ColorManager.primary,
                                         alignment: Alignment.center),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Text(
-                                          "Send  ",
-                                          style: TextStyle(
-                                              color: ColorManager.primary),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const Icon(FontAwesomeIcons.share)
-                                      ],
-                                    )),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      "${locationUrl == null ? "Add" : "Remove"} Location ",
+                                      style: TextStyle(
+                                          color: locationUrl == null
+                                              ? Colors.blue
+                                              : Colors.white),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const Icon(
+                                      FontAwesomeIcons.locationPin,
+                                      color: Colors.greenAccent,
+                                    )
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_addressController.text.isNotEmpty) {
+                                      _showShareDialog();
+                                    } else {
+                                      _showAddressWarning().show(context);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        side: BorderSide(
+                                            color: ColorManager.primary,
+                                            width: 2),
+                                      ),
+                                      backgroundColor: ColorManager.white,
+                                      alignment: Alignment.center),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        "Send  ",
+                                        style: TextStyle(
+                                            color: ColorManager.primary),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const Icon(FontAwesomeIcons.share)
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _isReporting = false;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 40)),
-                  child: Text(
-                    "Cancel",
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                )
-              ]
-            ],
-          ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isReporting = false;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 40)),
+                child: Text(
+                  "Cancel",
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              )
+            ]
+          ],
         ),
       )),
     );

@@ -26,6 +26,7 @@ class _ItemScreenState extends State<ItemScreen> {
   int currentIndex = 1;
   Future<List<String>>? futureBranches;
   int? itemCount;
+  late int currentRowId;
   @override
   void initState() {
     controller.addListener(() {
@@ -39,11 +40,13 @@ class _ItemScreenState extends State<ItemScreen> {
     if (widget.rowIds != null) {
       show();
     }
+    currentRowId = widget.rowId;
     super.initState();
   }
 
   void show() async {
-    var branches = await DatabaseHelper.getBranches(widget.rowIds!);
+    var nullebleBranches = await DatabaseHelper.getBranches(widget.rowIds!);
+    List<String> branches = nullebleBranches.whereType<String>().toList();
     if (context.mounted) {
       showModalBottomSheet(
         context: context,
@@ -87,9 +90,18 @@ class _ItemScreenState extends State<ItemScreen> {
               ListView.separated(
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      branches[index],
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        currentRowId = widget.rowIds!.elementAt(
+                            nullebleBranches.indexOf(branches[index]));
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: ListTile(
+                      title: Text(
+                        branches[index],
+                      ),
                     ),
                   );
                 },
@@ -114,7 +126,7 @@ class _ItemScreenState extends State<ItemScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SingleItemScreen(rowId: widget.rowId, heroTag: widget.heroTag),
+          child: SingleItemScreen(rowId: currentRowId, heroTag: widget.heroTag),
         ),
       ),
     );

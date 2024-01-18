@@ -90,6 +90,23 @@ class CsvFileServices {
     await Storage.addEntryCount(count);
   }
 
+  static void getAndStoreTitles(String agencyId) async {
+    Dio dio = Dio();
+    var response = await dio.post(
+      'https://www.recovery.starkinsolutions.com/vehicapi.php',
+      data: jsonEncode({"id": int.parse(agencyId)}),
+    );
+    if (response.statusCode == 200) {
+      List<Map<String, dynamic>> map = jsonDecode(response.data)['data']
+          .map((e) => MapEntry(e.key, e.value))
+          .toList();
+      Storage.storeTitleMap(
+          map.map((e) => e["mapping_name"].toString()).toList());
+    } else {
+      throw Exception('failed to get and store titles');
+    }
+  }
+
   static Future<void> _downloadFile(
     String url,
     String fileName,
@@ -156,6 +173,7 @@ class CsvFileServices {
     StreamController<Map<String, int>?> streamController,
   ) async {
     var files = await getExcelFiles();
+    getAndStoreTitles("2");
     List<String> fileNames =
         files.map((e) => basenameWithoutExtension(e.path)).toList();
     await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);

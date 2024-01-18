@@ -283,9 +283,8 @@ class DatabaseHelper {
     }
   }
 
-  static Future<List<String>> getBranches(List<int> rowIds) async {
-    print(rowIds);
-    List<String> branches = [];
+  static Future<List<String?>> getBranches(List<int> rowIds) async {
+    List<String?> branches = [];
     for (var element in rowIds) {
       try {
         var rows = await _database
@@ -296,6 +295,8 @@ class DatabaseHelper {
             tites[0]['json_string'] as String);
         if (mapDetails.containsKey('BRANCH')) {
           branches.add(mapDetails['BRANCH']!);
+        } else {
+          branches.add(null);
         }
       } catch (e) {
         print(e);
@@ -303,7 +304,7 @@ class DatabaseHelper {
       }
     }
     // return [];
-    return branches.toSet().toList();
+    return branches;
   }
 }
 

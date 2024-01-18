@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:recovery_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -77,5 +79,20 @@ class Storage {
       return daysRemaining < 0 ? 0 : daysRemaining;
     }
     return null;
+  }
+
+  static Future<void> storeTitleMap(List<String> titles) async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    await sharedPreference.setString('titles', jsonEncode(titles));
+  }
+
+  static Future<List<String>> getTitleMap() async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    var jsonTitles = sharedPreference.getString('titles');
+    if (jsonTitles != null) {
+      return jsonDecode(jsonTitles);
+    } else {
+      throw ('no titles found in sahared preference');
+    }
   }
 }
