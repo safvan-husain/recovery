@@ -35,17 +35,36 @@ class Utils {
     return (isAllNumbers, lastFour);
   }
 
-  static Future<bool> sendSMS(String message) async {
+  static Future<bool> sendSMS(String message, String status) async {
     final Uri url = Uri(
       scheme: 'sms',
-      path: '+917907320942',
+      // path: '+917907320942',
       queryParameters: {
-        'body': message,
+        'body': "$message \n status: $status",
       },
     );
 
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> sendWhatsapp(
+    Map<String, String> details,
+    String status,
+    // String message,
+    String agencyName,
+    String address, [
+    String? location,
+    String? load,
+  ]) async {
+    var text =
+        '${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n Status : $status \n carries Goods : $load \n  Reporting by : $agencyName';
+    String url = 'whatsapp://send?&text=$text';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
       return true;
     }
     return false;

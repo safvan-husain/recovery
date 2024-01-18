@@ -90,7 +90,7 @@ class CsvFileServices {
     await Storage.addEntryCount(count);
   }
 
-  static void getAndStoreTitles(String agencyId) async {
+  static void _getAndStoreTitles(String agencyId) async {
     Dio dio = Dio();
     var response = await dio.post(
       'https://www.recovery.starkinsolutions.com/vehicapi.php',
@@ -173,7 +173,7 @@ class CsvFileServices {
     StreamController<Map<String, int>?> streamController,
   ) async {
     var files = await getExcelFiles();
-    getAndStoreTitles("2");
+    // getAndStoreTitles("2");
     List<String> fileNames =
         files.map((e) => basenameWithoutExtension(e.path)).toList();
     await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);

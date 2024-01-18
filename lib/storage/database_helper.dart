@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -234,7 +235,10 @@ class DatabaseHelper {
     return null;
   }
 
-  static Future<List<SearchResultItem>> showForPrefix(String prefix) async {
+  static Future<List<SearchResultItem>> showForPrefix(
+    String prefix,
+    StreamController<SearchResultItem> itemStreamController,
+  ) async {
     log(prefix);
     List<SearchResultItem> results = [];
     int nodeId = 1; // Assuming the root node has id 1

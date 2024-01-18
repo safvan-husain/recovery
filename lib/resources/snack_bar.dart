@@ -3,10 +3,14 @@ import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void showSnackbar(String text, BuildContext context, IconData icon,
-    [Color? color]) {
+void showSnackbar(
+  String text,
+  BuildContext context,
+  IconData icon, [
+  Color? color,
+]) {
   DelightToastBar(
-    snackbarDuration: Duration(seconds: 3),
+    snackbarDuration: const Duration(seconds: 3),
     autoDismiss: true,
     builder: (context) => ToastCard(
       color: color ?? Colors.blueAccent[300],

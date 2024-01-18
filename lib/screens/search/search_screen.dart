@@ -29,6 +29,9 @@ class SearchScreen1State extends State<SearchScreen1> {
     super.initState();
   }
 
+  StreamController<SearchResultItem> itemStreamController =
+      StreamController.broadcast();
+
   CancelableOperation<List<SearchResultItem>>? operation;
   List<SearchResultItem> items = [];
   @override
@@ -112,8 +115,8 @@ class SearchScreen1State extends State<SearchScreen1> {
                         if (value.isNotEmpty) {
                           operation = CancelableOperation.fromFuture(
                             DatabaseHelper.showForPrefix(
-                              Utils.removeHyphens(_controller.text),
-                            ),
+                                Utils.removeHyphens(_controller.text),
+                                itemStreamController),
                           );
                         }
 

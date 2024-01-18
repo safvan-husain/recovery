@@ -1,20 +1,14 @@
-import 'dart:convert';
-
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:recovery_app/resources/assets_manager.dart';
-import 'package:recovery_app/resources/color_manager.dart';
+import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
-import 'package:recovery_app/services/loation.dart';
+import 'package:recovery_app/screens/search/widgets/report_inputs.dart';
+import 'package:recovery_app/screens/search/widgets/report_screen.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
-import 'package:recovery_app/storage/user_storage.dart';
 
 class SingleItemScreen extends StatefulWidget {
   final int rowId;
@@ -31,22 +25,27 @@ class SingleItemScreen extends StatefulWidget {
 
 class _SingleItemScreenState extends State<SingleItemScreen> {
   late final Future<Map<String, String>?> ftutureDetails;
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _loadController = TextEditingController();
-  List<String> titles = [];
+
+  List<String> titles = [
+    "AGREEMENTNO",
+    "CUSTOMERNAME",
+    "CIF_NO",
+    "PRODUCT",
+    "PRODUCT GRP",
+    "SUB PRODUCT",
+    "SCHEME",
+    "ZONE",
+    "REGION",
+    "AREA",
+    "BRANCH",
+  ];
   @override
   void initState() {
     ftutureDetails = DatabaseHelper.getDetails(widget.rowId);
     DatabaseHelper.getDetails(widget.rowId);
-    getTitles();
     super.initState();
   }
 
-  void getTitles() async {
-    titles = await Storage.getTitleMap();
-  }
-
-  String? locationUrl;
   bool _isReporting = false;
   Map<String, String> vehicleDetails = {};
 
@@ -82,7 +81,8 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: titles
-                                .map((e) => MapEntry(e, vehicleDetails[e]))
+                                .map(
+                                    (e) => MapEntry(e, vehicleDetails[e] ?? ""))
                                 // children: snp.data!.entries
                                 //     .where((element) =>
                                 //         element.value.toString().isNotEmpty)
@@ -145,12 +145,26 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                     "Copy": Icons.copy
                   }
                       .entries
-                      .map((e) => Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(e.value),
-                              Text(e.key),
-                            ],
+                      .map((e) => InkWell(
+                            onTap: () {
+                              takeActionForSpecificButton(
+                                e.key,
+                                titles.fold(
+                                  {},
+                                  (map, e) {
+                                    map[e] = vehicleDetails[e] ?? "";
+                                    return map;
+                                  },
+                                ),
+                              );
+                            },
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(e.value),
+                                Text(e.key),
+                              ],
+                            ),
                           ))
                       .toList(),
                 )
@@ -168,231 +182,15 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       style: GoogleFonts.poppins(color: Colors.white),
                     )),
             if (_isReporting) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 10,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Vehichel Address',
-                          style: GoogleFonts.poppins(),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        // margin: const EdgeInsets.symmetric(
-                        //     horizontal: 20, vertical: 10),
-                        width: MediaQuery.of(context).size.width,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.2), // Color of the shadow
-                              spreadRadius: 2, // Spread radius
-                              blurRadius: 4, // Blur radius
-                              offset: const Offset(0, 3), // Shadow offset
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: _addressController,
-                          // maxLength: 1000,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'street, area, locality...',
-                            hintStyle: GoogleFonts.poppins(fontSize: 13),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Carries Goods',
-                          style: GoogleFonts.poppins(),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        // margin: const EdgeInsets.symmetric(
-                        //     horizontal: 20, vertical: 10),
-                        width: MediaQuery.of(context).size.width,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.2), // Color of the shadow
-                              spreadRadius: 2, // Spread radius
-                              blurRadius: 4, // Blur radius
-                              offset: const Offset(0, 3), // Shadow offset
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: _loadController,
-                          // maxLength: 1000,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Carries goods, load...',
-                            hintStyle: GoogleFonts.poppins(fontSize: 13),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width - 70,
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Expanded(
-                            //   child: ElevatedButton(
-                            //     onPressed: () {
-                            //       if (_addressController.text.isNotEmpty) {
-                            // Utils.sendSMS(
-                            //     '$vehicleDetails \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
-                            //       } else {
-                            //         _showAddressWarning().show(context);
-                            //       }
-                            //     },
-                            //     style: ElevatedButton.styleFrom(
-                            //         shape: RoundedRectangleBorder(
-                            //             borderRadius: BorderRadius.circular(10),
-                            //             side: BorderSide(
-                            //                 color: ColorManager.primary,
-                            //                 width: 2)),
-                            //         backgroundColor: ColorManager.primary,
-                            //         alignment: Alignment.center),
-                            //     child: Row(
-                            //       mainAxisAlignment:
-                            //           MainAxisAlignment.spaceEvenly,
-                            //       children: [
-                            //         const Text(
-                            //           "Send ",
-                            //           style: TextStyle(color: Colors.white),
-                            //           textAlign: TextAlign.center,
-                            //         ),
-                            //         Image.asset(IconAssets.sms_ic)
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
-                            // const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  if (locationUrl != null) {
-                                    locationUrl = null;
-                                    if (context.mounted) {
-                                      Utils.toastBar(
-                                              "Removed Currentl Location")
-                                          .show(context);
-                                    }
-                                  } else {
-                                    locationUrl = await LocationService.share();
-                                    if (context.mounted) {
-                                      Utils.toastBar("Added Currentl Location",
-                                              Colors.greenAccent)
-                                          .show(context);
-                                    }
-                                  }
-
-                                  setState(() {});
-                                },
-                                style: locationUrl == null
-                                    ? ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          side: BorderSide(
-                                              color: ColorManager.primary,
-                                              width: 2),
-                                        ),
-                                        backgroundColor: ColorManager.white,
-                                      )
-                                    : ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            side: BorderSide(
-                                                color: ColorManager.primary,
-                                                width: 2)),
-                                        backgroundColor: ColorManager.primary,
-                                        alignment: Alignment.center),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text(
-                                      "${locationUrl == null ? "Add" : "Remove"} Location ",
-                                      style: TextStyle(
-                                          color: locationUrl == null
-                                              ? Colors.blue
-                                              : Colors.white),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const Icon(
-                                      FontAwesomeIcons.locationPin,
-                                      color: Colors.greenAccent,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_addressController.text.isNotEmpty) {
-                                      _showShareDialog();
-                                    } else {
-                                      _showAddressWarning().show(context);
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        side: BorderSide(
-                                            color: ColorManager.primary,
-                                            width: 2),
-                                      ),
-                                      backgroundColor: ColorManager.white,
-                                      alignment: Alignment.center),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(
-                                        "Send  ",
-                                        style: TextStyle(
-                                            color: ColorManager.primary),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const Icon(FontAwesomeIcons.share)
-                                    ],
-                                  )),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+              ReportInputs(
+                titles.fold(
+                  {},
+                  (map, e) {
+                    map[e] = vehicleDetails[e] ?? "";
+                    return map;
+                  },
                 ),
+                '',
               ),
               const SizedBox(height: 10),
               ElevatedButton(
@@ -415,79 +213,114 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
     );
   }
 
-  DelightToastBar _showAddressWarning() {
-    return DelightToastBar(
-      autoDismiss: true,
-      snackbarDuration: const Duration(seconds: 3),
-      builder: (context) => const ToastCard(
-        color: Colors.red,
-        leading: Icon(
-          Icons.flutter_dash,
-          size: 28,
-          color: Colors.red,
-        ),
-        title: Text(
-          "Address is Required",
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showShareDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Share details of ${widget.heroTag}',
-                  style: GoogleFonts.russoOne(),
-                ),
-              ),
-              ElevatedButton.icon(
-                icon: SvgPicture.asset(IconAssets.whatsapp_ic),
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 40)),
-                label: Text(
-                  'Share on WhatsApp',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-                onPressed: () {
-                  var message =
-                      '${Utils.formatMap(vehicleDetails)} ${locationUrl != null ? "location : $locationUrl" : ""}\n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}';
-                  String url =
-                      'whatsapp://send?phone=+917907320942&text=$message';
-                  Utils.launchURL(url);
-                },
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 40)),
-                label: Text(
-                  'Share on Message App',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-                icon: Image.asset(IconAssets.sms_ic),
-                onPressed: () {
-                  Utils.sendSMS(
-                      '${Utils.formatMap(vehicleDetails)}  ${locationUrl != null ? "location : $locationUrl" : ""} \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}');
-                },
-              ),
-            ],
+  void takeActionForSpecificButton(
+    String button,
+    Map<String, String> details,
+  ) {
+    switch (button) {
+      case "Confirm":
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (c) => ReportScreen(
+              title: button,
+              details: details,
+            ),
           ),
         );
-      },
-    );
+        break;
+      case "Whatsapp":
+        showModalBottomSheet(
+          context: context,
+          builder: (c) {
+            String agentName = context.read<HomeCubit>().state.user!.agent_name;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Utils.sendWhatsapp(
+                      details,
+                      'Bank for confirmation',
+                      agentName,
+                      '',
+                    );
+                  },
+                  child: ListTile(
+                    leading: const Icon(FontAwesomeIcons.buildingColumns),
+                    title: Text(
+                      'Bank for confirmation',
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Utils.sendWhatsapp(
+                      details,
+                      'Ok for confirmation',
+                      agentName,
+                      '',
+                    );
+                  },
+                  child: ListTile(
+                    leading: const Icon(Icons.done),
+                    title: Text(
+                      'Ok for Report',
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Utils.sendWhatsapp(
+                      details,
+                      'Not confirmed',
+                      agentName,
+                      '',
+                    );
+                  },
+                  child: ListTile(
+                    leading: const Icon(Icons.cancel),
+                    title: Text(
+                      'Not confirmed',
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+        break;
+      case "Ok Repo":
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (c) => ReportScreen(
+              title: button,
+              details: details,
+            ),
+          ),
+        );
+        break;
+      case "Cancel":
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (c) => ReportScreen(
+              title: button,
+              details: details,
+            ),
+          ),
+        );
+        break;
+      case "Copy":
+        copyToClipboard(Utils.formatMap(details));
+        showSnackbar('Copied!', context, Icons.copy);
+        break;
+      default:
+    }
   }
+}
+
+void copyToClipboard(String text) {
+  Clipboard.setData(ClipboardData(text: text));
 }
