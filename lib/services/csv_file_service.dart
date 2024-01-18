@@ -33,6 +33,7 @@ class CsvFileServices {
       var buffer = '';
       int? titleDBId;
       int? vehicalNumbrColumIndex;
+      bool found = false;
       await for (var data in reader) {
         buffer += decoder.convert(data);
         while (buffer.contains('\n')) {
@@ -40,18 +41,16 @@ class CsvFileServices {
           var line = buffer.substring(0, lineEndIndex);
 
           var items = _splitStringIgnoringQuotes(line);
-          // .map((e) => removeHyphens(e))
-          // .toList();
-          // print(items);
-          if (titleDBId == null) {
+
+          if (!found) {
             //TODO: vehivle column title.
             titles = items.map((e) => e.toLowerCase()).toList();
-            bool found = false;
+
             for (var title in titleList) {
               if (titles.contains(title.toLowerCase())) {
                 vehicalNumbrColumIndex = titles.indexOf(title.toLowerCase());
                 items.add(basenameWithoutExtension(file.path));
-                titleDBId = await DatabaseHelper.inseartTitles(items);
+                // titleDBId = await DatabaseHelper.inseartTitles(items);
                 found = true;
                 break;
               }
@@ -61,11 +60,11 @@ class CsvFileServices {
             }
           } else {
             if (vehicalNumbrColumIndex != null) {
-              if (rows.length < 302) {
+              if (rows.length < 1002) {
                 rows.add(items);
               } else {
                 await DatabaseHelper.bulkInsertVehicleNumbers(
-                    rows, titleDBId, vehicalNumbrColumIndex);
+                    rows, titleDBId, vehicalNumbrColumIndex, titles);
                 rows.clear();
                 rows.add(items);
               }
@@ -80,31 +79,14 @@ class CsvFileServices {
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-      if (rows.isNotEmpty) {
+      if (rows.isNotEmpty && found) {
         await DatabaseHelper.bulkInsertVehicleNumbers(
-            rows, titleDBId!, vehicalNumbrColumIndex!);
+            rows, titleDBId, vehicalNumbrColumIndex!, titles);
         rows.clear();
       }
     }
     streamController.sink.add(null);
     await Storage.addEntryCount(count);
-  }
-
-  static void _getAndStoreTitles(String agencyId) async {
-    Dio dio = Dio();
-    var response = await dio.post(
-      'https://www.recovery.starkinsolutions.com/vehicapi.php',
-      data: jsonEncode({"id": int.parse(agencyId)}),
-    );
-    if (response.statusCode == 200) {
-      List<Map<String, dynamic>> map = jsonDecode(response.data)['data']
-          .map((e) => MapEntry(e.key, e.value))
-          .toList();
-      Storage.storeTitleMap(
-          map.map((e) => e["mapping_name"].toString()).toList());
-    } else {
-      throw Exception('failed to get and store titles');
-    }
   }
 
   static Future<void> _downloadFile(

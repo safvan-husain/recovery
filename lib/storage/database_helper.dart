@@ -117,9 +117,11 @@ class DatabaseHelper {
     );
   }
 
-  static Future<int> inseartTitles(List<String> titles) async {
-    return await _database
-        .insert(jsonStore, {'json_string': jsonEncode(titles)});
+  static Future<int> inseartTitles(
+    List<String> titles,
+    Transaction txn,
+  ) async {
+    return await txn.insert(jsonStore, {'json_string': jsonEncode(titles)});
   }
 
   static Future<void> _inseartRow(
@@ -146,13 +148,15 @@ class DatabaseHelper {
 
   static Future<void> bulkInsertVehicleNumbers(
     List<List<String>> rows,
-    int titlesId,
+    int? titlesId,
     int vehicalNumbrColumIndex,
+    List<String> titles,
   ) async {
     await _database.transaction((txn) async {
       for (var row in rows) {
         var batch = txn.batch();
-        await _inseartRow(row, titlesId, vehicalNumbrColumIndex, txn, batch);
+        titlesId ??= await inseartTitles(titles, txn);
+        await _inseartRow(row, titlesId!, vehicalNumbrColumIndex, txn, batch);
         await batch.commit();
       }
     });
