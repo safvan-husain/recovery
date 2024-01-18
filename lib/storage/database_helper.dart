@@ -148,6 +148,7 @@ class DatabaseHelper {
     int titlesId,
     int vehicalNumbrColumIndex,
   ) async {
+    var batch = _database.batch();
     await _database.transaction((txn) async {
       for (var row in rows) {
         await _inseartRow(row, titlesId, vehicalNumbrColumIndex, txn);
@@ -237,28 +238,22 @@ class DatabaseHelper {
 
   static Future<List<SearchResultItem>> showForPrefix(
     String prefix,
-    StreamController<SearchResultItem> itemStreamController,
   ) async {
-    log(prefix);
     List<SearchResultItem> results = [];
     int nodeId = 1; // Assuming the root node has id 1
-    await _database.transaction((txn) async {
-      var batch = txn.batch();
-      for (var i = 0; i < prefix.length; i++) {
-        var character = prefix[i];
-        var node = await _getNode(nodeId, txn);
-        var children = node.children;
-        if (!children.containsKey(character)) {
-          return [];
-        }
-        nodeId = children[character]!;
+    for (var i = 0; i < prefix.length; i++) {
+      var character = prefix[i];
+      var node = await _getNode(nodeId, null);
+      var children = node.children;
+      if (!children.containsKey(character)) {
+        return [];
       }
+      nodeId = children[character]!;
+    }
 
-      // Now we have the node corresponding to the last character of the prefix
-      // We need to collect all words that start with this prefix
-      await _collectWords(nodeId, prefix, results, txn);
-      await batch.commit();
-    });
+    // Now we have the node corresponding to the last character of the prefix
+    // We need to collect all words that start with this prefix
+    await _collectWords(nodeId, prefix, results);
 
     // print(results.length);
     return results;
@@ -268,14 +263,16 @@ class DatabaseHelper {
     int nodeId,
     String prefix,
     List<SearchResultItem> results,
-    Transaction txn,
   ) async {
-    var node = await _getNode(nodeId, txn);
+    var node = await _getNode(nodeId, null);
     var children = node.children;
     if (children.isNotEmpty) {
       for (var childCharacter in children.keys) {
         await _collectWords(
-            children[childCharacter]!, prefix + childCharacter, results, txn);
+          children[childCharacter]!,
+          prefix + childCharacter,
+          results,
+        );
       }
     } else {
       if (node.og.isNotEmpty) {
