@@ -87,9 +87,9 @@ class DatabaseHelper {
   static Future<void> _updateNode(
     int id,
     String children,
-    Transaction txn,
+    Batch batch,
   ) async {
-    await txn.update(
+    batch.update(
       trie,
       {'children': children},
       where: 'id = ?',
@@ -127,6 +127,7 @@ class DatabaseHelper {
     int titlesId,
     int vehicalNumbrColumIndex,
     Transaction txn,
+    Batch batch,
   ) async {
     int rowId = await txn.insert(
         jsonStore, {'json_string': jsonEncode(row), 'titleId': titlesId});
@@ -136,7 +137,7 @@ class DatabaseHelper {
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
-      await _inseartString(txn, res.$2, rowId, s, true);
+      await _inseartString(txn, res.$2, rowId, s, true, batch);
     }
     // bulkInsertVehicleNumbers();
   }
@@ -148,10 +149,11 @@ class DatabaseHelper {
     int titlesId,
     int vehicalNumbrColumIndex,
   ) async {
-    var batch = _database.batch();
     await _database.transaction((txn) async {
       for (var row in rows) {
-        await _inseartRow(row, titlesId, vehicalNumbrColumIndex, txn);
+        var batch = txn.batch();
+        await _inseartRow(row, titlesId, vehicalNumbrColumIndex, txn, batch);
+        await batch.commit();
       }
     });
   }
@@ -162,6 +164,7 @@ class DatabaseHelper {
     int rowId,
     String og,
     bool isStaff,
+    Batch batch,
   ) async {
     Node? node;
     int nodeId = 1;
@@ -171,8 +174,6 @@ class DatabaseHelper {
       var charecter = word[i];
       bool isLastChar = i == word.length - 1;
       node = await _getNode(nodeId, txn);
-      // print(node.charecter);
-      // print(node.children);
       children = node.children;
       if (children.containsKey(charecter)) {
         nodeId = children[charecter];
@@ -182,13 +183,13 @@ class DatabaseHelper {
           ogs = node.og;
           if (!ogs.entries.map((e) => e.key).contains(og)) {
             ogs[og] = [rowId];
-            await txn.update(trie, {'og': jsonEncode(ogs)},
+            batch.update(trie, {'og': jsonEncode(ogs)},
                 where: 'id = ?', whereArgs: [node.dbId]);
           } else {
             if (isStaff) {
               List<int> rowIds = {...ogs[og]!, rowId}.toList();
               ogs[og] = rowIds;
-              await txn.update(trie, {'og': jsonEncode(ogs)},
+              batch.update(trie, {'og': jsonEncode(ogs)},
                   where: 'id = ?', whereArgs: [node.dbId]);
             }
           }
@@ -202,7 +203,7 @@ class DatabaseHelper {
           newNodeId = await _createNode(charecter, txn);
         }
         children[charecter] = newNodeId;
-        await _updateNode(nodeId, jsonEncode(children), txn);
+        _updateNode(nodeId, jsonEncode(children), batch);
         nodeId = newNodeId;
       }
     }
