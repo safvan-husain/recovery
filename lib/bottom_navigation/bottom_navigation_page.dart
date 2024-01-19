@@ -17,11 +17,8 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int _currentPageIndex = 0;
-  List<Widget> pages = [
-    const HomePage(),
-    const SettingsScView(),
-    const ProfileScView(),
-  ];
+  Widget home = const HomePage();
+  List<Widget> pages = [];
   Map<String, IconData> navBarItems = {
     "Home": FontAwesomeIcons.house,
     "Settings": Icons.settings,
@@ -36,13 +33,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
         "Account": FontAwesomeIcons.user,
       };
       pages = [
-        const HomePage(),
+        home,
         const SettingsScView(),
         const ControlPanelScreen(),
         const ProfileScView(),
       ];
-      setState(() {});
+    } else {
+      pages = [
+        home,
+        const SettingsScView(),
+        const ProfileScView(),
+      ];
     }
+    setState(() {});
   }
 
   @override

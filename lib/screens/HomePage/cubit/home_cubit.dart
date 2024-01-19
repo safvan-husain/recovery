@@ -25,7 +25,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void homeInitialization() async {
     emit(state.copywith(
-      changeType: ChangeType.vehichelOwnerListUpdated,
+      // changeType: ChangeType.vehichelOwnerListUpdated,
       isTwoColumnSearch: await Storage.getIsTwoColumnSearch(),
       entryCount: await Storage.getEntryCount(),
     ));
@@ -37,7 +37,7 @@ class HomeCubit extends Cubit<HomeState> {
     int hours = totalMinutes ~/ 60;
     int minutes = totalMinutes % 60;
     if (hours > 0) {
-      timeString = "$hours hours $minutes minutes";
+      timeString = "$hours hours $minutes min";
     } else {
       timeString = "$minutes minutes";
     }

@@ -58,7 +58,9 @@ class DownloadUI extends StatelessWidget {
                             style: GoogleFonts.poppins(
                                 color: ColorManager.primary,
                                 fontWeight: FontWeight.bold)),
-                        Text('est : ${state.esitimatedTime}',
+                        Text(' est : ${state.esitimatedTime}',
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
                             style: GoogleFonts.poppins(
                                 color: ColorManager.primary,
                                 fontWeight: FontWeight.bold))

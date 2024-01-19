@@ -34,7 +34,7 @@ class HomeState {
         'assets/images/pic-2.webp',
         'assets/images/pic-3.webp',
       ],
-      changeType: ChangeType.loading,
+      changeType: ChangeType.vehichelOwnerListUpdated,
       streamController: StreamController<Map<String, int>?>.broadcast(),
     );
   }
