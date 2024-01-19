@@ -38,6 +38,16 @@ class Storage {
     }
   }
 
+  static Future<void> addProcessedFileIndex(int count) async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    await sharedPreference.setInt("file", count);
+  }
+
+  static Future<int> getProcessedFileIndex() async {
+    var sharedPreference = await SharedPreferences.getInstance();
+    return sharedPreference.getInt("file") ?? 0;
+  }
+
   static Future<void> emptyEntryCount() async {
     var sharedPreference = await SharedPreferences.getInstance();
     int? currentCunt = sharedPreference.getInt('count');

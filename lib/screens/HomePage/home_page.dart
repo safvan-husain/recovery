@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                                             if (context.mounted) {
                                               await context
                                                   .read<HomeCubit>()
-                                                  .downloadData();
+                                                  .downloadData(context);
                                             }
                                           } else {
                                             if (context.mounted) {
@@ -393,20 +393,23 @@ class _HomePageState extends State<HomePage> {
                   });
                 },
               ),
-              items: List.generate(state.couselImages.length, (index) {
-                return SizedBox(
-                  height: 150,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      state.couselImages[index],
-                      fit: BoxFit.cover,
-                      width: MediaQuery.of(context).size.width,
-                      height: 150,
+              items: List.generate(
+                state.couselImages.length,
+                (index) {
+                  return SizedBox(
+                    height: 150,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        state.couselImages[index],
+                        fit: BoxFit.cover,
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                      ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                },
+              ),
             ),
             Align(
               alignment: Alignment.bottomCenter,

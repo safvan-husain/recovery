@@ -46,12 +46,12 @@ class _ItemScreenState extends State<ItemScreen> {
 
   void show() async {
     var nullebleBranches = await DatabaseHelper.getBranches(widget.rowIds!);
-    List<String> branches = nullebleBranches.whereType<String>().toList();
+    // List<BankBranch> branches = nullebleBranches.where((e) {}).toList();
     if (context.mounted) {
       showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          if (branches.isEmpty) {
+          if (nullebleBranches.isEmpty) {
             return Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -93,22 +93,23 @@ class _ItemScreenState extends State<ItemScreen> {
                   return InkWell(
                     onTap: () {
                       setState(() {
-                        currentRowId = widget.rowIds!.elementAt(
-                            nullebleBranches.indexOf(branches[index]));
+                        currentRowId = widget.rowIds!.elementAt(index);
                       });
                       Navigator.of(context).pop();
                     },
                     child: ListTile(
+                      trailing: Text(nullebleBranches[index].fileName),
                       title: Text(
-                        branches[index],
+                        nullebleBranches[index].bank,
                       ),
+                      subtitle: Text(nullebleBranches[index].branch),
                     ),
                   );
                 },
                 separatorBuilder: (context, index) {
                   return const Divider();
                 },
-                itemCount: branches.length,
+                itemCount: nullebleBranches.length,
               ),
             ],
           );

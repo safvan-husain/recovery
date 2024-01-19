@@ -48,13 +48,22 @@ class DownloadUI extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                        snp.data == null
-                            ? "Please Wait..."
-                            : "${(100 - snp.data!.values.toList()[0])}% To Complete ${snp.data!.keys.toList()[0]}",
-                        style: GoogleFonts.poppins(
-                            color: ColorManager.primary,
-                            fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                            snp.data == null
+                                ? "Please Wait..."
+                                : "${(snp.data!.values.toList()[0])}%  ${snp.data!.keys.toList()[0]}",
+                            style: GoogleFonts.poppins(
+                                color: ColorManager.primary,
+                                fontWeight: FontWeight.bold)),
+                        Text('est : ${state.esitimatedTime}',
+                            style: GoogleFonts.poppins(
+                                color: ColorManager.primary,
+                                fontWeight: FontWeight.bold))
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     LinearProgressIndicator(
                       value: snp.data == null
@@ -63,7 +72,7 @@ class DownloadUI extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       minHeight: 10,
                       color: ColorManager.primary,
-                      backgroundColor: Color.fromARGB(
+                      backgroundColor: const Color.fromARGB(
                         220,
                         169,
                         211,

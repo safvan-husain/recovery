@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
@@ -23,30 +24,38 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void homeInitialization() async {
-    getCrouselImages();
     emit(state.copywith(
+      changeType: ChangeType.vehichelOwnerListUpdated,
       isTwoColumnSearch: await Storage.getIsTwoColumnSearch(),
       entryCount: await Storage.getEntryCount(),
     ));
   }
 
-  void getCrouselImages() {
-    emit(state.copywith(
-      couselImages: _homeServices.getCarouselItems(),
-      changeType: ChangeType.crouselUpdated,
-    ));
+  void updateEstimatedTime(int t) {
+    String timeString;
+    int totalMinutes = t ~/ 60;
+    int hours = totalMinutes ~/ 60;
+    int minutes = totalMinutes % 60;
+    if (hours > 0) {
+      timeString = "$hours hours $minutes minutes";
+    } else {
+      timeString = "$minutes minutes";
+    }
+    emit(state.copywith(esitimatedTime: timeString));
   }
 
-  Future<String> downloadData() async {
+  Future<String> downloadData(
+    BuildContext context,
+  ) async {
     emit(state.copywith(changeType: ChangeType.loading));
     log("agency id : ${state.user!.agencyId}"); //TODO: agencyid.
     String error = '';
-    // try {
-    await CsvFileServices.updateData("2", state.streamController);
-    // } catch (e) {
-    //   print(e);
-    // error = e.toString();
-    // }
+    try {
+      await CsvFileServices.updateData("1", state.streamController, context);
+    } catch (e) {
+      print(e);
+      // error = e.toString();
+    }
     emit(state.copywith(
       changeType: ChangeType.vehichelOwnerListUpdated,
       entryCount: await Storage.getEntryCount(),
@@ -65,6 +74,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copywith(changeType: ChangeType.loading));
     await CsvFileServices.deleteAllFilesInVehicleDetails();
     await DatabaseHelper.deleteAllData();
+    await Storage.addProcessedFileIndex(0);
     await Storage.emptyEntryCount();
     emit(state.copywith(
         changeType: ChangeType.vehichelOwnerListUpdated, entryCount: 0));

@@ -236,6 +236,7 @@ class SearchScreen1State extends State<SearchScreen1> {
   InkWell _itemListTile(BuildContext context, int index) {
     return InkWell(
       onTap: () async {
+        log(displayItems[index].toString());
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (c) => ItemScreen(

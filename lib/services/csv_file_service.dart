@@ -1,25 +1,31 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
 class CsvFileServices {
   static Future<void> _proccessFiles(
-    StreamController<Map<String, int>?> streamController, [
+    StreamController<Map<String, int>?> streamController,
+    BuildContext context, [
     List<File>? csvFiles,
   ]) async {
     int count = 0;
     streamController.sink.add(null);
     List<String> titleList = ['VEHICAL NO']; //supported titles.
     var files = csvFiles ?? await getExcelFiles();
-    for (var i = 0; i < files.length; i++) {
-      List<List<String>> rows = [];
+    int unreadFileIndex = await Storage.getProcessedFileIndex();
+    for (var i = unreadFileIndex; i < files.length; i++) {
+      var startTime = DateTime.now();
       streamController.sink.add(
           {"processing": Utils.calculatePercentage(i, files.length).toInt()});
       var file = files[i];
@@ -46,6 +52,7 @@ class CsvFileServices {
             for (var title in titleList) {
               if (titles.contains(title.toLowerCase())) {
                 vehicalNumbrColumIndex = titles.indexOf(title.toLowerCase());
+                titleDBId = await DatabaseHelper.inseartTitles(titles);
                 found = true;
                 break;
               }
@@ -55,18 +62,20 @@ class CsvFileServices {
             }
           } else {
             if (vehicalNumbrColumIndex != null) {
-              if (rows.length < 502) {
-                rows.add(items);
-              } else {
-                await DatabaseHelper.bulkInsertVehicleNumbers(
-                  rows,
-                  titleDBId,
-                  vehicalNumbrColumIndex,
-                  titles,
-                );
-                rows.clear();
-                rows.add(items);
-              }
+              await DatabaseHelper.inseartRow(
+                  items, titleDBId!, vehicalNumbrColumIndex);
+              // if (rows.length < 502) {
+              //   rows.add(items);
+              // } else {
+              //   await DatabaseHelper.bulkInsertVehicleNumbers(
+              //     rows,
+              //     titleDBId,
+              //     vehicalNumbrColumIndex,
+              //     titles,
+              //   );
+              //   rows.clear();
+              //   rows.add(items);
+              // }
 
               count++;
             } else {
@@ -78,14 +87,25 @@ class CsvFileServices {
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-      if (rows.isNotEmpty && found) {
-        await DatabaseHelper.bulkInsertVehicleNumbers(
-            rows, titleDBId, vehicalNumbrColumIndex!, titles);
-        rows.clear();
+      // if (rows.isNotEmpty && found) {
+      //   await DatabaseHelper.bulkInsertVehicleNumbers(
+      //       rows, titleDBId, vehicalNumbrColumIndex!, titles);
+      //   rows.clear();
+      // }
+      await Storage.addEntryCount(count);
+      count = 0;
+      await Storage.addProcessedFileIndex(i);
+      var endTime = DateTime.now();
+      var duration = endTime.difference(startTime);
+      if (context.mounted) {
+        log('updating estimated ');
+        print(duration);
+        context.read<HomeCubit>().updateEstimatedTime(
+            duration.inSeconds * (files.length - unreadFileIndex));
       }
     }
     streamController.sink.add(null);
-    await Storage.addEntryCount(count);
+    // await Storage.addEntryCount(count);
   }
 
   static Future<void> _downloadFile(
@@ -152,6 +172,7 @@ class CsvFileServices {
   static Future<void> updateData(
     String agencyId,
     StreamController<Map<String, int>?> streamController,
+    BuildContext context,
   ) async {
     var files = await getExcelFiles();
     // getAndStoreTitles("2");
@@ -160,22 +181,11 @@ class CsvFileServices {
     await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);
 
     files = await getExcelFiles();
-    int entryCount = await Storage.getEntryCount();
-    if (entryCount > 0) {
-      List<File> res = files
-          .where((element) =>
-              !fileNames.contains(basenameWithoutExtension(element.path)))
-          .toList();
-      await _proccessFiles(
-        streamController,
-        res,
-      );
-    } else {
-      await _proccessFiles(
-        streamController,
-        files,
-      );
-    }
+    await _proccessFiles(
+      streamController,
+      context,
+      files,
+    );
   }
 
   static List<String> _splitStringIgnoringQuotes(String input) {
