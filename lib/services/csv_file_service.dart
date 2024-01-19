@@ -55,11 +55,15 @@ class CsvFileServices {
             }
           } else {
             if (vehicalNumbrColumIndex != null) {
-              if (rows.length < 1002) {
+              if (rows.length < 502) {
                 rows.add(items);
               } else {
                 await DatabaseHelper.bulkInsertVehicleNumbers(
-                    rows, titleDBId, vehicalNumbrColumIndex, titles);
+                  rows,
+                  titleDBId,
+                  vehicalNumbrColumIndex,
+                  titles,
+                );
                 rows.clear();
                 rows.add(items);
               }

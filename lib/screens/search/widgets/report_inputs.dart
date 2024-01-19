@@ -244,6 +244,7 @@ class _ReportInputsState extends State<ReportInputs> {
                     widget.details,
                     widget.status,
                     context.read<HomeCubit>().state.user!.agent_name,
+                    context.read<HomeCubit>().state.user!.number,
                     _addressController.text,
                     locationUrl,
                     _loadController.text,
@@ -261,7 +262,7 @@ class _ReportInputsState extends State<ReportInputs> {
                 icon: Image.asset(IconAssets.sms_ic),
                 onPressed: () {
                   Utils.sendSMS(
-                    '${Utils.formatMap(widget.details)}  ${locationUrl != null ? "location : $locationUrl" : ""} \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n  Reporting by : ${context.read<HomeCubit>().state.user!.agent_name}',
+                    '${Utils.formatMap(widget.details)}  ${locationUrl != null ? "location : $locationUrl" : ""} \n Reporting address : ${_addressController.text} \n carries Goods : ${_loadController.text} \n \n status : ${widget.status} \n ${context.read<HomeCubit>().state.user!.agent_name} : +91 ${context.read<HomeCubit>().state.user!.number}',
                     widget.status,
                   );
                 },

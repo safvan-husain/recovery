@@ -30,7 +30,9 @@ class SearchScreen1State extends State<SearchScreen1> {
   }
 
   CancelableOperation<List<SearchResultItem>>? operation;
+  List<SearchResultItem> displayItems = [];
   List<SearchResultItem> items = [];
+  List<SearchResultItem>? filteredItems;
   @override
   void dispose() {
     // _streamController.close();
@@ -100,38 +102,24 @@ class SearchScreen1State extends State<SearchScreen1> {
                           )),
                       controller: _controller,
                       onChanged: (value) async {
-                        if (context.mounted) {
-                          setState(() {
-                            isAllNumbers = RegExp(r'^\d+$').hasMatch(value);
-                            _isSearchComplete = false;
-                          });
-                        }
-                        if (operation != null) {
-                          operation!.cancel();
-                        }
-                        if (value.isNotEmpty) {
-                          operation = CancelableOperation.fromFuture(
-                            DatabaseHelper.showForPrefix(
-                                Utils.removeHyphens(_controller.text)),
+                        if (value.length == 4) {
+                          items = await DatabaseHelper.getResult(
+                            Utils.removeHyphens(_controller.text),
                           );
+                          displayItems = items;
+                          filteredItems = null;
+                          _isSearchComplete = true;
+                        } else {
+                          _isSearchComplete = false;
                         }
-
-                        if (operation != null) {
-                          try {
-                            items = await operation!.value;
-                            _isSearchComplete = true;
-                            if (context.mounted) setState(() {});
-                          } catch (e) {
-                            log("guss the operation canceld");
-                          }
-                        }
+                        setState(() {});
                       },
                     ),
                   ),
                 ],
               ),
             ),
-            if (isAllNumbers && _isSearchComplete) ...[
+            if (_isSearchComplete && _controller.text.length == 4) ...[
               Container(
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -164,29 +152,8 @@ class SearchScreen1State extends State<SearchScreen1> {
                       prefixIconConstraints: const BoxConstraints(minWidth: 50),
                     ),
                     onChanged: (value) async {
-                      if (value.isEmpty) {
-                        if (operation != null) {
-                          operation!.cancel();
-                        }
-                        if (_controller.text.isNotEmpty) {
-                          operation = CancelableOperation.fromFuture(
-                            DatabaseHelper.showForPrefix(
-                              Utils.removeHyphens(_controller.text),
-                            ),
-                          );
-                        }
-
-                        if (operation != null) {
-                          try {
-                            items = await operation!.value;
-                            _isSearchComplete = true;
-                            if (context.mounted) setState(() {});
-                          } catch (e) {
-                            log("guss the operation canceld");
-                          }
-                        }
-                      } else {
-                        items = items
+                      if (value.isNotEmpty) {
+                        displayItems = items
                             .where((element) => element.item.contains(value))
                             .toList();
                       }
@@ -199,7 +166,7 @@ class SearchScreen1State extends State<SearchScreen1> {
             const SizedBox(
               height: 10,
             ),
-            if (items.isEmpty &&
+            if (displayItems.isEmpty &&
                 _controller.text.isNotEmpty &&
                 _isSearchComplete) ...[
               const SizedBox(
@@ -211,9 +178,10 @@ class SearchScreen1State extends State<SearchScreen1> {
             ] else if (_isSearchComplete)
               Container(
                 padding: EdgeInsets.all(10),
-                height: MediaQuery.of(context).size.height -
-                    (isAllNumbers && _isSearchComplete ? 250 : 150),
+                // height: MediaQuery.of(context).size.height -
+                //     (isAllNumbers && _isSearchComplete ? 250 : 150),
                 child: ListView.separated(
+                  shrinkWrap: true,
                   separatorBuilder: (context, index) {
                     return Divider(
                       indent: 20,
@@ -222,9 +190,8 @@ class SearchScreen1State extends State<SearchScreen1> {
                     );
                   },
                   itemCount: context.read<HomeCubit>().state.isTwoColumnSearch
-                      ? ((items.length + 1) ~/
-                          2) // Corrected itemCount calculation
-                      : items.length,
+                      ? ((displayItems.length + 1) ~/ 2)
+                      : displayItems.length,
                   itemBuilder: (context, index) {
                     if (context.read<HomeCubit>().state.isTwoColumnSearch) {
                       return SizedBox(
@@ -235,7 +202,7 @@ class SearchScreen1State extends State<SearchScreen1> {
                             Expanded(
                                 child: _itemListTile(context,
                                     index * 2)), // First item in the row
-                            if (index * 2 + 1 < items.length) ...[
+                            if (index * 2 + 1 < displayItems.length) ...[
                               // Check if there is a second item
                               VerticalDivider(
                                 color: Colors.grey[300],
@@ -252,12 +219,14 @@ class SearchScreen1State extends State<SearchScreen1> {
                   },
                 ),
               )
-            else
+            else if (_controller.text.length == 4)
               Container(
                 height: 500,
                 alignment: Alignment.center,
                 child: const CircularProgressIndicator(),
-              ),
+              )
+            else
+              const SizedBox(),
           ],
         ),
       ),
@@ -270,11 +239,11 @@ class SearchScreen1State extends State<SearchScreen1> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (c) => ItemScreen(
-              rowId: items[index].rowIds[0],
+              rowId: displayItems[index].rowIds[0],
               rowIds: context.read<HomeCubit>().state.user!.isStaff
-                  ? items[index].rowIds
+                  ? displayItems[index].rowIds
                   : null,
-              heroTag: items[index].item.toUpperCase(),
+              heroTag: displayItems[index].item.toUpperCase(),
             ),
           ),
         );
@@ -283,7 +252,7 @@ class SearchScreen1State extends State<SearchScreen1> {
         alignment: Alignment.center,
         // padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Text(
-          items[index].item.toUpperCase(),
+          displayItems[index].item.toUpperCase(),
           style: GoogleFonts.poppins(
             fontSize: 19,
             fontWeight: FontWeight.bold,

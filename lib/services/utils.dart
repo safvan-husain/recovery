@@ -56,12 +56,13 @@ class Utils {
     String status,
     // String message,
     String agencyName,
+    String phone,
     String address, [
     String? location,
     String? load,
   ]) async {
     var text =
-        '${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n Status : $status \n carries Goods : $load \n  Reporting by : $agencyName';
+        '${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n carries Goods : $load   \n  \n Status : $status \n  \n $agencyName : +91 $phone';
     String url = 'whatsapp://send?&text=$text';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -71,7 +72,16 @@ class Utils {
   }
 
   static String formatMap(Map<String, String> map) {
+    List<String> shareableKey = [
+      "vehical no",
+      "chassis no",
+      "model/make",
+      "engine no",
+      "agreement no",
+      "customer name"
+    ];
     return map.entries
+        .where((element) => shareableKey.contains(element.key))
         .map((entry) => '${entry.key} : ${entry.value}')
         .join('\n');
   }

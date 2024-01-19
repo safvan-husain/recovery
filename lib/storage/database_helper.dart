@@ -25,8 +25,7 @@ class DatabaseHelper {
         await db.execute('''CREATE TABLE $trie (
   id INTEGER PRIMARY KEY,
   $charColum TEXT,
-  og TEXT,
-  children TEXT
+  og TEXT
 )''');
       },
       version: 1,
@@ -36,85 +35,6 @@ class DatabaseHelper {
   static Future<void> deleteAllData() async {
     await _database.delete(jsonStore);
     await _database.delete(trie);
-  }
-
-  static Future<Node> _getNode(
-    int id,
-    Transaction? txn,
-  ) async {
-    if (txn == null) {
-      var nodeList = await _database.query(
-        trie,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-      if (nodeList.isEmpty) {
-        if (id == 1) {
-          await _database
-              .insert(trie, {charColum: 'root', 'children': '{}', 'og': '{}'});
-          nodeList = await _database.query(
-            trie,
-            where: '$charColum = ?',
-            whereArgs: ['root'],
-          );
-        } else {
-          throw ("no node with $id");
-        }
-      }
-      return Node.fromMap(nodeList[0]);
-    }
-    var nodeList = await txn.query(
-      trie,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-    if (nodeList.isEmpty) {
-      if (id == 1) {
-        await txn
-            .insert(trie, {charColum: 'root', 'children': '{}', 'og': '{}'});
-        nodeList = await txn.query(
-          trie,
-          where: '$charColum = ?',
-          whereArgs: ['root'],
-        );
-      } else {
-        throw ("no node with $id");
-      }
-    }
-    return Node.fromMap(nodeList[0]);
-  }
-
-  static Future<void> _updateNode(
-    int id,
-    String children,
-    Batch batch,
-  ) async {
-    batch.update(
-      trie,
-      {'children': children},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
-  static Future<int> _createNode(
-    String char,
-    Transaction txn, [
-    int? rowId,
-    String? og,
-  ]) async {
-    return await txn.insert(
-      trie,
-      {
-        charColum: char,
-        'children': '{}',
-        'og': og == null
-            ? "{}"
-            : jsonEncode({
-                og: [rowId]
-              })
-      },
-    );
   }
 
   static Future<int> inseartTitles(
@@ -153,12 +73,12 @@ class DatabaseHelper {
     List<String> titles,
   ) async {
     await _database.transaction((txn) async {
+      var batch = txn.batch();
       for (var row in rows) {
-        var batch = txn.batch();
         titlesId ??= await inseartTitles(titles, txn);
         await _inseartRow(row, titlesId!, vehicalNumbrColumIndex, txn, batch);
-        await batch.commit();
       }
+      await batch.commit();
     });
   }
 
@@ -170,47 +90,60 @@ class DatabaseHelper {
     bool isStaff,
     Batch batch,
   ) async {
-    Node? node;
-    int nodeId = 1;
-    Map<String, dynamic> children = {};
-
-    for (var i = 0; i < word.length; i++) {
-      var charecter = word[i];
-      bool isLastChar = i == word.length - 1;
-      node = await _getNode(nodeId, txn);
-      children = node.children;
-      if (children.containsKey(charecter)) {
-        nodeId = children[charecter];
-        if (isLastChar) {
-          node = await _getNode(nodeId, txn);
-          Map<String, List<int>> ogs = {};
-          ogs = node.og;
-          if (!ogs.entries.map((e) => e.key).contains(og)) {
-            ogs[og] = [rowId];
-            batch.update(trie, {'og': jsonEncode(ogs)},
-                where: 'id = ?', whereArgs: [node.dbId]);
-          } else {
-            if (isStaff) {
-              List<int> rowIds = {...ogs[og]!, rowId}.toList();
-              ogs[og] = rowIds;
-              batch.update(trie, {'og': jsonEncode(ogs)},
-                  where: 'id = ?', whereArgs: [node.dbId]);
-            }
-          }
-        }
+    var result = await txn.query(
+      trie,
+      where: '$charColum = ?',
+      whereArgs: [word],
+    );
+    if (result.isEmpty) {
+      await txn.insert(
+        trie,
+        {
+          charColum: word,
+          "og": jsonEncode({
+            og: [rowId]
+          })
+        },
+      );
+    } else {
+      Map<String, dynamic> ogs = jsonDecode(result[0]['og'] as String);
+      if (ogs.containsKey(og)) {
+        ogs[og] = [...ogs[og]!, og];
       } else {
-        late int newNodeId;
-        if (isLastChar) {
-          // saving time of execution, doesn't need new id becuse this is the last in the word.
-          newNodeId = await _createNode(charecter, txn, rowId, og);
-        } else {
-          newNodeId = await _createNode(charecter, txn);
+        ogs[og] = [og];
+      }
+
+      batch.update(
+        trie,
+        {"og": jsonEncode(ogs)},
+        where: '$charColum = ?',
+        whereArgs: [word],
+      );
+    }
+  }
+
+  static Future<List<SearchResultItem>> getResult(String number) async {
+    List<SearchResultItem> list = [];
+    var results = await _database.query(
+      trie,
+      where: '$charColum = ?',
+      whereArgs: [number],
+    );
+    if (results.isNotEmpty) {
+      for (var result in results) {
+        Map<String, dynamic> items = jsonDecode(result['og'] as String);
+        for (var item in items.entries) {
+          List<int> rowIds = item.value.cast<int>();
+          list.add(
+            SearchResultItem(
+              item: item.key,
+              rowIds: rowIds,
+            ),
+          );
         }
-        children[charecter] = newNodeId;
-        _updateNode(nodeId, jsonEncode(children), batch);
-        nodeId = newNodeId;
       }
     }
+    return list;
   }
 
   static Future<Map<String, String>?> getDetails(int rowId) async {
@@ -245,54 +178,6 @@ class DatabaseHelper {
     return null;
   }
 
-  static Future<List<SearchResultItem>> showForPrefix(
-    String prefix,
-  ) async {
-    List<SearchResultItem> results = [];
-    int nodeId = 1; // Assuming the root node has id 1
-    for (var i = 0; i < prefix.length; i++) {
-      var character = prefix[i];
-      var node = await _getNode(nodeId, null);
-      var children = node.children;
-      if (!children.containsKey(character)) {
-        return [];
-      }
-      nodeId = children[character]!;
-    }
-
-    // Now we have the node corresponding to the last character of the prefix
-    // We need to collect all words that start with this prefix
-    await _collectWords(nodeId, prefix, results);
-
-    // print(results.length);
-    return results;
-  }
-
-  static Future<void> _collectWords(
-    int nodeId,
-    String prefix,
-    List<SearchResultItem> results,
-  ) async {
-    var node = await _getNode(nodeId, null);
-    var children = node.children;
-    if (children.isNotEmpty) {
-      for (var childCharacter in children.keys) {
-        await _collectWords(
-          children[childCharacter]!,
-          prefix + childCharacter,
-          results,
-        );
-      }
-    } else {
-      if (node.og.isNotEmpty) {
-        for (var element in node.og.entries) {
-          results
-              .add(SearchResultItem(item: element.key, rowIds: element.value));
-        }
-      }
-    }
-  }
-
   static Future<List<String?>> getBranches(List<int> rowIds) async {
     List<String?> branches = [];
     for (var element in rowIds) {
@@ -310,30 +195,6 @@ class DatabaseHelper {
     // return [];
     return branches;
   }
-
-  // static Future<List<String?>> getBranches(List<int> rowIds) async {
-  //   List<String?> branches = [];
-  //   for (var element in rowIds) {
-  //     try {
-  //       var rows = await _database
-  //           .query(jsonStore, where: 'id = ?', whereArgs: [element]);
-  //       var tites = await _database
-  //           .query(jsonStore, where: 'id = ?', whereArgs: [rows[0]['titleId']]);
-  //       var mapDetails = getObject(rows[0]['json_string'] as String,
-  //           tites[0]['json_string'] as String);
-  //       if (mapDetails.containsKey('BRANCH')) {
-  //         branches.add(mapDetails['BRANCH']!);
-  //       } else {
-  //         branches.add(null);
-  //       }
-  //     } catch (e) {
-  //       print(e);
-  //       rethrow;
-  //     }
-  //   }
-  //   // return [];
-  //   return branches;
-  // }
 }
 
 Map<String, String> getObject(String rowValues, String titles) {

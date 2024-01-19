@@ -263,6 +263,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
           context: context,
           builder: (c) {
             String agentName = context.read<HomeCubit>().state.user!.agent_name;
+            String phone = context.read<HomeCubit>().state.user!.number;
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -272,6 +273,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       details,
                       'Bank for confirmation',
                       agentName,
+                      phone,
                       '',
                     );
                   },
@@ -289,6 +291,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       details,
                       'Ok for confirmation',
                       agentName,
+                      phone,
                       '',
                     );
                   },
@@ -306,6 +309,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       details,
                       'Not confirmed',
                       agentName,
+                      phone,
                       '',
                     );
                   },
