@@ -17,14 +17,12 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeState.initial());
 
-  final HomeServices _homeServices = HomeServices();
-
   void setUser(UserModel user) {
-    emit(state.copywith(user: user));
+    emit(state.copyWith(user: user));
   }
 
   void homeInitialization() async {
-    emit(state.copywith(
+    emit(state.copyWith(
       changeType: ChangeType.vehicleOwnerListUpdated,
       isTwoColumnSearch: await Storage.getIsTwoColumnSearch(),
       entryCount: await Storage.getEntryCount(),
@@ -43,44 +41,43 @@ class HomeCubit extends Cubit<HomeState> {
     } else {
       timeString = "$minutes minutes";
     }
-    emit(state.copywith(estimatedTime: timeString));
+    emit(state.copyWith(estimatedTime: timeString));
   }
 
-  Future<String> downloadData(
+  Future<void> downloadData(
     BuildContext context,
   ) async {
-    emit(state.copywith(changeType: ChangeType.loading));
-    log("agency id : ${state.user!.agencyId}"); //TODO: agencyid.
-    String error = '';
+    emit(state.copyWith(changeType: ChangeType.loading));
     try {
-      await CsvFileServices.updateData("1", state.streamController, context);
+      await CsvFileServices.updateData(
+        // state.user!.agencyId,
+        "2", state.streamController,
+        context,
+      );
     } catch (e) {
       print(e);
-      // error = e.toString();
     }
-    emit(state.copywith(
+    emit(state.copyWith(
       changeType: ChangeType.vehicleOwnerListUpdated,
       entryCount: await Storage.getEntryCount(),
     ));
-    return error;
   }
 
   void updateIsColumSearch(bool isColumSearch) {
     Storage.setIsTwoColumSearch(isColumSearch);
     emit(
-      state.copywith(isTwoColumnSearch: isColumSearch),
+      state.copyWith(isTwoColumnSearch: isColumSearch),
     );
   }
 
   void deleteAllData() async {
-    log('delete called');
-    emit(state.copywith(changeType: ChangeType.loading));
+    emit(state.copyWith(changeType: ChangeType.loading));
     await CsvFileServices.deleteAllFilesInVehicleDetails();
     await DatabaseHelper.deleteAllData();
     await Storage.addProcessedFileIndex(0);
     await Storage.emptyEntryCount();
 
-    emit(state.copywith(
+    emit(state.copyWith(
       changeType: ChangeType.vehicleOwnerListUpdated,
       entryCount: 0,
     ));

@@ -38,7 +38,7 @@ class HomeState {
     );
   }
 
-  HomeState copywith({
+  HomeState copyWith({
     UserModel? user,
     List<String>? couselImages,
     StreamController<Map<String, int>?>? streamController,

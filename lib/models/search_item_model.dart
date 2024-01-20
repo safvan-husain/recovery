@@ -1,13 +1,9 @@
-import 'dart:convert';
-
 class SearchResultItem {
   final String item;
-  // final Node node;
   final List<Map<String, String>> rows;
 
   SearchResultItem({
     required this.item,
-    // required this.node,
     required this.rows,
   });
 

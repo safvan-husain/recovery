@@ -62,35 +62,5 @@ ThemeData getApplicationTheme() {
           color: Colors.grey,
           fontSize: FontSize.s20,
         )),
-
-    // Input Decoration Theme (text formFeild)
-    // inputDecorationTheme: InputDecorationTheme(
-    //   contentPadding: EdgeInsets.all(AppPadding.p8),
-    //   hintStyle: getRegularStyle(color: ColorManager.grey1), // Hint Style
-    //   labelStyle: getMediumStyle(color: ColorManager.darkGrey), //Label Style
-    //   errorStyle: getRegularStyle(color: ColorManager.error), //Error Style
-
-    //   enabledBorder: OutlineInputBorder(
-    //     borderSide: BorderSide(color: ColorManager.grey, width: AppSize.s1_5),
-    //     borderRadius: const BorderRadius.all(Radius.circular(AppSize.s8)),
-    //   ), //Enabled Border
-
-    //   focusedBorder: OutlineInputBorder(
-    //     borderSide:
-    //         BorderSide(color: ColorManager.primary, width: AppSize.s1_5),
-    //     borderRadius: const BorderRadius.all(Radius.circular(AppSize.s8)),
-    //   ), //Focused Border
-
-    //   errorBorder: OutlineInputBorder(
-    //     borderSide: BorderSide(color: ColorManager.error, width: AppSize.s1_5),
-    //     borderRadius: const BorderRadius.all(Radius.circular(AppSize.s8)),
-    //   ), //Error Border
-
-    //   focusedErrorBorder: OutlineInputBorder(
-    //     borderSide:
-    //         BorderSide(color: ColorManager.primary, width: AppSize.s1_5),
-    //     borderRadius: const BorderRadius.all(Radius.circular(AppSize.s8)),
-    //   ), //Focused Error Border
-    // ),
   );
 }

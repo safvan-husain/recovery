@@ -24,7 +24,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     "Settings": Icons.settings,
     "Account": FontAwesomeIcons.user,
   };
-  void initilizePages() {
+  void initializePages() {
     if (context.read<HomeCubit>().state.user!.isStaff) {
       navBarItems = {
         "Home": FontAwesomeIcons.house,
@@ -50,7 +50,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   void initState() {
-    initilizePages();
+    initializePages();
     super.initState();
   }
 

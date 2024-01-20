@@ -34,8 +34,7 @@ class CsvFileServices {
       final reader = file.openRead();
       final decoder = utf8.decoder;
       var buffer = '';
-      int? titleDBId;
-      int? vehicalNumbrColumIndex;
+      int? vehicleNumberColumIndex;
       bool found = false;
       await for (var data in reader) {
         buffer += decoder.convert(data);
@@ -47,12 +46,11 @@ class CsvFileServices {
           items.add(basenameWithoutExtension(file.path));
 
           if (!found) {
-            //TODO: vehivle column title.
             titles = items.map((e) => e.toLowerCase()).toList();
 
             for (var title in titleList) {
               if (titles.contains(title.toLowerCase())) {
-                vehicalNumbrColumIndex = titles.indexOf(title.toLowerCase());
+                vehicleNumberColumIndex = titles.indexOf(title.toLowerCase());
                 found = true;
                 break;
               }
@@ -61,15 +59,14 @@ class CsvFileServices {
               break;
             }
           } else {
-            if (vehicalNumbrColumIndex != null) {
-              // await DatabaseHelper.inseartRow(items, vehicalNumbrColumIndex);
+            if (vehicleNumberColumIndex != null) {
               if (rows.length < 1002) {
                 rows.add(items);
               } else {
                 await DatabaseHelper.bulkInsertVehicleNumbers(
                   rows,
                   titles,
-                  vehicalNumbrColumIndex,
+                  vehicleNumberColumIndex,
                 );
                 rows.clear();
                 rows.add(items);
@@ -89,7 +86,7 @@ class CsvFileServices {
         await DatabaseHelper.bulkInsertVehicleNumbers(
           rows,
           titles,
-          vehicalNumbrColumIndex!,
+          vehicleNumberColumIndex!,
         );
         rows.clear();
       }
@@ -99,14 +96,11 @@ class CsvFileServices {
       var endTime = DateTime.now();
       var duration = endTime.difference(startTime);
       if (context.mounted) {
-        log('updating estimated ');
-        print(duration);
         context.read<HomeCubit>().updateEstimatedTime(
             duration.inMicroseconds * (files.length - unreadFileIndex));
       }
     }
     streamController.sink.add(null);
-    // await Storage.addEntryCount(count);
   }
 
   static Future<void> _downloadFile(
@@ -182,11 +176,15 @@ class CsvFileServices {
     await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);
 
     files = await getExcelFiles();
-    await _proccessFiles(
-      streamController,
-      context,
-      files,
-    );
+    if (context.mounted) {
+      await _proccessFiles(
+        streamController,
+        context,
+        files,
+      );
+    } else {
+      print("process context not mounted");
+    }
   }
 
   static List<String> _splitStringIgnoringQuotes(String input) {

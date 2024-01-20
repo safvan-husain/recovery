@@ -1,14 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/utils.dart';
-import 'package:recovery_app/storage/node_model.dart';
+import 'package:recovery_app/models/search_item_model.dart';
 
 class DatabaseHelper {
   // DatabaseHelper._internal();
@@ -34,7 +32,6 @@ class DatabaseHelper {
   }
 
   static Future<void> deleteAllData() async {
-    // await _database.delete(jsonStore);
     await _database.delete(trie);
   }
 
@@ -68,8 +65,6 @@ class DatabaseHelper {
       await _insertString(res.$2, row, titles, s, true, batch);
     }
   }
-
-  static List<Map<String, dynamic>> vehicleNumbersToInsert = [];
 
   static Future<void> _insertString(
     String word,
@@ -138,7 +133,6 @@ class DatabaseHelper {
         );
       } catch (e) {
         print(e);
-        rethrow;
       }
     }
     // return [];
@@ -155,27 +149,4 @@ class BankBranch {
     required this.branch,
     required this.fileName,
   });
-}
-
-Map<String, String> getObject(String rowValues, String titles) {
-  List<dynamic> rowMapDynamic = jsonDecode(rowValues);
-  List<String> rowMap = rowMapDynamic.map((e) => e.toString()).toList();
-
-  List<dynamic> titleMapDynamic = jsonDecode(titles);
-  List<String> titleMap = titleMapDynamic.map((e) => e.toString()).toList();
-  Map<String, String> result = {};
-  for (var i = 0; i < rowMap.length; i++) {
-    var title = titleMap[i];
-    String value = rowMap[i];
-    result[title] = value;
-  }
-  if (rowMap.length < titleMap.length) {
-    result['File name'] = titleMap.last;
-  }
-
-  return result;
-}
-
-void redLog(String s) {
-  print('\x1B[31mThis is a red message\x1B[0m');
 }

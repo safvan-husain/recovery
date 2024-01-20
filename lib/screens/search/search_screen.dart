@@ -9,7 +9,7 @@ import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/search/item_screen.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
-import 'package:recovery_app/storage/node_model.dart';
+import 'package:recovery_app/models/search_item_model.dart';
 
 class SearchScreen1 extends StatefulWidget {
   const SearchScreen1({super.key});

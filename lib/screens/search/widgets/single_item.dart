@@ -72,7 +72,6 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
   }
 
   bool _isReporting = false;
-  Map<String, String> vehicleDetails = {};
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +149,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                                 titles.fold(
                                   {},
                                   (map, e) {
-                                    map[e] = vehicleDetails[e] ?? "";
+                                    map[e] = widget.details[e] ?? "";
                                     return map;
                                   },
                                 ),
@@ -184,11 +183,11 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                 titles.fold(
                   {},
                   (map, e) {
-                    map[e] = vehicleDetails[e] ?? "";
+                    map[e] = widget.details[e] ?? "";
                     return map;
                   },
                 ),
-                '',
+                'Report',
               ),
               const SizedBox(height: 10),
               ElevatedButton(
