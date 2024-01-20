@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,6 +41,7 @@ class CsvFileServices {
           var line = buffer.substring(0, lineEndIndex);
 
           var items = _splitStringIgnoringQuotes(line);
+          //adding file name which contain info about finance and branch for adding it into the details.
           items.add(basenameWithoutExtension(file.path));
 
           if (!found) {
@@ -96,8 +95,9 @@ class CsvFileServices {
       var endTime = DateTime.now();
       var duration = endTime.difference(startTime);
       if (context.mounted) {
-        context.read<HomeCubit>().updateEstimatedTime(
-            duration.inMicroseconds * (files.length - unreadFileIndex));
+        context
+            .read<HomeCubit>()
+            .updateEstimatedTime(duration.inMicroseconds * (files.length - i));
       }
     }
     streamController.sink.add(null);

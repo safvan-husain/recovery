@@ -8,7 +8,6 @@ import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/search/widgets/report_inputs.dart';
 import 'package:recovery_app/screens/search/widgets/report_screen.dart';
 import 'package:recovery_app/services/utils.dart';
-import 'package:recovery_app/storage/database_helper.dart';
 
 class SingleItemScreen extends StatefulWidget {
   final Map<String, String> details;

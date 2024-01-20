@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-
-class AppMargin{
+class AppMargin {
   static const double m8 = 8.0;
   static const double m12 = 12.0;
   static const double m14 = 14.0;
@@ -9,7 +7,7 @@ class AppMargin{
   static const double m20 = 20.0;
 }
 
-class AppPadding{
+class AppPadding {
   static const double p4 = 4.0;
   static const double p8 = 8.0;
   static const double p12 = 12.0;
@@ -21,7 +19,7 @@ class AppPadding{
   static const double p40 = 40.0;
 }
 
-class AppSize{
+class AppSize {
   static const double s0 = 0;
   static const double s1_5 = 1.5;
   static const double s4 = 4.0;
@@ -41,6 +39,6 @@ class AppSize{
   static const double s150 = 150.0;
 }
 
-class DurationConstant{
+class DurationConstant {
   static const int d300 = 300;
 }

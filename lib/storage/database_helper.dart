@@ -9,21 +9,18 @@ import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/models/search_item_model.dart';
 
 class DatabaseHelper {
-  // DatabaseHelper._internal();
   static late final Database _database;
-  static var jsonStore = 'json_store';
-  static var trie = 'trie';
-  static var charColum = 'charecter';
+  static var tableVehicleInfo = 'trie';
+  static var last4digitVehicleNumber = 'Number';
 
   static Future<void> initializeDatabase() async {
     _database = await openDatabase(
       join(await getDatabasesPath(), 'your_database.db'),
       onCreate: (db, version) async {
-        // Create your tables here
-        await db.execute('''CREATE TABLE $trie (
+        await db.execute('''CREATE TABLE $tableVehicleInfo (
   id INTEGER PRIMARY KEY,
-  $charColum TEXT,
-  og TEXT,
+  $last4digitVehicleNumber TEXT,
+  completeVehicleNumber TEXT,
   details TEXT
 )''');
       },
@@ -32,7 +29,7 @@ class DatabaseHelper {
   }
 
   static Future<void> deleteAllData() async {
-    await _database.delete(trie);
+    await _database.delete(tableVehicleInfo);
   }
 
   static Future<void> bulkInsertVehicleNumbers(
@@ -55,10 +52,10 @@ class DatabaseHelper {
   static Future<void> _insertRow(
     List<String> row,
     List<String> titles,
-    int vehicalNumbrColumIndex,
+    int vehicleNumberColumIndex,
     Batch batch,
   ) async {
-    var s = Utils.removeHyphens(row.elementAt(vehicalNumbrColumIndex));
+    var s = Utils.removeHyphens(row.elementAt(vehicleNumberColumIndex));
 
     var res = Utils.checkLastFourChars(s);
     if (res.$1) {
@@ -70,7 +67,7 @@ class DatabaseHelper {
     String word,
     List<String> row,
     List<String> titles,
-    String og,
+    String completeVehicleNumber,
     bool isStaff,
     Batch batch,
   ) async {
@@ -78,15 +75,16 @@ class DatabaseHelper {
     for (var i = 0; i < titles.length; i++) {
       details[titles[i]] = row[i];
     }
+    //row.last is the filename given from the server, it contain information about finance and branch.
     List<String> content = row.last.split("______");
     details["file name"] = content[0];
     details["finance"] = content[1];
     details["branch"] = content[2];
     batch.insert(
-      trie,
+      tableVehicleInfo,
       {
-        charColum: word,
-        "og": og,
+        last4digitVehicleNumber: word,
+        "completeVehicleNumber": completeVehicleNumber,
         'details': jsonEncode(details),
       },
     );
@@ -95,8 +93,8 @@ class DatabaseHelper {
   static Future<List<SearchResultItem>> getResult(String number) async {
     List<SearchResultItem> list = [];
     var results = await _database.query(
-      trie,
-      where: '$charColum = ?',
+      tableVehicleInfo,
+      where: '$last4digitVehicleNumber = ?',
       whereArgs: [number],
     );
     if (results.isNotEmpty) {
@@ -110,7 +108,7 @@ class DatabaseHelper {
         });
         list.add(
           SearchResultItem(
-            item: element['og'] as String,
+            item: element['completeVehicleNumber'] as String,
             rows: [stringDetails],
           ),
         );

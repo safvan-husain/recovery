@@ -30,6 +30,7 @@ class Utils {
     if (str.length < 5) {
       return (false, '');
     }
+    //last four digit in vehicle registration number.
     String lastFour = str.substring(str.length - 4);
     bool isAllNumbers = RegExp(r'^\d+$').hasMatch(lastFour);
     return (isAllNumbers, lastFour);

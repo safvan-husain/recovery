@@ -3,17 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recovery_app/resources/theme_manager.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/initialScreen.dart';
-import 'package:recovery_app/screens/authentication/otp_login.dart';
-import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/storage/database_helper.dart';
-import 'package:recovery_app/storage/user_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseHelper.initializeDatabase();
-  // await CsvFileServices.deleteAllFilesInVehicleDetails();
-  // await DatabaseHelper.deleteAllData();
-  // await Storage.emptyEntryCount();
 
   runApp(
     MultiBlocProvider(

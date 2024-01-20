@@ -176,47 +176,49 @@ class SearchScreen1State extends State<SearchScreen1> {
                 child: Text("No search results for ${_controller.text}"),
               )
             ] else if (_isSearchComplete)
-              Container(
-                padding: EdgeInsets.all(10),
-                // height: MediaQuery.of(context).size.height -
-                //     (isAllNumbers && _isSearchComplete ? 250 : 150),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  separatorBuilder: (context, index) {
-                    return Divider(
-                      indent: 20,
-                      endIndent: 20,
-                      color: Colors.grey[300],
-                    );
-                  },
-                  itemCount: context.read<HomeCubit>().state.isTwoColumnSearch
-                      ? ((displayItems.length + 1) ~/ 2)
-                      : displayItems.length,
-                  itemBuilder: (context, index) {
-                    if (context.read<HomeCubit>().state.isTwoColumnSearch) {
-                      return SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: 40,
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: _itemListTile(context,
-                                    index * 2)), // First item in the row
-                            if (index * 2 + 1 < displayItems.length) ...[
-                              // Check if there is a second item
-                              VerticalDivider(
-                                color: Colors.grey[300],
-                              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) {
+                      return Divider(
+                        indent: 20,
+                        endIndent: 20,
+                        color: Colors.grey[300],
+                      );
+                    },
+                    itemCount: context.read<HomeCubit>().state.isTwoColumnSearch
+                        ? ((displayItems.length + 1) ~/ 2)
+                        : displayItems.length,
+                    itemBuilder: (context, index) {
+                      if (context.read<HomeCubit>().state.isTwoColumnSearch) {
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 40,
+                          child: Row(
+                            children: [
                               Expanded(
                                   child: _itemListTile(context,
-                                      index * 2 + 1)) // Second item in the row
+                                      index * 2)), // First item in the row
+                              if (index * 2 + 1 < displayItems.length) ...[
+                                // Check if there is a second item
+                                VerticalDivider(
+                                  color: Colors.grey[300],
+                                ),
+                                Expanded(
+                                    child: _itemListTile(
+                                        context,
+                                        index * 2 +
+                                            1)) // Second item in the row
+                              ],
                             ],
-                          ],
-                        ),
-                      );
-                    }
-                    return _itemListTile(context, index);
-                  },
+                          ),
+                        );
+                      }
+                      return _itemListTile(context, index);
+                    },
+                  ),
                 ),
               )
             else if (_controller.text.length == 4)

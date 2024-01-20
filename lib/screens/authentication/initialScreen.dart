@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
-import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
-import 'package:recovery_app/screens/HomePage/home_page.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/storage/user_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class InitialScreen extends StatefulWidget {
   const InitialScreen({super.key});
