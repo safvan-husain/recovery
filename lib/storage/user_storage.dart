@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:recovery_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,13 +50,10 @@ class Storage {
   }
 
   static Future<void> emptyEntryCount() async {
+    print('empty entry count');
     var sharedPreference = await SharedPreferences.getInstance();
-    int? currentCunt = sharedPreference.getInt('count');
-    if (currentCunt != null) {
-      await sharedPreference.setInt("count", 0);
-    } else {
-      await sharedPreference.setInt("count", 0);
-    }
+    await sharedPreference.setInt("count", 0);
+    log(sharedPreference.getInt('count').toString());
   }
 
   static Future<void> setIsTwoColumSearch(bool value) async {

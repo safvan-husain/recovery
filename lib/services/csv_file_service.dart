@@ -25,6 +25,7 @@ class CsvFileServices {
     var files = csvFiles ?? await getExcelFiles();
     int unreadFileIndex = await Storage.getProcessedFileIndex();
     for (var i = unreadFileIndex; i < files.length; i++) {
+      List<List<String>> rows = [];
       var startTime = DateTime.now();
       streamController.sink.add(
           {"processing": Utils.calculatePercentage(i, files.length).toInt()});
@@ -52,7 +53,6 @@ class CsvFileServices {
             for (var title in titleList) {
               if (titles.contains(title.toLowerCase())) {
                 vehicalNumbrColumIndex = titles.indexOf(title.toLowerCase());
-                titleDBId = await DatabaseHelper.inseartTitles(titles);
                 found = true;
                 break;
               }
@@ -62,20 +62,18 @@ class CsvFileServices {
             }
           } else {
             if (vehicalNumbrColumIndex != null) {
-              await DatabaseHelper.inseartRow(
-                  items, titleDBId!, vehicalNumbrColumIndex);
-              // if (rows.length < 502) {
-              //   rows.add(items);
-              // } else {
-              //   await DatabaseHelper.bulkInsertVehicleNumbers(
-              //     rows,
-              //     titleDBId,
-              //     vehicalNumbrColumIndex,
-              //     titles,
-              //   );
-              //   rows.clear();
-              //   rows.add(items);
-              // }
+              // await DatabaseHelper.inseartRow(items, vehicalNumbrColumIndex);
+              if (rows.length < 1002) {
+                rows.add(items);
+              } else {
+                await DatabaseHelper.bulkInsertVehicleNumbers(
+                  rows,
+                  titles,
+                  vehicalNumbrColumIndex,
+                );
+                rows.clear();
+                rows.add(items);
+              }
 
               count++;
             } else {
@@ -87,11 +85,14 @@ class CsvFileServices {
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-      // if (rows.isNotEmpty && found) {
-      //   await DatabaseHelper.bulkInsertVehicleNumbers(
-      //       rows, titleDBId, vehicalNumbrColumIndex!, titles);
-      //   rows.clear();
-      // }
+      if (rows.isNotEmpty && found) {
+        await DatabaseHelper.bulkInsertVehicleNumbers(
+          rows,
+          titles,
+          vehicalNumbrColumIndex!,
+        );
+        rows.clear();
+      }
       await Storage.addEntryCount(count);
       count = 0;
       await Storage.addProcessedFileIndex(i);
@@ -101,7 +102,7 @@ class CsvFileServices {
         log('updating estimated ');
         print(duration);
         context.read<HomeCubit>().updateEstimatedTime(
-            duration.inSeconds * (files.length - unreadFileIndex));
+            duration.inMicroseconds * (files.length - unreadFileIndex));
       }
     }
     streamController.sink.add(null);

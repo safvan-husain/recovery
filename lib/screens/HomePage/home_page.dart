@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 listenWhen: (prev, state) {
                   return prev.changeType == ChangeType.loading &&
-                      state.changeType == ChangeType.vehichelOwnerListUpdated;
+                      state.changeType == ChangeType.vehicleOwnerListUpdated;
                 },
                 builder: (context, state) {
                   return ConstrainedBox(

@@ -11,11 +11,11 @@ import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 
 class SingleItemScreen extends StatefulWidget {
-  final int rowId;
+  final Map<String, String> details;
   final String heroTag;
   const SingleItemScreen({
     super.key,
-    required this.rowId,
+    required this.details,
     required this.heroTag,
   });
 
@@ -24,8 +24,6 @@ class SingleItemScreen extends StatefulWidget {
 }
 
 class _SingleItemScreenState extends State<SingleItemScreen> {
-  late final Future<Map<String, String>?> ftutureDetails;
-
   List<String> titles = [
     "VEHICAL NO",
     "CHASSIS NO",
@@ -38,8 +36,6 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
 
   @override
   void initState() {
-    ftutureDetails = DatabaseHelper.getDetails(widget.rowId);
-    DatabaseHelper.getDetails(widget.rowId);
     if (context.read<HomeCubit>().state.user!.isStaff) {
       titles.addAll(
         [
@@ -88,79 +84,51 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
         child: Column(
           children: [
             Expanded(
-              child: FutureBuilder(
-                  future: ftutureDetails,
-                  builder: (context, snp) {
-                    if (snp.connectionState != ConnectionState.done) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (!snp.hasData) {
-                      return const Center(
-                        child: Text("No data availible"),
-                      );
-                    }
-                    vehicleDetails = snp.data!;
-                    // print(vehicleDetails);
-                    return SingleChildScrollView(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 10),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: titles
-                                .map(
-                                    (e) => MapEntry(e, vehicleDetails[e] ?? ""))
-                                // children: snp.data!.entries
-                                //     .where((element) =>
-                                //         element.value.toString().isNotEmpty)
-                                //     .map((e) {
-                                //       if (e.key == "File name") {
-                                //         return MapEntry("File name",
-                                //             e.value.split('______').first);
-                                //       }
-                                //       return e;
-                                //     })
-                                .map((e) => Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              e.key,
-                                              style: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          Text(
-                                            " :    ",
-                                            style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Expanded(
-                                              flex: 2,
-                                              child: Text(
-                                                e.value.toString(),
-                                                style: GoogleFonts.poppins(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              )),
-                                        ],
+              child: SingleChildScrollView(
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: titles
+                          .map((e) => MapEntry(e, widget.details[e] ?? ""))
+                          .map((e) => Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        e.key,
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ))
-                                .toList(),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+                                    ),
+                                    Text(
+                                      " :    ",
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          e.value.toString(),
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             if (!_isReporting)

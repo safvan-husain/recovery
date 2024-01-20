@@ -25,23 +25,25 @@ class HomeCubit extends Cubit<HomeState> {
 
   void homeInitialization() async {
     emit(state.copywith(
-      // changeType: ChangeType.vehichelOwnerListUpdated,
+      changeType: ChangeType.vehicleOwnerListUpdated,
       isTwoColumnSearch: await Storage.getIsTwoColumnSearch(),
       entryCount: await Storage.getEntryCount(),
     ));
   }
 
-  void updateEstimatedTime(int t) {
+  void updateEstimatedTime(int microSeconds) {
     String timeString;
-    int totalMinutes = t ~/ 60;
+    int totalSeconds =
+        microSeconds ~/ 1000000; // Convert microseconds to seconds
+    int totalMinutes = totalSeconds ~/ 60; // Convert seconds to minutes
     int hours = totalMinutes ~/ 60;
     int minutes = totalMinutes % 60;
     if (hours > 0) {
-      timeString = "$hours hours $minutes min";
+      timeString = "$hours hours and $minutes minutes";
     } else {
       timeString = "$minutes minutes";
     }
-    emit(state.copywith(esitimatedTime: timeString));
+    emit(state.copywith(estimatedTime: timeString));
   }
 
   Future<String> downloadData(
@@ -57,7 +59,7 @@ class HomeCubit extends Cubit<HomeState> {
       // error = e.toString();
     }
     emit(state.copywith(
-      changeType: ChangeType.vehichelOwnerListUpdated,
+      changeType: ChangeType.vehicleOwnerListUpdated,
       entryCount: await Storage.getEntryCount(),
     ));
     return error;
@@ -71,13 +73,17 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void deleteAllData() async {
+    log('delete called');
     emit(state.copywith(changeType: ChangeType.loading));
     await CsvFileServices.deleteAllFilesInVehicleDetails();
     await DatabaseHelper.deleteAllData();
     await Storage.addProcessedFileIndex(0);
     await Storage.emptyEntryCount();
+
     emit(state.copywith(
-        changeType: ChangeType.vehichelOwnerListUpdated, entryCount: 0));
+      changeType: ChangeType.vehicleOwnerListUpdated,
+      entryCount: 0,
+    ));
   }
 }
 

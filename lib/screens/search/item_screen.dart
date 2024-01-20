@@ -7,13 +7,11 @@ import 'package:recovery_app/screens/search/widgets/single_item.dart';
 import 'package:recovery_app/storage/database_helper.dart';
 
 class ItemScreen extends StatefulWidget {
-  final int rowId;
-  final List<int>? rowIds;
+  final List<Map<String, String>> detailsList;
   final String heroTag;
   const ItemScreen({
     Key? key,
-    required this.rowId,
-    this.rowIds,
+    required this.detailsList,
     required this.heroTag,
   }) : super(key: key);
 
@@ -24,9 +22,9 @@ class ItemScreen extends StatefulWidget {
 class _ItemScreenState extends State<ItemScreen> {
   final PageController controller = PageController();
   int currentIndex = 1;
-  Future<List<String>>? futureBranches;
+  late Future<List<String>> futureBranches;
   int? itemCount;
-  late int currentRowId;
+  late Map<String, String> currentDetails;
   @override
   void initState() {
     controller.addListener(() {
@@ -37,15 +35,15 @@ class _ItemScreenState extends State<ItemScreen> {
         });
       }
     });
-    if (widget.rowIds != null) {
+    if (context.read<HomeCubit>().state.user!.isStaff) {
       show();
     }
-    currentRowId = widget.rowId;
+    currentDetails = widget.detailsList[0];
     super.initState();
   }
 
   void show() async {
-    var nullebleBranches = await DatabaseHelper.getBranches(widget.rowIds!);
+    var nullebleBranches = await DatabaseHelper.getBranches(widget.detailsList);
     // List<BankBranch> branches = nullebleBranches.where((e) {}).toList();
     if (context.mounted) {
       showModalBottomSheet(
@@ -93,7 +91,7 @@ class _ItemScreenState extends State<ItemScreen> {
                   return InkWell(
                     onTap: () {
                       setState(() {
-                        currentRowId = widget.rowIds!.elementAt(index);
+                        currentDetails = widget.detailsList.elementAt(index);
                       });
                       Navigator.of(context).pop();
                     },
@@ -127,7 +125,10 @@ class _ItemScreenState extends State<ItemScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SingleItemScreen(rowId: currentRowId, heroTag: widget.heroTag),
+          child: SingleItemScreen(
+            details: currentDetails,
+            heroTag: widget.heroTag,
+          ),
         ),
       ),
     );

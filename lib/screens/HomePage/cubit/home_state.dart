@@ -4,8 +4,7 @@ part of 'home_cubit.dart';
 
 enum ChangeType {
   loading,
-  crouselUpdated,
-  vehichelOwnerListUpdated,
+  vehicleOwnerListUpdated,
 }
 
 class HomeState {
@@ -15,13 +14,13 @@ class HomeState {
   final ChangeType changeType;
   final bool isTwoColumnSearch;
   final int entryCount;
-  final String esitimatedTime;
+  final String estimatedTime;
 
   HomeState({
     this.user,
     this.isTwoColumnSearch = false,
     this.entryCount = 0,
-    this.esitimatedTime = '',
+    this.estimatedTime = '',
     required this.couselImages,
     required this.streamController,
     required this.changeType,
@@ -34,7 +33,7 @@ class HomeState {
         'assets/images/pic-2.webp',
         'assets/images/pic-3.webp',
       ],
-      changeType: ChangeType.vehichelOwnerListUpdated,
+      changeType: ChangeType.vehicleOwnerListUpdated,
       streamController: StreamController<Map<String, int>?>.broadcast(),
     );
   }
@@ -46,7 +45,7 @@ class HomeState {
     ChangeType? changeType,
     bool? isTwoColumnSearch,
     int? entryCount,
-    String? esitimatedTime,
+    String? estimatedTime,
   }) {
     return HomeState(
       entryCount: entryCount ?? this.entryCount,
@@ -55,7 +54,7 @@ class HomeState {
       couselImages: couselImages ?? this.couselImages,
       streamController: streamController ?? this.streamController,
       changeType: changeType ?? this.changeType,
-      esitimatedTime: esitimatedTime ?? this.esitimatedTime,
+      estimatedTime: estimatedTime ?? this.estimatedTime,
     );
   }
 }
