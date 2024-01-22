@@ -21,21 +21,47 @@ class ControlPanelService {
     }
   }
 
-  static Future<List<String>> getAllFinances(String agencyId) async {
-    List<String> banksList = [];
+  static Future<Map<String, List<String>>> getAllFinances(
+      String agencyId) async {
     var response = await dio.get(
       "https://www.recovery.starkinsolutions.com/Allbankbranch.php",
       data: jsonEncode({"admin_id": agencyId}),
     );
     if (response.statusCode == 200) {
-      var banks = response.data['banks'];
-      for (var element in banks) {
-        banksList.add(element['bank']);
-      }
+      return _createBankBranchMap(response.data);
     } else {
-      throw Exception('Failed to load users');
+      return {};
     }
-    return banksList;
+  }
+
+  static Map<String, List<String>> _createBankBranchMap(
+      Map<String, dynamic> jsonResponse) {
+    final List<dynamic> banks = jsonResponse['banks'];
+    final List<dynamic> branches = jsonResponse['branch'];
+
+    // Create a map to store bank branches
+    final Map<String, List<String>> bankBranchMap = {};
+
+    // Iterate through banks to initialize the map with empty lists
+    for (var bank in banks) {
+      final String bankName = bank['bank'];
+      bankBranchMap[bankName] = [];
+    }
+
+    // Populate the map with corresponding branches
+    for (var branch in branches) {
+      final String bankId = branch['bank_id'];
+      final String branchName = branch['branch'];
+
+      // Find the corresponding bank name using bankId
+      final String bankName =
+          banks.firstWhere((bank) => bank['id'] == bankId)['bank'];
+
+      // Add branch to the list of branches for the corresponding bank
+      bankBranchMap[bankName]?.add(branchName);
+    }
+
+    return bankBranchMap;
   }
 
   static void switchAdminAccess(bool value, int agentId) async {

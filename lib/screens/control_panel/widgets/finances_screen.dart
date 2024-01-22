@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/color_manager.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/screens/control_panel/widgets/branches_screen.dart';
 import 'package:recovery_app/services/control_panel_services.dart';
 
 class FinancesScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class FinancesScreen extends StatefulWidget {
 }
 
 class _FinancesScreenState extends State<FinancesScreen> {
-  late Future<List<String>> futureBanks;
+  late Future<Map<String, List<String>>> futureBanks;
   @override
   void initState() {
     futureBanks = ControlPanelService.getAllFinances(
@@ -55,16 +56,25 @@ class _FinancesScreenState extends State<FinancesScreen> {
                 child: CircularProgressIndicator(),
               );
             }
-            List<String> banks = snp.data!;
+            List<MapEntry<String, List<String>>> banks =
+                snp.data!.entries.toList();
             return ListView.separated(
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (c) => BranchesScreen(
+                          banks[index].value,
+                        ),
+                      ),
+                    );
+                  },
                   child: ListTile(
                     leading: const Icon(FontAwesomeIcons.buildingColumns),
                     title: Text(
-                      banks[index],
+                      banks[index].key,
                     ),
                   ),
                 );

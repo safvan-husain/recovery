@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -80,6 +81,9 @@ class SearchScreen1State extends State<SearchScreen1> {
                     width: MediaQuery.of(context).size.width - 100,
                     child: TextField(
                       keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(4),
+                      ],
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: " eg: 1301",
