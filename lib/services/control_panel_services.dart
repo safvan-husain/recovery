@@ -9,6 +9,7 @@ class ControlPanelService {
     var response = await dio.get(
       "https://www.recovery.starkinsolutions.com/alluser.php",
     );
+    print(response.data);
     if (response.statusCode == 200) {
       List<dynamic> data = response.data;
       List<Agent> agents = data
@@ -64,13 +65,13 @@ class ControlPanelService {
     return bankBranchMap;
   }
 
-  static void switchAdminAccess(bool value, int agentId) async {
-    var response = await dio.post(
-      "https://www.recovery.starkinsolutions.com/addremove.php",
-      data: jsonEncode({"id": "$agentId", "staff": value ? "1" : "0"}),
-    );
-    print(response.data);
-  }
+  // static void switchAdminAccess(bool value, int agentId) async {
+  //   var response = await dio.post(
+  //     "https://www.recovery.starkinsolutions.com/addremove.php",
+  //     data: jsonEncode({"id": "$agentId", "staff": value ? "1" : "0"}),
+  //   );
+  //   print(response.data);
+  // }
 }
 
 class Agent {

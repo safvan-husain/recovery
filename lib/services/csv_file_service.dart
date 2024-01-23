@@ -12,9 +12,9 @@ import 'package:recovery_app/storage/database_helper.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
 class CsvFileServices {
-  static Future<void> _proccessFiles(
+  static Future<void> _processFiles(
     StreamController<Map<String, int>?> streamController,
-    BuildContext context, [
+    HomeCubit homeCubit, [
     List<File>? csvFiles,
   ]) async {
     int count = 0;
@@ -89,16 +89,13 @@ class CsvFileServices {
         );
         rows.clear();
       }
-      await Storage.addEntryCount(count);
+      homeCubit.updateDataCount(count);
       count = 0;
       await Storage.addProcessedFileIndex(i);
       var endTime = DateTime.now();
       var duration = endTime.difference(startTime);
-      if (context.mounted) {
-        context
-            .read<HomeCubit>()
-            .updateEstimatedTime(duration.inMicroseconds * (files.length - i));
-      }
+      homeCubit
+          .updateEstimatedTime(duration.inMicroseconds * (files.length - i));
     }
     streamController.sink.add(null);
   }
@@ -167,7 +164,7 @@ class CsvFileServices {
   static Future<void> updateData(
     String agencyId,
     StreamController<Map<String, int>?> streamController,
-    BuildContext context,
+    HomeCubit homeCubit,
   ) async {
     var files = await getExcelFiles();
     // getAndStoreTitles("2");
@@ -176,15 +173,11 @@ class CsvFileServices {
     await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);
 
     files = await getExcelFiles();
-    if (context.mounted) {
-      await _proccessFiles(
-        streamController,
-        context,
-        files,
-      );
-    } else {
-      print("process context not mounted");
-    }
+    await _processFiles(
+      streamController,
+      homeCubit,
+      files,
+    );
   }
 
   static List<String> _splitStringIgnoringQuotes(String input) {

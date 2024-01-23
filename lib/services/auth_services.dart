@@ -108,7 +108,6 @@ class AuthServices {
               var user = UserModel.fromServerJson(result);
               if (isLogin) {
                 if (context.mounted) context.read<HomeCubit>().setUser(user);
-                await Storage.storeUser(user);
               }
 
               return ("${result["otp"]}", user);

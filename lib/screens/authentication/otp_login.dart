@@ -9,6 +9,9 @@ import 'package:recovery_app/screens/authentication/agency_code_screen.dart';
 import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/common_widgets/count_down_ui.dart';
 import 'package:recovery_app/services/auth_services.dart';
+import 'package:recovery_app/services/sim_services.dart';
+import 'package:recovery_app/services/utils.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 
 class OtpLogin extends StatefulWidget {
   const OtpLogin({super.key});
@@ -84,9 +87,12 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
                         ? MainAxisAlignment.start
                         : MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset(isOtpGenerated
-                          ? 'assets/images/otp.png'
-                          : 'assets/images/phone-verify.png'),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Image.asset(isOtpGenerated
+                            ? 'assets/images/otp.png'
+                            : 'assets/images/phone-verify.png'),
+                      ),
                       if (!isOtpGenerated) ...[
                         Text(
                           'Verify your phone number',
@@ -100,22 +106,22 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
                         ),
                         Column(
                           children: [
-                            buildPhoneInputFieald(
+                            buildPhoneInputField(
                               controller: _emailController,
                             ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: value2,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      value2 = value ?? false;
-                                    });
-                                  },
-                                ),
-                                const Text('Remember'),
-                              ],
-                            ),
+                            // Row(
+                            //   children: [
+                            //     Checkbox(
+                            //       value: value2,
+                            //       onChanged: (value) {
+                            //         setState(() {
+                            //           value2 = value ?? false;
+                            //         });
+                            //       },
+                            //     ),
+                            //     const Text('Remember'),
+                            //   ],
+                            // ),
                           ],
                         ),
                         const SizedBox(height: 30),
@@ -130,32 +136,44 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
                               );
                               return;
                             }
-                            try {
-                              setState(() {
-                                isClicked = true;
-                              });
-                              var result = await AuthServices.verifyPhone(
-                                phone: _emailController.text,
-                                context: context,
-                              );
-                              setState(() {
-                                isClicked = false;
-                              });
-                              otp = result.$1;
-                              user = result.$2;
-                              setState(() {});
-                              _startCountDown();
-                            } catch (e) {
-                              if (context.mounted) {
-                                showSnackbar(
-                                  "Authentication failed",
-                                  context,
-                                  Icons.warning,
-                                );
+                            if (await SimServices.verifyPhoneNumber(
+                              _emailController.text,
+                            )) {
+                              try {
+                                setState(() {
+                                  isClicked = true;
+                                });
+                                if (context.mounted) {
+                                  var result = await AuthServices.verifyPhone(
+                                    phone: _emailController.text,
+                                    context: context,
+                                  );
+                                  setState(() {
+                                    isClicked = false;
+                                  });
+                                  otp = result.$1;
+                                  user = result.$2;
+                                  setState(() {});
+                                  _startCountDown();
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  showSnackbar(
+                                    "Authentication failed",
+                                    context,
+                                    Icons.warning,
+                                  );
+                                }
+                                setState(() {
+                                  isClicked = false;
+                                });
                               }
-                              setState(() {
-                                isClicked = false;
-                              });
+                            } else {
+                              if (mounted) {
+                                Utils.toastBar(
+                                        "Oops! Please use the mobile number linked to your SIM")
+                                    .show(context);
+                              }
                             }
                           },
                           style: ButtonStyle(
@@ -313,17 +331,20 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
           //handle validation or checks here
         },
         //runs when every textfield is filled
-        onSubmit: (v) {
+        onSubmit: (v) async {
           if (v == otp) {
             if (user != null) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const BottomNavigation()),
-                (s) => false,
-              );
-              showSnackbar(
-                  "Welcome back ${user!.agent_name}", context, Icons.warning);
+              await Storage.storeUser(user!);
+              if (mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BottomNavigation()),
+                  (s) => false,
+                );
+                showSnackbar(
+                    "Welcome back ${user!.agent_name}", context, Icons.warning);
+              }
             } else {
               Navigator.push(
                 context,

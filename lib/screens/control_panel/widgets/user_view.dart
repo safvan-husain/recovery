@@ -87,7 +87,7 @@ class _UserViewState extends State<UserView> {
                           : "Not admin"),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),

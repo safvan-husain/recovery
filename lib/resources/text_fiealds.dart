@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Widget buildPhoneInputFieald({
+Widget buildPhoneInputField({
   required TextEditingController controller,
 }) {
   return Container(
@@ -17,18 +17,19 @@ Widget buildPhoneInputFieald({
         border: Border.all(color: Colors.blue, width: 1.0)),
     child: TextField(
       keyboardType: TextInputType.phone,
+      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
       inputFormatters: [LengthLimitingTextInputFormatter(10)],
       decoration: InputDecoration(
         border: InputBorder.none,
         hintText: "phone",
-        hintStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
-        prefixIcon: const Padding(
-          padding: EdgeInsets.only(
-            top: 15,
-            bottom: 8.0,
-            right: 10,
+        hintStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          child: Text(
+            "🇮🇳  +91  ",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
           ),
-          child: Text("🇮🇳  IN  +91"),
         ),
       ),
       controller: controller,

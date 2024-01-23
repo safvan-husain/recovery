@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
+import 'package:recovery_app/services/sim_services.dart';
+import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
 class InitialScreen extends StatefulWidget {
@@ -23,11 +25,19 @@ class _InitialScreenState extends State<InitialScreen> {
     var user = await Storage.getUser();
 
     if (user != null) {
-      if (context.mounted) {
-        context.read<HomeCubit>().setUser(user);
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (c) => const BottomNavigation()),
-        );
+      if (await SimServices.verifyPhoneNumber(user.number)) {
+        if (context.mounted) {
+          context.read<HomeCubit>().setUser(user);
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (c) => const BottomNavigation()),
+            (p) => false,
+          );
+        }
+      } else {
+        if (context.mounted) {
+          Utils.toastBar("Oops! Please use the  SIM linked to your account")
+              .show(context);
+        }
       }
     } else {
       if (context.mounted) {
@@ -41,7 +51,7 @@ class _InitialScreenState extends State<InitialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       body: Center(
         child: Image.asset('assets/icons/logo.jpeg'),
       ),

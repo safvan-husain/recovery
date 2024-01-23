@@ -87,15 +87,15 @@ class _LoginState extends State<Login> {
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: true,
-                          onChanged: (value) {},
-                        ),
-                        const Text('Remember'),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Checkbox(
+                    //       value: true,
+                    //       onChanged: (value) {},
+                    //     ),
+                    //     const Text('Remember'),
+                    //   ],
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 30),

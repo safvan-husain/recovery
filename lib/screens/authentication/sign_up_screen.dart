@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/services/auth_services.dart';
 import 'package:recovery_app/services/image_file_reciever.dart';
+import 'package:recovery_app/services/sim_services.dart';
+import 'package:recovery_app/services/utils.dart';
 
 class SignUpScreen extends StatefulWidget {
   final String agencyName;
@@ -53,7 +55,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   children: [
                     const SizedBox(height: 20),
                     Text(
-                      'Provide your details here for veification\n from ${widget.agencyName}',
+                      'Provide your details here for verification\n from ${widget.agencyName}',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.outfit(
                         fontSize: 16,
@@ -70,7 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     _inputFieald(
                       controller: _emailController,
                       icon: Icons.mail_outline,
-                      label: 'Email ID',
+                      label: 'Email ID (optional)',
                     ),
                     _inputFieald(
                       controller: _addressController,
@@ -161,55 +163,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () async {
-                        if (_emailController.text.isEmpty ||
-                            _passwordController.text.isEmpty ||
+                        if (_passwordController.text.isEmpty ||
                             _userNameController.text.isEmpty ||
                             _addressController.text.isEmpty) {
                           showSnackbar(
-                            "Every fieald required",
+                            "Every field required",
                             context,
                             FontAwesomeIcons.fill,
                             Colors.redAccent,
                           );
                           return;
                         }
-                        if (_passwordController.text !=
-                            _confirmController.text) {
-                          showSnackbar(
-                            "Password mismatch",
-                            context,
-                            FontAwesomeIcons.cancel,
-                            Colors.redAccent,
-                          );
-                          return;
-                        }
-                        if (panCard == null || adharCard == null) {
-                          showSnackbar(
-                            "Please provide Pan and Adhar cards",
-                            context,
-                            FontAwesomeIcons.cancel,
-                            Colors.redAccent,
-                          );
-                          return;
-                        }
-                        setState(() {
-                          _isLoading = true;
-                        });
+                        if (mounted) {
+                          if (_passwordController.text !=
+                              _confirmController.text) {
+                            showSnackbar(
+                              "Password mismatch",
+                              context,
+                              FontAwesomeIcons.cancel,
+                              Colors.redAccent,
+                            );
+                            return;
+                          }
+                          if (panCard == null || adharCard == null) {
+                            showSnackbar(
+                              "Please provide Pan and Adhar cards",
+                              context,
+                              FontAwesomeIcons.cancel,
+                              Colors.redAccent,
+                            );
+                            return;
+                          }
+                          setState(() {
+                            _isLoading = true;
+                          });
 
-                        await AuthServices.registerUser(
-                          userName: _userNameController.text,
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                          context: context,
-                          panCard: panCard!,
-                          adharCard: adharCard!,
-                          agencyId: widget.agencyId,
-                          address: _addressController.text,
-                          phone: widget.phoneNumber,
-                        );
-                        setState(() {
-                          _isLoading = false;
-                        });
+                          await AuthServices.registerUser(
+                            userName: _userNameController.text,
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                            context: context,
+                            panCard: panCard!,
+                            adharCard: adharCard!,
+                            agencyId: widget.agencyId,
+                            address: _addressController.text,
+                            phone: widget.phoneNumber,
+                          );
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
                       },
                       style: ButtonStyle(
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(

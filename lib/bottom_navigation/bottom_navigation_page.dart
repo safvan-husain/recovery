@@ -58,7 +58,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 242, 244, 255),
-      body: pages.elementAt(_currentPageIndex),
+      // body: pages.elementAt(_currentPageIndex),
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: pages,
+      ),
       bottomNavigationBar: Container(
         height: 60,
         width: MediaQuery.of(context).size.width,
@@ -108,19 +112,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   ))
               .values
               .toList(),
-          // items: {
-          //   "Home": Icon(FontAwesomeIcons.house),
-          //   "Settings": Icon(Icons.settings),
-          //   "Account": Icon(FontAwesomeIcons.user),
-          // }
-          //     .entries
-          //     .map((e) => BottomNavigationBarItem(icon: e.value, label: e.key))
-          //     .toList(),
-          // onTap: (value) {
-          //   setState(() {
-          //     _currentPageIndex = value;
-          //   });
-          // },
         ),
       ),
     );

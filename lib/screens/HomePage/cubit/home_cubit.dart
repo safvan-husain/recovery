@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
@@ -42,16 +43,22 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(estimatedTime: timeString));
   }
 
-  Future<void> downloadData(
-    BuildContext context,
-  ) async {
+  void updateDataCount(int count) async {
+    await Storage.addEntryCount(count);
+
+    emit(state.copyWith(entryCount: await Storage.getEntryCount()));
+  }
+
+  Future<void> downloadData() async {
+    await deleteAllData();
+    log('downlaing data');
     emit(state.copyWith(changeType: ChangeType.loading));
     try {
       await CsvFileServices.updateData(
         // state.user!.agencyId,
         "2",
         state.streamController,
-        context,
+        this,
       );
     } catch (e) {
       print(e);
@@ -69,7 +76,7 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
-  void deleteAllData() async {
+  Future<void> deleteAllData() async {
     emit(state.copyWith(changeType: ChangeType.loading));
     await CsvFileServices.deleteAllFilesInVehicleDetails();
     await DatabaseHelper.deleteAllData();

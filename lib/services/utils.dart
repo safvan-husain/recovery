@@ -1,7 +1,12 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
@@ -61,9 +66,10 @@ class Utils {
     String address, [
     String? location,
     String? load,
+    String? greeting,
   ]) async {
     var text =
-        '${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n carries Goods : $load   \n  \n Status : $status \n  \n $agencyName : +91 $phone';
+        '${greeting != null ? "$greeting \n" : ''} ${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n carries Goods : $load   \n  \n Status : $status \n  \n $agencyName : +91 $phone';
     String url = 'whatsapp://send?&text=$text';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -112,5 +118,31 @@ class Utils {
         ),
       ),
     );
+  }
+
+  static void saveIdCard(
+    GlobalKey<State<StatefulWidget>> globalKey,
+    BuildContext context,
+  ) async {
+    PermissionStatus status = await Permission.storage.status;
+
+    RenderRepaintBoundary boundary =
+        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+    while (!status.isGranted && !status.isLimited) {
+      status = await Permission.storage.request();
+      if (context.mounted) {
+        toastBar("Permission denied to save Id card").show(context);
+      }
+    }
+
+    if (status.isGranted) {
+      ui.Image image = await boundary.toImage();
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      final result =
+          await ImageGallerySaver.saveImage(byteData!.buffer.asUint8List());
+      if (context.mounted) toastBar("Id card saved").show(context);
+    }
   }
 }

@@ -13,6 +13,7 @@ import 'package:recovery_app/resources/assets_manager.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/screens/common_widgets/count_down_ui.dart';
+import 'package:recovery_app/screens/profile_sc/id_card_screen.dart';
 import 'package:recovery_app/services/auth_services.dart';
 import 'package:recovery_app/services/image_file_reciever.dart';
 import 'package:recovery_app/storage/user_storage.dart';
@@ -82,7 +83,7 @@ class _ProfileScViewState extends State<ProfileScView>
       resizeToAvoidBottomInset: false,
       backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
-        leading: const BackButton(),
+        // leading: const BackButton(),
         centerTitle: true,
         backgroundColor: ColorManager.primary,
         systemOverlayStyle: SystemUiOverlayStyle(
@@ -238,7 +239,7 @@ class _ProfileScViewState extends State<ProfileScView>
                   bottom: 8.0,
                   right: 10,
                 ),
-                child: Text("🇮🇳  IN  +91"),
+                child: Text("  🇮🇳"),
               ),
               label: 'Phone Number',
               value: '1234',
@@ -262,6 +263,89 @@ class _ProfileScViewState extends State<ProfileScView>
               label: 'Address',
               value: context.read<HomeCubit>().state.user!.address,
             ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5), // Color of the shadow
+                    spreadRadius: 1, // Spread radius
+                    blurRadius: 4, // Blur radius
+                    // offset: const Offset(0, 1), // Shadow offset
+                  ),
+                ],
+              ),
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Subscription details",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Divider(
+                    color: Colors.grey,
+                  ),
+                  Text(
+                    "From",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    "27-2-2018",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Divider(
+                    color: Colors.grey,
+                  ),
+                  Text(
+                    "To",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    "27-1-208",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Divider(
+                    color: Colors.grey,
+                  ),
+                  Text(
+                    "remaining days",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    "20  days",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ]
+                    .map((e) => Padding(
+                          padding: e is Text
+                              ? const EdgeInsets.all(3)
+                              : const EdgeInsets.all(7),
+                          child: e,
+                        ))
+                    .toList(),
+              ),
+            )
           ],
         ),
         // Row(
@@ -381,80 +465,162 @@ class _ProfileScViewState extends State<ProfileScView>
     // imageUrl = context.read<HomeCubit>().state.user!.avatarUrl;
     log(imageUrl ?? "no image");
     return PreferredSize(
-        preferredSize: const Size.fromHeight(150),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                      minRadius: 50,
-                      backgroundImage: file != null
-                          ? Image.file(file!).image
-                          : imageUrl == null
-                              ? Image.asset('assets/icons/user.png').image
-                              : NetworkImage(
-                                  "https://www.recovery.starkinsolutions.com/$imageUrl",
-                                )),
-                  if (isEditting)
-                    Positioned(
-                      bottom: 10,
-                      right: 125,
-                      child: IconButton(
-                        onPressed: () {
-                          // PictureUploadService.getImageFile(
-                          //   context,
-                          //   (url) {
-                          //     setState(() {
-                          //       imageUrl = url;
-                          //     });
-                          //   },
-                          // );
-                        },
-                        icon: const Icon(
-                          CupertinoIcons.pencil_circle_fill,
-                          color: Colors.greenAccent,
-                        ),
+      preferredSize: const Size.fromHeight(150),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 90,
+            width: 90,
+            padding: const EdgeInsets.all(8.0),
+            child: Stack(
+              children: [
+                CircleAvatar(
+                    minRadius: 50,
+                    backgroundImage: file != null
+                        ? Image.file(file!).image
+                        : imageUrl == null
+                            ? Image.asset('assets/icons/user.png').image
+                            : NetworkImage(
+                                "https://www.recovery.starkinsolutions.com/$imageUrl",
+                              )),
+                Positioned(
+                  // alignment: Alignment.bottomRight,
+                  bottom: -10,
+                  right: -10,
+                  child: IconButton(
+                    onPressed: () async {
+                      file = await ImageFile.pick(context);
+                      setState(() {});
+                      if (file != null && context.mounted) {
+                        AuthServices.uploadProfilePicture(
+                          file!,
+                          context.read<HomeCubit>().state.user!.email,
+                        );
+                      }
+                      // PictureUploadService.getImageFile(
+                      //   context,
+                      //   (url) {
+                      //     setState(() {
+                      //       imageUrl = url;
+                      //     });
+                      //   },
+                      // );
+                    },
+                    icon: const CircleAvatar(
+                      radius: 12,
+                      child: Icon(
+                        Icons.add_a_photo_rounded,
+                        size: 15,
                       ),
-                    )
-                ],
-              ),
+                    ),
+                  ),
+                )
+              ],
             ),
-            const Text(
-              "Cameron Williamson",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
+          ),
+          const Text(
+            "Cameron Williamson",
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w500, fontSize: 15),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              _emailController.text,
+              style: const TextStyle(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.normal,
                   fontSize: 15),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                _emailController.text,
-                style: const TextStyle(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 15),
-              ),
-            ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   PopupMenuButton<int> _popUpOptions() {
     return PopupMenuButton<int>(
       onSelected: (value) async {
-        if (value == 2) {
-          file = await ImageFile.pick(context);
-          setState(() {});
-          if (file != null && context.mounted) {
-            AuthServices.uploadProfilePicture(
-              file!,
-              context.read<HomeCubit>().state.user!.email,
-            );
-          }
+        if (value == 1) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SvgPicture.asset(
+                      IconAssets.logout_ic,
+                      height: 100,
+                    ),
+                  ),
+                  Text(
+                    "Oh no! You are leaving... \n are you sure?",
+                    style: GoogleFonts.poppins(
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.all(5),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text("Nah, Just Kidding",
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                          )),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      await Storage.logOutUser();
+                      if (context.mounted) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (c) => const OtpLogin()),
+                          (route) => false,
+                        );
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.all(5),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 5),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.blue, width: 1.0)),
+                      child: Text("Yes, Log me out",
+                          style: GoogleFonts.poppins(
+                            color: Colors.blue,
+                          )),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else if (value == 0) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (c) => IdCardScreen(),
+            ),
+          );
         }
       },
       itemBuilder: (BuildContext context) {
@@ -470,106 +636,27 @@ class _ProfileScViewState extends State<ProfileScView>
                   const Text("Download id Card"),
                 ],
               )),
-          const PopupMenuItem(
-              value: 2,
+          // const PopupMenuItem(
+          //     value: 2,
+          //     child: Row(
+          //       children: [
+          //         Icon(Icons.add_a_photo),
+          //         SizedBox(
+          //           width: 10,
+          //         ),
+          //         Text("Upload profile picture"),
+          //       ],
+          //     )),
+          PopupMenuItem(
+              value: 1,
               child: Row(
                 children: [
-                  Icon(Icons.add_a_photo),
-                  SizedBox(
+                  SvgPicture.asset(IconAssets.logout_ic),
+                  const SizedBox(
                     width: 10,
                   ),
-                  Text("Upload profile picture"),
+                  const Text("LogOut"),
                 ],
-              )),
-          PopupMenuItem(
-              value: 3,
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).pop();
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      backgroundColor: Colors.white,
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset(
-                              IconAssets.logout_ic,
-                              height: 100,
-                            ),
-                          ),
-                          Text(
-                            "Oh no! You are leaving... \n are you sure?",
-                            style: GoogleFonts.poppins(
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 10),
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.all(5),
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text("Nah, Just Kidding",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                  )),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              await Storage.logOutUser();
-                              if (context.mounted) {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (c) => const OtpLogin()),
-                                  (route) => false,
-                                );
-                              }
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.all(5),
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 5),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: Colors.blue, width: 1.0)),
-                              child: Text("Yes, Log me out",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.blue,
-                                  )),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    SvgPicture.asset(IconAssets.logout_ic),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text("LogOut"),
-                  ],
-                ),
               )),
         ];
       },
@@ -626,56 +713,5 @@ class _ProfileScViewState extends State<ProfileScView>
             ),
           )),
     );
-  }
-
-  Widget _buildPhoneInputFieald({
-    required TextEditingController controller,
-    required String value,
-  }) {
-    return Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5), // Color of the shadow
-              spreadRadius: 1, // Spread radius
-              blurRadius: 4, // Blur radius
-              // offset: const Offset(0, 1), // Shadow offset
-            ),
-          ],
-        ),
-        alignment: Alignment.center,
-        margin: const EdgeInsets.all(10),
-        padding: const EdgeInsets.all(10),
-        child: TextField(
-          focusNode: focusNode,
-          enabled: isEditting,
-          keyboardType: TextInputType.phone,
-          inputFormatters: [LengthLimitingTextInputFormatter(10)],
-          style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
-          decoration: InputDecoration(
-            hintText: "Phone",
-            suffixIcon: isEditting ? const Icon(Icons.edit) : null,
-            border: InputBorder.none,
-            labelStyle: const TextStyle(
-              color: Color(0xff23202a),
-              fontSize: 16,
-            ),
-            // hintText: "phone",
-            // hintStyle: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
-            // prefixIconConstraints: BoxConstraints(minWidth: 80),
-            prefixIcon: const Padding(
-              padding: EdgeInsets.only(
-                top: 15,
-                bottom: 8.0,
-                right: 10,
-              ),
-              child: Text("🇮🇳  IN  +91"),
-            ),
-          ),
-          controller: controller,
-        ));
   }
 }

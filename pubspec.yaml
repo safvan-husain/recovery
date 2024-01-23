@@ -39,8 +39,11 @@ dependencies:
   sqflite: ^2.3.0
   connectivity_plus: ^5.0.2
   url_launcher: ^6.2.3
-  async: ^2.11.0
-
+  sim_card_info:
+    git:
+      url: https://github.com/safvan-husain/sim_card_info.git
+      ref: 8e9b6b09beea6da1314be9be84bf921e082dc991
+  image_gallery_saver: ^2.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

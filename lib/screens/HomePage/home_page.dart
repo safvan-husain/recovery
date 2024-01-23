@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -35,7 +36,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     context.read<HomeCubit>().homeInitialization();
-    daysRemaining = HomeServices.getSubsction(() {
+    log("on home init");
+    daysRemaining = HomeServices.getSubscription(() {
       Utils.toastBar("You are offline, Can't check subscription").show(context);
     });
     getFileCount();
@@ -96,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                                             if (context.mounted) {
                                               await context
                                                   .read<HomeCubit>()
-                                                  .downloadData(context);
+                                                  .downloadData();
                                             }
                                           } else {
                                             if (context.mounted) {
@@ -295,68 +297,90 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSearchBar(BuildContext context, double scWidth) {
-    return InkWell(
-      onTap: () {
-        if (isHaveSubscription) {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (c) => SearchScreen1()),
-          );
-        } else {
-          DelightToastBar(
-            autoDismiss: true,
-            snackbarDuration: Duration(seconds: 3),
-            builder: (context) => const ToastCard(
-              color: Colors.red,
-              leading: Icon(
-                Icons.flutter_dash,
-                size: 28,
-                color: Colors.red,
-              ),
-              title: Text(
-                "You don't have a subscription",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Colors.white,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              // width: MediaQuery.of(context).size.width - 100,
+              child: GestureDetector(
+                onTap: () {
+                  if (isHaveSubscription) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (c) => SearchScreen1()),
+                    );
+                  } else {
+                    DelightToastBar(
+                      autoDismiss: true,
+                      snackbarDuration: Duration(seconds: 3),
+                      builder: (context) => const ToastCard(
+                        color: Colors.red,
+                        leading: Icon(
+                          Icons.flutter_dash,
+                          size: 28,
+                          color: Colors.red,
+                        ),
+                        title: Text(
+                          "You don't have a subscription",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ).show(context);
+                  }
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  height: 60,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.grey.withOpacity(0.5), // Color of the shadow
+                        spreadRadius: 2, // Spread radius
+                        blurRadius: 4, // Blur radius
+                        offset: const Offset(0, 3), // Shadow offset
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const CircleAvatar(child: Icon(Icons.search)),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        'Search here',
+                        style: GoogleFonts.poppins(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ).show(context);
-        }
-      },
-      child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        height: 60,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5), // Color of the shadow
-              spreadRadius: 2, // Spread radius
-              blurRadius: 4, // Blur radius
-              offset: const Offset(0, 3), // Shadow offset
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const CircleAvatar(child: Icon(Icons.search)),
-            const SizedBox(
-              width: 20,
-            ),
-            Text(
-              'Search here',
-              style: GoogleFonts.poppins(
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  FontAwesomeIcons.bell,
+                  color: Colors.blue,
+                )),
+          )
+        ],
       ),
     );
   }

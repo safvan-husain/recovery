@@ -20,7 +20,7 @@ class _SettingsScViewState extends State<SettingsScView> {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
-        leading: const BackButton(),
+        // leading: const BackButton(),
         centerTitle: true,
         backgroundColor: ColorManager.primary,
         systemOverlayStyle: SystemUiOverlayStyle(

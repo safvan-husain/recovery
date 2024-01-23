@@ -237,10 +237,13 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                   onTap: () {
                     Utils.sendWhatsapp(
                       details,
-                      'Bank for confirmation',
+                      'Please confirm this vehicle.',
                       agentName,
                       phone,
                       '',
+                      null,
+                      null,
+                      'Respected sir,',
                     );
                   },
                   child: ListTile(
@@ -259,6 +262,9 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       agentName,
                       phone,
                       '',
+                      null,
+                      null,
+                      'Respected sir,',
                     );
                   },
                   child: ListTile(
@@ -277,6 +283,9 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       agentName,
                       phone,
                       '',
+                      null,
+                      null,
+                      'Respected sir,',
                     );
                   },
                   child: ListTile(
