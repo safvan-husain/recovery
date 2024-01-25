@@ -72,7 +72,7 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       body: Stack(
         children: [
           Center(
@@ -136,44 +136,34 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
                               );
                               return;
                             }
-                            if (await SimServices.verifyPhoneNumber(
-                              _emailController.text,
-                            )) {
-                              try {
-                                setState(() {
-                                  isClicked = true;
-                                });
-                                if (context.mounted) {
-                                  var result = await AuthServices.verifyPhone(
-                                    phone: _emailController.text,
-                                    context: context,
-                                  );
-                                  setState(() {
-                                    isClicked = false;
-                                  });
-                                  otp = result.$1;
-                                  user = result.$2;
-                                  setState(() {});
-                                  _startCountDown();
-                                }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  showSnackbar(
-                                    "Authentication failed",
-                                    context,
-                                    Icons.warning,
-                                  );
-                                }
+                            try {
+                              setState(() {
+                                isClicked = true;
+                              });
+                              if (context.mounted) {
+                                var result = await AuthServices.verifyPhone(
+                                  phone: _emailController.text,
+                                  context: context,
+                                );
                                 setState(() {
                                   isClicked = false;
                                 });
+                                otp = result.$1;
+                                user = result.$2;
+                                setState(() {});
+                                _startCountDown();
                               }
-                            } else {
-                              if (mounted) {
-                                Utils.toastBar(
-                                        "Oops! Please use the mobile number linked to your SIM")
-                                    .show(context);
+                            } catch (e) {
+                              if (context.mounted) {
+                                showSnackbar(
+                                  "Authentication failed",
+                                  context,
+                                  Icons.warning,
+                                );
                               }
+                              setState(() {
+                                isClicked = false;
+                              });
                             }
                           },
                           style: ButtonStyle(

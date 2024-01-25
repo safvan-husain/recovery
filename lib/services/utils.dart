@@ -8,6 +8,8 @@ import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:device_imei/device_imei.dart';
+import 'package:flutter/services.dart';
 
 class Utils {
   static Future<bool> isConnected() async {
@@ -58,18 +60,19 @@ class Utils {
   }
 
   static Future<bool> sendWhatsapp(
+    String? agencyName,
     Map<String, String> details,
     String status,
     // String message,
-    String agencyName,
+    String agentName,
     String phone,
     String address, [
     String? location,
     String? load,
-    String? greeting,
   ]) async {
+    // ) async {
     var text =
-        '${greeting != null ? "$greeting \n" : ''} ${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n carries Goods : $load   \n  \n Status : $status \n  \n $agencyName : +91 $phone';
+        '"Respected Sir, \n \n ${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n carries Goods : $load   \n  \n Status : $status \n  \n $agentName : +91 $phone \n \n $agentName';
     String url = 'whatsapp://send?&text=$text';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -129,11 +132,8 @@ class Utils {
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
-    while (!status.isGranted && !status.isLimited) {
+    if (!status.isGranted) {
       status = await Permission.storage.request();
-      if (context.mounted) {
-        toastBar("Permission denied to save Id card").show(context);
-      }
     }
 
     if (status.isGranted) {
@@ -143,6 +143,30 @@ class Utils {
       final result =
           await ImageGallerySaver.saveImage(byteData!.buffer.asUint8List());
       if (context.mounted) toastBar("Id card saved").show(context);
+    } else {
+      if (context.mounted) {
+        toastBar("Permission denied to save Id card").show(context);
+      }
     }
+  }
+
+  static String formatString(String input) {
+    // Replace "_" and "-" with spaces
+    String formatted = input.replaceAll('_', ' ').replaceAll('-', ' ');
+
+    // Capitalize the first letter of each word
+    List<String> words = formatted.split(' ');
+    for (int i = 0; i < words.length; i++) {
+      if (words[i].isNotEmpty) {
+        words[i] = words[i][0].toUpperCase() + words[i].substring(1);
+      }
+    }
+
+    return words.join(' ');
+  }
+
+  static Future<String> getImei() async {
+    const platform = MethodChannel('androidId');
+    return await platform.invokeMethod('getId');
   }
 }

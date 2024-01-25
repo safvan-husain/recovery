@@ -3,6 +3,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:recovery_app/services/utils.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class UserModel {
   String agent_name;
@@ -14,6 +16,7 @@ class UserModel {
   String? panUrl;
   String agencyId;
   bool isStaff;
+  String deviceId;
 
   UserModel({
     required this.agent_name,
@@ -25,7 +28,13 @@ class UserModel {
     this.panUrl,
     required this.agencyId,
     this.isStaff = true,
+    this.deviceId = '',
   });
+
+  Future<bool> verifyDevice() async {
+    String imei = await Utils.getImei();
+    return imei == deviceId;
+  }
 
   factory UserModel.fromServerJson2(Map<String, dynamic> map) {
     log(map['Add_data']['agency_id']);

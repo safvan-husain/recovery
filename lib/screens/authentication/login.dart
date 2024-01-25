@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
+import 'package:recovery_app/resources/text_fiealds.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/services/auth_services.dart';
 
@@ -13,8 +14,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _emailController =
-      TextEditingController(text: "vsah2@gmail.com");
+  final TextEditingController _phoneController =
+      TextEditingController(text: "8766865573");
   final TextEditingController _passwordController =
       TextEditingController(text: "12321");
   bool passwordObscure = true;
@@ -22,7 +23,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -44,7 +45,7 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Login with your email id',
+                  'Login with your phone number and password',
                   style: GoogleFonts.outfit(
                     textStyle: const TextStyle(
                       fontSize: 16,
@@ -55,12 +56,10 @@ class _LoginState extends State<Login> {
                 ),
                 Column(
                   children: [
-                    _inputFieald(
-                      controller: _emailController,
-                      icon: Icons.mail_outline,
-                      label: 'Email ID',
+                    buildPhoneInputField(
+                      controller: _phoneController,
                     ),
-                    _inputFieald(
+                    _inputField(
                       controller: _passwordController,
                       label: "Password",
                       icon: Icons.lock_outline,
@@ -69,39 +68,33 @@ class _LoginState extends State<Login> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (c) => const OtpLogin()),
-                              (route) => false,
-                            );
-                          },
-                          child: const Text(
-                            'Forgot Password ?',
-                            style: TextStyle(
-                              color: Color(0xff2c65d8),
-                              fontWeight: FontWeight.w400,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (c) => const OtpLogin()),
+                                (route) => false,
+                              );
+                            },
+                            child: const Text(
+                              'Use OTP instead',
+                              style: TextStyle(
+                                color: Color(0xff2c65d8),
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    // Row(
-                    //   children: [
-                    //     Checkbox(
-                    //       value: true,
-                    //       onChanged: (value) {},
-                    //     ),
-                    //     const Text('Remember'),
-                    //   ],
-                    // ),
                   ],
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
-                    if (_emailController.text.isEmpty ||
+                    if (_phoneController.text.isEmpty ||
                         _passwordController.text.isEmpty ||
                         _passwordController.text.isEmpty) {
                       showSnackbar(
@@ -113,7 +106,7 @@ class _LoginState extends State<Login> {
                     }
                     AuthServices.loginUser(
                       userName: _userNameController.text,
-                      email: _emailController.text,
+                      phoneNumber: _phoneController.text,
                       password: _passwordController.text,
                       context: context,
                     );
@@ -178,7 +171,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Container _inputFieald({
+  Container _inputField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
@@ -199,12 +192,10 @@ class _LoginState extends State<Login> {
         controller: controller,
         obscureText: isSensitive ?? false,
         decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: "Password",
+          hintStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
           prefixIcon: Icon(icon),
-          labelText: label,
-          labelStyle: const TextStyle(
-            color: Color(0xff23202a),
-            fontSize: 16,
-          ),
           suffixIcon: isSensitive == null
               ? null
               : InkWell(
@@ -217,7 +208,6 @@ class _LoginState extends State<Login> {
                     passwordObscure ? Icons.visibility_off : Icons.visibility,
                   ),
                 ),
-          border: InputBorder.none,
         ),
       ),
     );

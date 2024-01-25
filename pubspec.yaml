@@ -44,6 +44,7 @@ dependencies:
       url: https://github.com/safvan-husain/sim_card_info.git
       ref: 8e9b6b09beea6da1314be9be84bf921e082dc991
   image_gallery_saver: ^2.0.3
+  device_imei: ^0.0.4+2
 dev_dependencies:
   flutter_test:
     sdk: flutter

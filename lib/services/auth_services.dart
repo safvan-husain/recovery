@@ -16,7 +16,7 @@ class AuthServices {
 
   static Future<void> loginUser({
     required String userName,
-    required String email,
+    required String phoneNumber,
     required String password,
     required BuildContext context,
   }) async {
@@ -24,7 +24,7 @@ class AuthServices {
     try {
       var response = await dio.post(
         "https://www.recovery.starkinsolutions.com/loginapi.php",
-        data: {"email": email, "password": password},
+        data: {"phone": phoneNumber, "password": password},
       );
       var decoded = jsonDecode(jsonEncode(response.data));
       if (response.statusCode == 200) {
@@ -127,8 +127,15 @@ class AuthServices {
             // throw Error();
           }
         }
+      } else {
+        if (context.mounted) {
+          showSnackbar("Server Error", context, Icons.warning);
+        }
       }
     } catch (e) {
+      if (context.mounted) {
+        showSnackbar("Failed to connect to the server", context, Icons.warning);
+      }
       print(e);
     }
     return (null, null);
@@ -144,6 +151,10 @@ class AuthServices {
     required File adharCard,
     required String agencyId,
     required String phone,
+    required String state,
+    required String district,
+    required String village,
+    required String pinCode,
   }) async {
     try {
       var response = await dio.post(
@@ -151,10 +162,14 @@ class AuthServices {
         data: {
           "phone_number": phone,
           "name": userName,
-          "email": email,
+          "email": "msh@sssm.com",
           "password": password,
           "address": address,
-          "agencyid": int.parse(agencyId)
+          "agencyid": int.parse(agencyId),
+          'state': state,
+          'district': district,
+          'village': village,
+          'pincode': pinCode,
         },
       );
       print(response.data);
@@ -212,9 +227,16 @@ class AuthServices {
             showSnackbar(result['message'], context, Icons.warning);
           }
         }
+      } else {
+        if (context.mounted) {
+          showSnackbar("Server Error", context, Icons.warning);
+        }
       }
     } catch (e) {
       print(e);
+      if (context.mounted) {
+        showSnackbar("Failed to connect to the server", context, Icons.warning);
+      }
     }
   }
 

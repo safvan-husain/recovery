@@ -65,13 +65,21 @@ class ControlPanelService {
     return bankBranchMap;
   }
 
-  // static void switchAdminAccess(bool value, int agentId) async {
-  //   var response = await dio.post(
-  //     "https://www.recovery.starkinsolutions.com/addremove.php",
-  //     data: jsonEncode({"id": "$agentId", "staff": value ? "1" : "0"}),
-  //   );
-  //   print(response.data);
-  // }
+  static void switchAdminAccess(bool value, int agentId) async {
+    var response = await dio.post(
+      "https://www.recovery.starkinsolutions.com/staffactive.php",
+      data: jsonEncode({"id": agentId, "staff": value ? 1 : 0}),
+    );
+    print(response.data);
+  }
+
+  static void switchActiveAccess(bool value, int agentId) async {
+    var response = await dio.post(
+      "https://www.recovery.starkinsolutions.com/activeagent.php",
+      data: jsonEncode({"id": agentId, "status": value ? 1 : 0}),
+    );
+    print(response.data);
+  }
 }
 
 class Agent {
@@ -85,7 +93,7 @@ class Agent {
   final int adminId;
   final int agencyId;
   final bool staff;
-  final int status;
+  final bool status;
   final DateTime dateAdded;
   final DateTime dateModified;
 
@@ -117,7 +125,7 @@ class Agent {
       adminId: int.parse(json['admin_id']),
       agencyId: int.parse(json['agency_id']),
       staff: int.parse(json['staff']) == 1,
-      status: int.parse(json['status']),
+      status: int.parse(json['status']) == 1,
       dateAdded: DateTime.parse(json['date_added']),
       dateModified: DateTime.parse(json['date_modified']),
     );

@@ -17,15 +17,11 @@ class AppUsersScreen extends StatefulWidget {
 
 class _AppUsersScreenState extends State<AppUsersScreen> {
   late Future<List<Agent>> futureAgents;
-  @override
-  void initState() {
-    futureAgents = ControlPanelService.getAllUsers(
-        context.read<HomeCubit>().state.user!.agencyId);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
+    futureAgents = ControlPanelService.getAllUsers(
+        context.read<HomeCubit>().state.user!.agencyId);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
@@ -70,6 +66,9 @@ class _AppUsersScreenState extends State<AppUsersScreen> {
                       MaterialPageRoute(
                         builder: (c) => UserView(
                           agent: agencts[index],
+                          onChange: () {
+                            setState(() {});
+                          },
                         ),
                       ),
                     );
@@ -83,8 +82,11 @@ class _AppUsersScreenState extends State<AppUsersScreen> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (agencts[index].staff)
+                        if (agencts[index].staff) ...[
                           const Icon(FontAwesomeIcons.shield),
+                          const SizedBox(width: 10)
+                        ],
+                        if (agencts[index].status) const Icon(Icons.done),
                       ],
                     ),
                   ),

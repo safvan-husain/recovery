@@ -12,11 +12,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/screens/HomePage/notification_screen.dart';
 import 'package:recovery_app/screens/HomePage/widgets/download_ui.dart';
 import 'package:recovery_app/screens/search/search_screen.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'package:recovery_app/services/home_service.dart';
 import 'package:recovery_app/services/utils.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 
 import '../../resources/color_manager.dart';
 
@@ -30,16 +32,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentCarouselIndex = 0;
   final ScrollController _scrollController = ScrollController();
-  late Future<int> daysRemaining;
   bool _isDownloaded = false;
 
   @override
   void initState() {
-    context.read<HomeCubit>().homeInitialization();
-    log("on home init");
-    daysRemaining = HomeServices.getSubscription(() {
-      Utils.toastBar("You are offline, Can't check subscription").show(context);
-    });
+    context.read<HomeCubit>().homeInitialization(context);
     getFileCount();
 
     super.initState();
@@ -72,10 +69,7 @@ class _HomePageState extends State<HomePage> {
               BlocConsumer<HomeCubit, HomeState>(
                 listener: (context, state) {
                   getFileCount();
-                },
-                listenWhen: (prev, state) {
-                  return prev.changeType == ChangeType.loading &&
-                      state.changeType == ChangeType.vehicleOwnerListUpdated;
+                  isHaveSubscription = state.data.remainingDays != 0;
                 },
                 builder: (context, state) {
                   return ConstrainedBox(
@@ -146,59 +140,45 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       ),
-                                      FutureBuilder(
-                                          future: daysRemaining,
-                                          builder: (context, snp) {
-                                            if (snp.data != null) {
-                                              isHaveSubscription =
-                                                  snp.data! > 0;
-                                            }
-                                            return Container(
-                                              height: 80,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey.withOpacity(
-                                                        0.5), // Color of the shadow
-                                                    spreadRadius:
-                                                        2, // Spread radius
-                                                    blurRadius:
-                                                        4, // Blur radius
-                                                    offset: const Offset(
-                                                        0, 3), // Shadow offset
-                                                  ),
-                                                ],
-                                              ),
-                                              alignment: Alignment.center,
-                                              margin: EdgeInsets.only(left: 10),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    snp.data == null
-                                                        ? "-"
-                                                        : snp.data.toString(),
-                                                    textAlign: TextAlign.center,
-                                                    style: GoogleFonts.poppins(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16),
-                                                  ),
-                                                  Text(
-                                                    "Days Remaining",
-                                                    style:
-                                                        GoogleFonts.poppins(),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }),
+                                      Container(
+                                        height: 80,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(
+                                                  0.5), // Color of the shadow
+                                              spreadRadius: 2, // Spread radius
+                                              blurRadius: 4, // Blur radius
+                                              offset: const Offset(
+                                                  0, 3), // Shadow offset
+                                            ),
+                                          ],
+                                        ),
+                                        alignment: Alignment.center,
+                                        margin: EdgeInsets.only(left: 10),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Text(
+                                              state.data.remainingDays
+                                                  .toString(),
+                                              textAlign: TextAlign.center,
+                                              style: GoogleFonts.poppins(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            ),
+                                            Text(
+                                              "Days Remaining",
+                                              style: GoogleFonts.poppins(),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ].map((e) => Expanded(child: e)).toList(),
                                   ),
                                 ),
@@ -371,14 +351,38 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  FontAwesomeIcons.bell,
-                  color: Colors.blue,
-                )),
+          InkWell(
+            onTap: () async {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (c) => NotificationScreen(),
+                ),
+              );
+              // context.read<HomeCubit>().homeInitialization(context);
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      FontAwesomeIcons.bell,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  if (context.read<HomeCubit>().state.data.isThereNewData)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 5,
+                        backgroundColor: Colors.red,
+                      ),
+                    )
+                ],
+              ),
+            ),
           )
         ],
       ),

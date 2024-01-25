@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:recovery_app/screens/authentication/sign_up_screen.dart';
+import 'package:recovery_app/screens/authentication/sign_up_screen_initial.dart';
 import 'package:recovery_app/services/auth_services.dart';
 
 class AgencyCodeScreen extends StatefulWidget {
@@ -26,6 +26,7 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: const Color.fromARGB(255, 242, 244, 255),
           body: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -215,7 +216,7 @@ class _AgencyCodeScreenState extends State<AgencyCodeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SignUpScreen(
+                          builder: (context) => SignUpScreenInitial(
                                 agencyName: agency!["agency_name"],
                                 agencyId: agency!['id'],
                                 phoneNumber: widget.phoneNumber,

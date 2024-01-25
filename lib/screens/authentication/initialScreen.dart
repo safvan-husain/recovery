@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/screens/authentication/device_verify_screen.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/services/sim_services.dart';
 import 'package:recovery_app/services/utils.dart';
@@ -25,7 +26,7 @@ class _InitialScreenState extends State<InitialScreen> {
     var user = await Storage.getUser();
 
     if (user != null) {
-      if (await SimServices.verifyPhoneNumber(user.number)) {
+      if (!await user.verifyDevice()) {
         if (context.mounted) {
           context.read<HomeCubit>().setUser(user);
           Navigator.of(context).pushAndRemoveUntil(
@@ -35,8 +36,11 @@ class _InitialScreenState extends State<InitialScreen> {
         }
       } else {
         if (context.mounted) {
-          Utils.toastBar("Oops! Please use the  SIM linked to your account")
-              .show(context);
+          context.read<HomeCubit>().setUser(user);
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (c) => const DeviceVerifyScreen()),
+            (p) => false,
+          );
         }
       }
     } else {

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/control_panel/widgets/app_users_screen.dart';
 import 'package:recovery_app/screens/control_panel/widgets/blocklist_screen.dart';
+import 'package:recovery_app/screens/control_panel/widgets/controll_panel_verification.dart';
 import 'package:recovery_app/screens/control_panel/widgets/finances_screen.dart';
 
 import '../../resources/color_manager.dart';
@@ -19,6 +20,7 @@ class ControlPanelScreen extends StatefulWidget {
 }
 
 class _ControlPanelScreenState extends State<ControlPanelScreen> {
+  bool isVerified = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,49 +41,61 @@ class _ControlPanelScreenState extends State<ControlPanelScreen> {
               color: Colors.white, fontWeight: FontWeight.w500, fontSize: 25),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          child: Column(
-            children: insertBetweenAll(
-              [
-                _buildListTile(
-                  title: "App Users",
-                  icon: FontAwesomeIcons.users,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (c) => const AppUsersScreen()),
-                    );
-                  },
-                ),
-                _buildListTile(
-                  title: "Finance",
-                  icon: FontAwesomeIcons.buildingColumns,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (c) => const FinancesScreen()),
-                    );
-                  },
-                ),
-                _buildListTile(
-                  title: "Blacklist",
-                  icon: FontAwesomeIcons.ban,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (c) => const BlockListScreen(),
+      body: !isVerified
+          ? Center(
+              child: ControlPanelVerification(
+                onVerified: () {
+                  setState(() {
+                    isVerified = true;
+                  });
+                },
+              ),
+            )
+          : SingleChildScrollView(
+              child: Container(
+                margin: const EdgeInsets.all(20),
+                child: Column(
+                  children: insertBetweenAll(
+                    [
+                      _buildListTile(
+                        title: "App Users",
+                        icon: FontAwesomeIcons.users,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (c) => const AppUsersScreen()),
+                          );
+                        },
                       ),
-                    );
-                  },
+                      _buildListTile(
+                        title: "Finance",
+                        icon: FontAwesomeIcons.buildingColumns,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (c) => const FinancesScreen()),
+                          );
+                        },
+                      ),
+                      _buildListTile(
+                        title: "Blacklist",
+                        icon: FontAwesomeIcons.ban,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (c) => const BlockListScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                    Divider(
+                      color: Colors.grey[300],
+                    ),
+                  ),
                 ),
-              ],
-              Divider(
-                color: Colors.grey[300],
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

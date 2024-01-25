@@ -21,8 +21,8 @@ Widget buildPhoneInputField({
       inputFormatters: [LengthLimitingTextInputFormatter(10)],
       decoration: InputDecoration(
         border: InputBorder.none,
-        hintText: "phone",
-        hintStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+        hintText: "Phone",
+        hintStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
         prefixIcon: Padding(
           padding: const EdgeInsets.symmetric(vertical: 13),
           child: Text(

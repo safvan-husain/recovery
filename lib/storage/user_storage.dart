@@ -1,22 +1,27 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:recovery_app/models/agency_details.dart';
+import 'package:recovery_app/models/subscription_details.dart';
 import 'package:recovery_app/models/user_model.dart';
+import 'package:recovery_app/services/home_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Storage {
+  static late SharedPreferences sharedPreference;
+  static Future<void> initialize() async {
+    sharedPreference = await SharedPreferences.getInstance();
+  }
+
   static Future<void> storeUser(UserModel user) async {
-    var sharedPreference = await SharedPreferences.getInstance();
     await sharedPreference.setString("user", user.toJson());
   }
 
   static Future<void> logOutUser() async {
-    var sharedPreference = await SharedPreferences.getInstance();
     await sharedPreference.setString("user", '');
   }
 
   static Future<UserModel?> getUser() async {
-    var sharedPreference = await SharedPreferences.getInstance();
     var jsonUser = sharedPreference.getString("user");
     if (jsonUser != null && jsonUser.isNotEmpty) {
       return UserModel.fromJson(jsonUser);
@@ -24,13 +29,19 @@ class Storage {
     return null;
   }
 
-  static Future<void> storeEndData(String data) async {
-    var sharedPreference = await SharedPreferences.getInstance();
-    await sharedPreference.setString("date", data);
+  static Future<void> storeSubscriptionDetails(SubscriptionDetails data) async {
+    await sharedPreference.setString("date", data.toJson());
+  }
+
+  static Future<SubscriptionDetails?> getSubscriptionDetails() async {
+    var date = sharedPreference.getString("date");
+    if (date != null) {
+      return SubscriptionDetails.fromJson(date);
+    }
+    return null;
   }
 
   static Future<void> addEntryCount(int count) async {
-    var sharedPreference = await SharedPreferences.getInstance();
     int? currentCunt = sharedPreference.getInt('count');
     if (currentCunt != null) {
       await sharedPreference.setInt("count", currentCunt + count);
@@ -40,29 +51,23 @@ class Storage {
   }
 
   static Future<void> addProcessedFileIndex(int count) async {
-    var sharedPreference = await SharedPreferences.getInstance();
     await sharedPreference.setInt("file", count);
   }
 
   static Future<int> getProcessedFileIndex() async {
-    var sharedPreference = await SharedPreferences.getInstance();
     return sharedPreference.getInt("file") ?? 0;
   }
 
   static Future<void> emptyEntryCount() async {
-    print('empty entry count');
-    var sharedPreference = await SharedPreferences.getInstance();
     await sharedPreference.setInt("count", 0);
     log(sharedPreference.getInt('count').toString());
   }
 
   static Future<void> setIsTwoColumSearch(bool value) async {
-    var sharedPreference = await SharedPreferences.getInstance();
     await sharedPreference.setBool("twoColumSearch", value);
   }
 
   static Future<bool> getIsTwoColumnSearch() async {
-    var sharedPreference = await SharedPreferences.getInstance();
     bool? isTwo = sharedPreference.getBool('twoColumSearch');
     if (isTwo == null) {
       await sharedPreference.setBool("twoColumSearch", true);
@@ -73,34 +78,67 @@ class Storage {
   }
 
   static Future<int> getEntryCount() async {
-    var sharedPreference = await SharedPreferences.getInstance();
     int? currentCunt = sharedPreference.getInt('count');
     return currentCunt ?? 0;
   }
 
-  static Future<int?> getRemaingDays() async {
-    var sharedPreference = await SharedPreferences.getInstance();
-    var date = sharedPreference.getString("date");
-    if (date != null) {
-      DateTime endDate = DateTime.parse(date);
-      int daysRemaining = endDate.difference(DateTime.now()).inDays;
-      return daysRemaining < 0 ? 0 : daysRemaining;
-    }
-    return null;
-  }
-
-  static Future<void> storeTitleMap(List<String> titles) async {
-    var sharedPreference = await SharedPreferences.getInstance();
+  static Future<void> storeTitleMapsss(List<String> titles) async {
     await sharedPreference.setString('titles', jsonEncode(titles));
   }
 
   static Future<List<String>> getTitleMap() async {
-    var sharedPreference = await SharedPreferences.getInstance();
     var jsonTitles = sharedPreference.getString('titles');
     if (jsonTitles != null) {
       return jsonDecode(jsonTitles);
     } else {
       throw ('no titles found in sahared preference');
     }
+  }
+
+  static Future<void> saveLastUpdatedTime() async {
+    DateTime lastUpdated = DateTime.now();
+    await sharedPreference.setString(
+        'last-data', lastUpdated.toIso8601String());
+  }
+
+  static Future<bool> saveIsThereNewData(String lastDataDate) async {
+    String? dateTimeString = sharedPreference.getString('last-data');
+    if (dateTimeString != null) {
+      DateTime lastUpdated = DateTime.parse(dateTimeString);
+      try {
+        DateTime lastDataAdded = DateTime.parse(lastDataDate);
+        await sharedPreference.setBool(
+            'isThereNew', lastDataAdded.isAfter(lastUpdated));
+        return lastDataAdded.isAfter(lastUpdated);
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      await sharedPreference.setBool('isThereNew', true);
+    }
+    return true;
+  }
+
+  static bool isThereNewData() {
+    bool? isThereNew = sharedPreference.getBool('isThereNew');
+    return isThereNew ?? false;
+  }
+
+  static Future<void> storeAgencyDetails(AgencyDetails details) async {
+    await sharedPreference.setString('agency', details.toRawJson());
+  }
+
+  static AgencyDetails? getAgencyDetails() {
+    String? json = sharedPreference.getString('agency');
+    if (json != null) return AgencyDetails.fromRawJson(json);
+    return null;
+  }
+
+  static Future<void> storeControlPanelPassword(String password) async {
+    await sharedPreference.setString('pass', password);
+  }
+
+  static Future<String?> getControlPanelPassword() async {
+    return sharedPreference.getString('pass');
   }
 }

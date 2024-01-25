@@ -97,6 +97,7 @@ class _IdCardScreenState extends State<IdCardScreen> {
                   Image.asset(
                     'assets/icons/logo.jpeg',
                     height: 60,
+                    fit: BoxFit.contain,
                   ),
                   const SizedBox(
                     width: 20,
@@ -110,12 +111,17 @@ class _IdCardScreenState extends State<IdCardScreen> {
                   ),
                 ],
               ),
-              CircleAvatar(
-                minRadius: 50,
-                backgroundImage: Image.asset(
-                  'assets/icons/user.png',
-                  fit: BoxFit.contain,
-                ).image,
+              Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: Image.asset(
+                      'assets/icons/user.png',
+                      scale: 2,
+                      fit: BoxFit.fitHeight,
+                    ).image,
+                  ),
+                ),
               ),
               const SizedBox(
                 height: 20,

@@ -21,8 +21,9 @@ class CsvFileServices {
     streamController.sink.add(null);
     List<String> titleList = ['VEHICAL NO']; //supported titles.
     var files = csvFiles ?? await getExcelFiles();
-    int unreadFileIndex = await Storage.getProcessedFileIndex();
-    for (var i = unreadFileIndex; i < files.length; i++) {
+    int readFileIndex = await Storage.getProcessedFileIndex();
+    //don't want to re process the last file if there is no new data (readFileIndex + 1).
+    for (var i = readFileIndex + 1; i < files.length; i++) {
       List<List<String>> rows = [];
       var startTime = DateTime.now();
       streamController.sink.add(
@@ -155,6 +156,7 @@ class CsvFileServices {
               .toInt()
         });
       }
+      await Storage.saveLastUpdatedTime();
     } else {
       print('Failed to load download links');
       // throw Exception('Failed to load download links');

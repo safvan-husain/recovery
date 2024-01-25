@@ -289,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  device_imei:
+    dependency: "direct main"
+    description:
+      name: device_imei
+      sha256: "44a1ed0027a41a232c6cdc9995d23603432bfbcc5b78bea130bbfb83e376bd19"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4+2"
   dio:
     dependency: "direct main"
     description:

@@ -1,27 +1,22 @@
 import 'package:flutter/services.dart';
+import 'package:recovery_app/models/user_model.dart';
+import 'package:recovery_app/services/utils.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 import 'package:sim_card_info/sim_card_info.dart';
 import 'package:sim_card_info/sim_info.dart';
+import 'package:flutter/services.dart';
 
-class SimServices {
-  static Future<List<String>> _getPhoneNumbers() async {
-    final simCardInfoPlugin = SimCardInfo();
-    List<String> phoneNumbers = [];
-    List<SimInfo>? simCardInfo;
-
-    try {
-      simCardInfo = await simCardInfoPlugin.getSimInfo() ?? [];
-      for (var element in simCardInfo) {
-        phoneNumbers.add(element.number.substring(3));
-      }
-    } on PlatformException {
-      simCardInfo = [];
-    }
-    return phoneNumbers;
+class DeviceIdServices {
+  static Future<String> getDeviceId() async {
+    return await Utils.getImei();
   }
 
-  static Future<bool> verifyPhoneNumber(String number) async {
-    return true;
-    List<String> phoneNumbers = await _getPhoneNumbers();
-    return phoneNumbers.contains(number);
+  static Future<bool?> verifyPhoneNumber(String number) async {
+    // return true;
+    UserModel? user = await Storage.getUser();
+    if (user == null) return null;
+    // List<String> phoneNumbers = await _getDeviceId();
+    // print(phoneNumbers);
+    return false;
   }
 }

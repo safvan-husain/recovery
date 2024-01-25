@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/resources/color_manager.dart';
+import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -11,63 +14,36 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  List<Map<String, dynamic>> notifications = [];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // phone = context.read<GlobalAccountCubit>().state.user!.phone;
-    _getNotifications();
-  }
-
-  late String phone;
-  void _getNotifications() async {
-    // var response = await http.get(
-    //   Uri.parse("$baseUri/notifications?phone=$phone"),
-    //   headers: {"Content-Type": "application/json"},
-    // );
-    // if (response.statusCode == 200) {
-    //   var result = jsonDecode(response.body);
-    //   for (var element in result) {
-    //     notifications.add(element);
-    //   }
-    //   setState(() {});
-    // } else {
-    //   if (context.mounted) {
-    //     showSnackbar("Unable to show Notifications", context);
-    //   }
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isThereNew = context.read<HomeCubit>().state.data.isThereNewData;
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 242, 244, 255),
       appBar: AppBar(
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarBrightness: Brightness.light,
           statusBarIconBrightness: Brightness.dark,
         ),
-        backgroundColor: Colors.grey[200],
         elevation: 1,
-        leading: InkWell(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
+        leading: const BackButton(),
+        backgroundColor: ColorManager.primary,
         title: Text(
           "Notifications",
-          style: GoogleFonts.poppins(color: Colors.black),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+          ),
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: ListView.builder(
-            itemCount: notifications.length,
+            itemCount: isThereNew ? 1 : 0,
             itemBuilder: (context, index) {
               return Container(
                 margin: EdgeInsets.all(10),
@@ -89,12 +65,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   // contentPadding: EdgeInsets.all(10),
                   leading: Icon(FontAwesomeIcons.solidBell),
                   title: Text(
-                    notifications.elementAt(index)['title'] ?? "",
+                    "New Data found on database",
                     style: GoogleFonts.poppins(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   subtitle: Text(
-                    notifications.elementAt(index)['description'] ?? "",
+                    "please update to get latest Data",
                     style: GoogleFonts.poppins(color: Colors.black),
                   ),
                 ),

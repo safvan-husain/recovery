@@ -1,14 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:recovery_app/resources/color_manager.dart';
 import 'package:recovery_app/services/control_panel_services.dart';
+import 'package:recovery_app/services/utils.dart';
 
 class UserView extends StatefulWidget {
   final Agent agent;
+  final void Function() onChange;
+
   const UserView({
     super.key,
     required this.agent,
+    required this.onChange,
   });
 
   @override
@@ -16,8 +22,15 @@ class UserView extends StatefulWidget {
 }
 
 class _UserViewState extends State<UserView> {
-  bool? isAdmin;
+  bool isAdmin = false;
   bool isActive = false;
+  @override
+  void initState() {
+    isActive = widget.agent.status;
+    isAdmin = widget.agent.staff;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +75,29 @@ class _UserViewState extends State<UserView> {
                 _buildTile('Name', widget.agent.agentName),
                 _buildTile('Mobile Number', "99999999"),
                 _buildTile('Address', widget.agent.address),
+                // Container(
+                //   margin: const EdgeInsets.only(top: 15),
+                //   padding: const EdgeInsets.all(15),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(10),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         color:
+                //             Colors.grey.withOpacity(0.5), // Color of the shadow
+                //         spreadRadius: 2, // Spread radius
+                //         blurRadius: 4, // Blur radius
+                //         offset: const Offset(0, 3), // Shadow offset
+                //       ),
+                //     ],
+                //   ),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //     children: [
+                //       Text(isActive ? "active" : "inactive"),
+                //       Text((isAdmin ?? widget.agent.staff)
+                //           ? "Admin"
+                //           : "Not admin"),
                 Container(
                   margin: const EdgeInsets.only(top: 15),
                   padding: const EdgeInsets.all(15),
@@ -82,9 +118,67 @@ class _UserViewState extends State<UserView> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(isActive ? "active" : "inactive"),
-                      Text((isAdmin ?? widget.agent.staff)
-                          ? "Admin"
-                          : "Not admin"),
+                      CupertinoSwitch(
+                        // thumb color (round icon)
+                        activeColor: ColorManager.primary,
+                        thumbColor: Colors.white,
+                        trackColor: isActive == true
+                            ? ColorManager.primary
+                            : Colors.grey,
+                        value: isActive,
+                        // changes the state of the switch
+                        onChanged: (v) {
+                          ControlPanelService.switchAdminAccess(
+                            v,
+                            widget.agent.id,
+                          );
+                          if (v) {
+                            Utils.toastBar(
+                              "Activated",
+                              Colors.greenAccent,
+                            ).show(context);
+                          } else {
+                            Utils.toastBar(
+                              "Inactivated",
+                              Colors.redAccent,
+                            ).show(context);
+                          }
+                          setState(() {
+                            isActive = v;
+                          });
+                        },
+                      ),
+                      Text((isAdmin) ? "Admin" : "Not admin"),
+                      CupertinoSwitch(
+                        // thumb color (round icon)
+                        activeColor: ColorManager.primary,
+                        thumbColor: Colors.white,
+                        trackColor: isAdmin == true
+                            ? ColorManager.primary
+                            : Colors.grey,
+                        value: isAdmin,
+                        // changes the state of the switch
+                        onChanged: (v) {
+                          ControlPanelService.switchAdminAccess(
+                            v,
+                            widget.agent.id,
+                          );
+                          if (v) {
+                            Utils.toastBar(
+                              "Admin access added",
+                              Colors.greenAccent,
+                            ).show(context);
+                          } else {
+                            Utils.toastBar(
+                              "Admin access removed",
+                              Colors.redAccent,
+                            ).show(context);
+                          }
+                          setState(() {
+                            isAdmin = v;
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),

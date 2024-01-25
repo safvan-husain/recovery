@@ -3,11 +3,15 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:recovery_app/models/home_data.dart';
+import 'package:recovery_app/models/subscription_details.dart';
 
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:recovery_app/services/home_service.dart';
+import 'package:recovery_app/services/utils.dart';
 
 import 'package:recovery_app/storage/database_helper.dart';
 import 'package:recovery_app/storage/user_storage.dart';
@@ -20,12 +24,34 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(user: user));
   }
 
-  void homeInitialization() async {
+  void homeInitialization(BuildContext context) async {
     emit(state.copyWith(
       changeType: ChangeType.vehicleOwnerListUpdated,
       isTwoColumnSearch: await Storage.getIsTwoColumnSearch(),
       entryCount: await Storage.getEntryCount(),
     ));
+
+    SubscriptionDetails? subDetails = await HomeServices.getSubscription(
+      () {
+        Utils.toastBar("You are offline, Can't check subscription")
+            .show(context);
+      },
+      state.user!.agencyId,
+    );
+    print(subDetails?.remainingDays);
+
+    emit(
+      state.copyWith(
+        data: state.data.copyWith(
+          remainingDays: subDetails != null ? subDetails.remainingDays : 0,
+          isThereNewData:
+              await HomeServices.isThereNewData(state.user!.agencyId),
+          agencyDetails:
+              await HomeServices.updateAgencyDetails(state.user!.agencyId),
+          subscriptionDetails: subDetails,
+        ),
+      ),
+    );
   }
 
   void updateEstimatedTime(int microSeconds) {
@@ -50,23 +76,29 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> downloadData() async {
-    await deleteAllData();
+    // await deleteAllData();
     log('downlaing data');
     emit(state.copyWith(changeType: ChangeType.loading));
     try {
       await CsvFileServices.updateData(
-        // state.user!.agencyId,
-        "2",
+        state.user!.agencyId,
+        // "3",
         state.streamController,
         this,
       );
     } catch (e) {
       print(e);
     }
-    emit(state.copyWith(
-      changeType: ChangeType.vehicleOwnerListUpdated,
-      entryCount: await Storage.getEntryCount(),
-    ));
+    emit(
+      state.copyWith(
+        changeType: ChangeType.vehicleOwnerListUpdated,
+        entryCount: await Storage.getEntryCount(),
+        data: state.data.copyWith(
+          isThereNewData:
+              await HomeServices.isThereNewData(state.user!.agencyId),
+        ),
+      ),
+    );
   }
 
   void updateIsColumSearch(bool isColumSearch) {

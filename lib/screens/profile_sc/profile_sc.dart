@@ -9,6 +9,7 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/models/subscription_details.dart';
 import 'package:recovery_app/resources/assets_manager.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
@@ -263,88 +264,96 @@ class _ProfileScViewState extends State<ProfileScView>
               label: 'Address',
               value: context.read<HomeCubit>().state.user!.address,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5), // Color of the shadow
-                    spreadRadius: 1, // Spread radius
-                    blurRadius: 4, // Blur radius
-                    // offset: const Offset(0, 1), // Shadow offset
+
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.grey.withOpacity(0.2), // Color of the shadow
+                        spreadRadius: 1, // Spread radius
+                        blurRadius: 4, // Blur radius
+                        // offset: const Offset(0, 1), // Shadow offset
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              margin: const EdgeInsets.all(10),
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Subscription details",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Divider(
-                    color: Colors.grey,
-                  ),
-                  Text(
-                    "From",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    "27-2-2018",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Divider(
-                    color: Colors.grey,
-                  ),
-                  Text(
-                    "To",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    "27-1-208",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Divider(
-                    color: Colors.grey,
-                  ),
-                  Text(
-                    "remaining days",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    "20  days",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ]
-                    .map((e) => Padding(
-                          padding: e is Text
-                              ? const EdgeInsets.all(3)
-                              : const EdgeInsets.all(7),
-                          child: e,
-                        ))
-                    .toList(),
-              ),
+                  margin: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
+                  child: state.data.subscriptionDetails == null
+                      ? Text('No subscription exist')
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Subscription details",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Divider(
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              "From",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              state.data.subscriptionDetails!.start.toString(),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Divider(
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              "To",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              state.data.subscriptionDetails!.end.toString(),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Divider(
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              "remaining days",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              "${state.data.subscriptionDetails!.remainingDays}  days",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ]
+                              .map((e) => Padding(
+                                    padding: e is Text
+                                        ? const EdgeInsets.all(3)
+                                        : const EdgeInsets.all(7),
+                                    child: e,
+                                  ))
+                              .toList(),
+                        ),
+                );
+              },
             )
           ],
         ),
@@ -683,7 +692,7 @@ class _ProfileScViewState extends State<ProfileScView>
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5), // Color of the shadow
+                color: Colors.grey.withOpacity(0.2), // Color of the shadow
                 spreadRadius: 1, // Spread radius
                 blurRadius: 4, // Blur radius
                 // offset: const Offset(0, 1), // Shadow offset

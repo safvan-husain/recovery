@@ -15,12 +15,14 @@ class HomeState {
   final bool isTwoColumnSearch;
   final int entryCount;
   final String estimatedTime;
+  final HomeData data;
 
   HomeState({
     this.user,
     this.isTwoColumnSearch = false,
     this.entryCount = 0,
     this.estimatedTime = '',
+    required this.data,
     required this.couselImages,
     required this.streamController,
     required this.changeType,
@@ -35,6 +37,10 @@ class HomeState {
       ],
       changeType: ChangeType.vehicleOwnerListUpdated,
       streamController: StreamController<Map<String, int>?>.broadcast(),
+      data: HomeData(
+        remainingDays: 0,
+        isThereNewData: false,
+      ),
     );
   }
 
@@ -46,6 +52,7 @@ class HomeState {
     bool? isTwoColumnSearch,
     int? entryCount,
     String? estimatedTime,
+    HomeData? data,
   }) {
     return HomeState(
       entryCount: entryCount ?? this.entryCount,
@@ -55,6 +62,7 @@ class HomeState {
       streamController: streamController ?? this.streamController,
       changeType: changeType ?? this.changeType,
       estimatedTime: estimatedTime ?? this.estimatedTime,
+      data: data ?? this.data,
     );
   }
 }

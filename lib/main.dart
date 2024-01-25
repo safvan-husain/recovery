@@ -4,11 +4,12 @@ import 'package:recovery_app/resources/theme_manager.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/initialScreen.dart';
 import 'package:recovery_app/storage/database_helper.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseHelper.initializeDatabase();
-
+  await Storage.initialize();
   runApp(
     MultiBlocProvider(
         providers: [BlocProvider(create: (c) => HomeCubit())],

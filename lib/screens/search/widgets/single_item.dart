@@ -28,9 +28,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
     "CHASSIS NO",
     "MODEL/MAKE",
     "ENGINE NO",
-    "AGREEMENT NO",
     "CUSTOMER NAME",
-    "CUSTOMER ADDRESS",
   ].map((e) => e.toLowerCase()).toList();
 
   @override
@@ -38,6 +36,8 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
     if (context.read<HomeCubit>().state.user!.isStaff) {
       titles.addAll(
         [
+          "AGREEMENT NO",
+          "CUSTOMER ADDRESS",
           "BUCKET",
           "GV",
           "OD REGION",
@@ -74,6 +74,14 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<MapEntry<dynamic, dynamic>> data = titles.map<MapEntry>((e) {
+      return MapEntry(e, widget.details[e] ?? "");
+    }).toList();
+    if (context.read<HomeCubit>().state.data.agencyDetails != null) {
+      data.addAll(
+          context.read<HomeCubit>().state.data.agencyDetails!.toJson().entries);
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -89,8 +97,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                         vertical: 20, horizontal: 10),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: titles
-                          .map((e) => MapEntry(e, widget.details[e] ?? ""))
+                      children: data
                           .map((e) => Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
@@ -98,7 +105,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        e.key,
+                                        Utils.formatString(e.key),
                                         style: GoogleFonts.poppins(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -145,10 +152,10 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                             onTap: () {
                               takeActionForSpecificButton(
                                 e.key,
-                                titles.fold(
+                                data.fold(
                                   {},
                                   (map, e) {
-                                    map[e] = widget.details[e] ?? "";
+                                    map[e.key] = e.value;
                                     return map;
                                   },
                                 ),
@@ -186,7 +193,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                     return map;
                   },
                 ),
-                'Report',
+                'Please confirm this vehicle.',
               ),
               const SizedBox(height: 10),
               ElevatedButton(
@@ -229,6 +236,13 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
           context: context,
           builder: (c) {
             String agentName = context.read<HomeCubit>().state.user!.agent_name;
+            String agencyName = context
+                    .read<HomeCubit>()
+                    .state
+                    .data
+                    .agencyDetails
+                    ?.agencyName ??
+                "";
             String phone = context.read<HomeCubit>().state.user!.number;
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -236,6 +250,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                 InkWell(
                   onTap: () {
                     Utils.sendWhatsapp(
+                      agencyName,
                       details,
                       'Please confirm this vehicle.',
                       agentName,
@@ -243,7 +258,6 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       '',
                       null,
                       null,
-                      'Respected sir,',
                     );
                   },
                   child: ListTile(
@@ -257,6 +271,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                 InkWell(
                   onTap: () {
                     Utils.sendWhatsapp(
+                      agencyName,
                       details,
                       'Ok for confirmation',
                       agentName,
@@ -264,7 +279,6 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       '',
                       null,
                       null,
-                      'Respected sir,',
                     );
                   },
                   child: ListTile(
@@ -278,6 +292,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                 InkWell(
                   onTap: () {
                     Utils.sendWhatsapp(
+                      agencyName,
                       details,
                       'Not confirmed',
                       agentName,
@@ -285,7 +300,6 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       '',
                       null,
                       null,
-                      'Respected sir,',
                     );
                   },
                   child: ListTile(
