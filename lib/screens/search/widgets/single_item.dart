@@ -75,7 +75,8 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
   @override
   Widget build(BuildContext context) {
     List<MapEntry<dynamic, dynamic>> data = titles.map<MapEntry>((e) {
-      return MapEntry(e, widget.details[e] ?? "");
+      return MapEntry(
+          e, widget.details[e.toUpperCase()] ?? widget.details[e] ?? "");
     }).toList();
     if (context.read<HomeCubit>().state.data.agencyDetails != null) {
       data.addAll(

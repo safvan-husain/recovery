@@ -4,11 +4,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
+import 'package:recovery_app/models/agency_details.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:dio/dio.dart';
+import 'package:recovery_app/screens/authentication/device_verify_screen.dart';
 import 'package:recovery_app/screens/authentication/unapproved_screen.dart';
+import 'package:recovery_app/services/home_service.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
 class AuthServices {
@@ -20,18 +23,26 @@ class AuthServices {
     required String password,
     required BuildContext context,
   }) async {
-    print("logi n user ");
+    // dio.options.validateStatus;
+    print("logi n user $phoneNumber $password");
     try {
       var response = await dio.post(
         "https://www.recovery.starkinsolutions.com/loginapi.php",
-        data: {"phone": phoneNumber, "password": password},
+        data: jsonEncode({"phone": phoneNumber, "password": password}),
       );
       var decoded = jsonDecode(jsonEncode(response.data));
       if (response.statusCode == 200) {
         if (decoded['user_data']['status'] == "1") {
           var user = UserModel.fromServerJson2(response.data);
+          AgencyDetails? agencyDetails =
+              await HomeServices.updateAgencyDetails(user.agencyId);
+          if (agencyDetails == null && context.mounted) {
+            showSnackbar("No agency details", context, Icons.warning);
+            return;
+          }
+          user.addAgencyDetails(agencyDetails!);
           await Storage.storeUser(user);
-          if (context.mounted) {
+          if (await user.verifyDevice() && context.mounted) {
             context.read<HomeCubit>().setUser(user);
             Navigator.pushAndRemoveUntil(
               context,
@@ -40,6 +51,14 @@ class AuthServices {
               ),
               (s) => false,
             );
+          } else {
+            if (context.mounted) {
+              context.read<HomeCubit>().setUser(user!);
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (c) => const DeviceVerifyScreen()),
+                (p) => false,
+              );
+            }
           }
         } else {
           if (context.mounted) {
@@ -141,6 +160,23 @@ class AuthServices {
     return (null, null);
   }
 
+  static Future<void> requestDeviceIdChange(
+      UserModel user, String newDeviceId) async {
+    try {
+      await dio.post(
+        'https://www.recovery.starkinsolutions.com/add_device_req.php',
+        data: jsonEncode({
+          "agent_name": user.agent_name,
+          "device_id": newDeviceId,
+          "agent_id": user.agentId,
+          "agency_id": int.parse(user.agencyId),
+        }),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
   static Future<void> registerUser({
     required String userName,
     required String email,
@@ -155,6 +191,7 @@ class AuthServices {
     required String district,
     required String village,
     required String pinCode,
+    required String deviceId,
   }) async {
     try {
       var response = await dio.post(
@@ -170,6 +207,7 @@ class AuthServices {
           'district': district,
           'village': village,
           'pincode': pinCode,
+          'device': deviceId,
         },
       );
       print(response.data);

@@ -41,7 +41,11 @@ class _SettingsScViewState extends State<SettingsScView> {
           child: Column(
             children: [
               _getRowUOS(
-                  value: context.watch<HomeCubit>().state.isTwoColumnSearch,
+                  value: context
+                      .watch<HomeCubit>()
+                      .state
+                      .searchSettings
+                      .isTwoColumnSearch,
                   ctx: context),
               Divider(
                 color: Colors.grey[300],

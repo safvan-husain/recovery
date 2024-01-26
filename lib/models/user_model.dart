@@ -3,6 +3,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:recovery_app/models/agency_details.dart';
+import 'package:recovery_app/models/subscription_details.dart';
 import 'package:recovery_app/services/utils.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
@@ -17,9 +19,14 @@ class UserModel {
   String agencyId;
   bool isStaff;
   String deviceId;
+  AgencyDetails? details;
+  String agentId;
+  // SubscriptionDetails subscriptionDetails;
 
   UserModel({
     required this.agent_name,
+    required this.agentId,
+    // required this.subscriptionDetails,
     required this.number,
     required this.email,
     required this.address,
@@ -28,8 +35,13 @@ class UserModel {
     this.panUrl,
     required this.agencyId,
     this.isStaff = true,
-    this.deviceId = '',
+    required this.deviceId,
+    this.details,
   });
+
+  void addAgencyDetails(AgencyDetails details) {
+    this.details = details;
+  }
 
   Future<bool> verifyDevice() async {
     String imei = await Utils.getImei();
@@ -37,8 +49,10 @@ class UserModel {
   }
 
   factory UserModel.fromServerJson2(Map<String, dynamic> map) {
-    log(map['Add_data']['agency_id']);
+    log(map['user_data']['device']);
     return UserModel(
+      agentId: map['user_data']['id'],
+      deviceId: map['user_data']['device'] ?? "",
       agent_name: map['Add_data']['agent_name'] as String,
       number: map['user_data']['phone'] as String,
       email: map['user_data']['email'] as String,
@@ -53,6 +67,8 @@ class UserModel {
 
   factory UserModel.fromServerJson(Map<String, dynamic> map) {
     return UserModel(
+      agentId: map['details']['admin_id'],
+      deviceId: map['device'] ?? "",
       agent_name: map['details']['agent_name'] as String,
       number: map['phone'] as String,
       email: map['details']['email']
@@ -77,11 +93,15 @@ class UserModel {
       'panUrl': panUrl,
       'agency_id': agencyId,
       'isStaff': isStaff,
+      'details': details!.toJson(),
+      'deviceId': deviceId,
+      'agentId': agentId,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
+      agentId: map['agentId'],
       agent_name: map['agent_name'] as String,
       number: map['number'] as String,
       email: map['email'] as String,
@@ -89,6 +109,8 @@ class UserModel {
       avatarUrl: map['avatarUrl'] != null ? map['avatarUrl'] as String : null,
       agencyId: map['agency_id'] as String,
       isStaff: map['isStaff'],
+      deviceId: map['deviceId'],
+      details: AgencyDetails.fromJson(map['details']),
     );
   }
 

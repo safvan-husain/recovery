@@ -219,6 +219,7 @@ class _SignUpScreenInitialState extends State<SignUpScreenInitial> {
                             district: _districtController.text,
                             pinCode: _pinCodeController.text,
                             village: _villageController.text,
+                            deviceId: await Utils.getImei(),
                           );
 
                           setState(() {
@@ -292,7 +293,7 @@ class _SignUpScreenInitialState extends State<SignUpScreenInitial> {
                     InkWell(
                       onTap: () {
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (c) =>const OtpLogin()),
+                          MaterialPageRoute(builder: (c) => const OtpLogin()),
                           (p) => false,
                         );
                       },

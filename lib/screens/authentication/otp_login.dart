@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
+import 'package:recovery_app/models/agency_details.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/resources/snack_bar.dart';
 import 'package:recovery_app/resources/text_fiealds.dart';
+import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/agency_code_screen.dart';
+import 'package:recovery_app/screens/authentication/device_verify_screen.dart';
 import 'package:recovery_app/screens/authentication/login.dart';
 import 'package:recovery_app/screens/common_widgets/count_down_ui.dart';
 import 'package:recovery_app/services/auth_services.dart';
+import 'package:recovery_app/services/home_service.dart';
 import 'package:recovery_app/services/sim_services.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
@@ -324,8 +329,16 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
         onSubmit: (v) async {
           if (v == otp) {
             if (user != null) {
+              AgencyDetails? agencyDetails =
+                  await HomeServices.updateAgencyDetails(user!.agencyId);
+              if (agencyDetails == null && mounted) {
+                showSnackbar("No agency details", context, Icons.warning);
+                return;
+              }
+              user!.addAgencyDetails(agencyDetails!);
+
               await Storage.storeUser(user!);
-              if (mounted) {
+              if (await user!.verifyDevice() && mounted) {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
@@ -334,6 +347,15 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
                 );
                 showSnackbar(
                     "Welcome back ${user!.agent_name}", context, Icons.warning);
+              } else {
+                if (context.mounted) {
+                  context.read<HomeCubit>().setUser(user!);
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (c) => const DeviceVerifyScreen()),
+                    (p) => false,
+                  );
+                }
               }
             } else {
               Navigator.push(

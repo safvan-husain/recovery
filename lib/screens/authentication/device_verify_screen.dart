@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
+import 'package:recovery_app/services/auth_services.dart';
+import 'package:recovery_app/services/utils.dart';
 
 class DeviceVerifyScreen extends StatefulWidget {
   const DeviceVerifyScreen({super.key});
@@ -34,7 +38,10 @@ class _DeviceVerifyScreenState extends State<DeviceVerifyScreen> {
               const SizedBox(height: 20),
               if (!_isRequested)
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await AuthServices.requestDeviceIdChange(
+                        context.read<HomeCubit>().state.user!,
+                        await Utils.getImei());
                     setState(() {
                       _isRequested = true;
                     });

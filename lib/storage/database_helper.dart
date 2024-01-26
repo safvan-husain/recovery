@@ -12,6 +12,7 @@ class DatabaseHelper {
   static late final Database _database;
   static var tableVehicleInfo = 'trie';
   static var last4digitVehicleNumber = 'Number';
+  static String chessiNo = "chessiNo";
 
   static Future<void> initializeDatabase() async {
     _database = await openDatabase(
@@ -21,6 +22,7 @@ class DatabaseHelper {
   id INTEGER PRIMARY KEY,
   $last4digitVehicleNumber TEXT,
   completeVehicleNumber TEXT,
+  $chessiNo TEXT,
   details TEXT
 )''');
       },
@@ -85,18 +87,24 @@ class DatabaseHelper {
       {
         last4digitVehicleNumber: word,
         "completeVehicleNumber": completeVehicleNumber,
+        chessiNo: details['CHASSIS NO'] ?? "",
         'details': jsonEncode(details),
       },
     );
   }
 
-  static Future<List<SearchResultItem>> getResult(String number) async {
+  static Future<List<SearchResultItem>> getResult(
+    String number, [
+    bool isVehicle = true,
+  ]) async {
     List<SearchResultItem> list = [];
     var results = await _database.query(
       tableVehicleInfo,
-      where: '$last4digitVehicleNumber = ?',
-      whereArgs: [number],
+      where: isVehicle ? '$last4digitVehicleNumber = ?' : '$chessiNo = ?',
+      whereArgs: [isVehicle ? number : number.toUpperCase()],
     );
+    print(number);
+    print(results);
     if (results.isNotEmpty) {
       for (var element in results) {
         var details = jsonDecode(element['details'] as String);
@@ -108,7 +116,9 @@ class DatabaseHelper {
         });
         list.add(
           SearchResultItem(
-            item: element['completeVehicleNumber'] as String,
+            item: isVehicle
+                ? element['completeVehicleNumber'] as String
+                : stringDetails["CHASSIS NO"] ?? "chass miss",
             rows: [stringDetails],
           ),
         );

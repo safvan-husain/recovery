@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:recovery_app/models/home_data.dart';
+import 'package:recovery_app/models/search_settings.dart';
 import 'package:recovery_app/models/subscription_details.dart';
 
 import 'package:recovery_app/models/user_model.dart';
@@ -27,7 +28,7 @@ class HomeCubit extends Cubit<HomeState> {
   void homeInitialization(BuildContext context) async {
     emit(state.copyWith(
       changeType: ChangeType.vehicleOwnerListUpdated,
-      isTwoColumnSearch: await Storage.getIsTwoColumnSearch(),
+      searchSettings: await Storage.getSearchSettings(),
       entryCount: await Storage.getEntryCount(),
     ));
 
@@ -102,9 +103,13 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void updateIsColumSearch(bool isColumSearch) {
-    Storage.setIsTwoColumSearch(isColumSearch);
+    Storage.setSearchSettings(
+        state.searchSettings.copyWith(isTwoColumnSearch: isColumSearch));
     emit(
-      state.copyWith(isTwoColumnSearch: isColumSearch),
+      state.copyWith(
+          searchSettings: state.searchSettings.copyWith(
+        isTwoColumnSearch: isColumSearch,
+      )),
     );
   }
 

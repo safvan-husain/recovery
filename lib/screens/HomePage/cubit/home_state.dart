@@ -12,14 +12,14 @@ class HomeState {
   final List<String> couselImages;
   final StreamController<Map<String, int>?> streamController;
   final ChangeType changeType;
-  final bool isTwoColumnSearch;
+  final SearchSettings searchSettings;
   final int entryCount;
   final String estimatedTime;
   final HomeData data;
 
   HomeState({
     this.user,
-    this.isTwoColumnSearch = false,
+    required this.searchSettings,
     this.entryCount = 0,
     this.estimatedTime = '',
     required this.data,
@@ -30,6 +30,11 @@ class HomeState {
 
   factory HomeState.initial() {
     return HomeState(
+      searchSettings: SearchSettings(
+        isOnlineSearch: false,
+        isTwoColumnSearch: true,
+        isSearchOnVehicleNumber: true,
+      ),
       couselImages: [
         'assets/images/pic-1.webp',
         'assets/images/pic-2.webp',
@@ -49,14 +54,14 @@ class HomeState {
     List<String>? couselImages,
     StreamController<Map<String, int>?>? streamController,
     ChangeType? changeType,
-    bool? isTwoColumnSearch,
+    SearchSettings? searchSettings,
     int? entryCount,
     String? estimatedTime,
     HomeData? data,
   }) {
     return HomeState(
       entryCount: entryCount ?? this.entryCount,
-      isTwoColumnSearch: isTwoColumnSearch ?? this.isTwoColumnSearch,
+      searchSettings: searchSettings ?? this.searchSettings,
       user: user ?? this.user,
       couselImages: couselImages ?? this.couselImages,
       streamController: streamController ?? this.streamController,

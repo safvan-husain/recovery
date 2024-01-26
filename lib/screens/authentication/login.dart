@@ -14,10 +14,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _phoneController =
-      TextEditingController(text: "8766865573");
-  final TextEditingController _passwordController =
-      TextEditingController(text: "12321");
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool passwordObscure = true;
   @override
   Widget build(BuildContext context) {

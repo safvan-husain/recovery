@@ -45,6 +45,7 @@ dependencies:
       ref: 8e9b6b09beea6da1314be9be84bf921e082dc991
   image_gallery_saver: ^2.0.3
   device_imei: ^0.0.4+2
+  toggle_switch: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

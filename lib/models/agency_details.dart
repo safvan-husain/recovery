@@ -9,8 +9,9 @@ class AgencyDetails {
   // String panCard;
   // String shopAct;
   // String gst;
-  // DateTime startDate;
-  // DateTime endDate;
+  DateTime startDate;
+  DateTime endDate;
+  int remainingDays;
   // String adminId;
   // String validityPlansId;
   // String agentsNo;
@@ -27,15 +28,19 @@ class AgencyDetails {
     // required this.panCard,
     // required this.shopAct,
     // required this.gst,
-    // required this.startDate,
-    // required this.endDate,
+    required this.startDate,
+    required this.endDate,
     // required this.adminId,
     // required this.validityPlansId,
     // required this.agentsNo,
     // required this.status,
     // required this.dateAdded,
     // required this.dateModified,
-  });
+  }) : remainingDays = _calculateRemainingDays(endDate);
+  static int _calculateRemainingDays(DateTime end) {
+    int daysRemaining = end.difference(DateTime.now()).inDays;
+    return daysRemaining < 0 ? 0 : daysRemaining;
+  }
 
   factory AgencyDetails.fromRawJson(String str) =>
       AgencyDetails.fromJson(json.decode(str));
@@ -51,8 +56,8 @@ class AgencyDetails {
         // panCard: json["pan_card"],
         // shopAct: json["shop_act"],
         // gst: json["gst"],
-        // startDate: DateTime.parse(json["start_date"]),
-        // endDate: DateTime.parse(json["end_date"]),
+        startDate: DateTime.parse(json["start_date"]),
+        endDate: DateTime.parse(json["end_date"]),
         // adminId: json["admin_id"],
         // validityPlansId: json["validity_plans_id"],
         // agentsNo: json["agents_no"],
@@ -72,8 +77,8 @@ class AgencyDetails {
         // "pan_card": panCard,
         // "shop_act": shopAct,
         // "gst": gst,
-        // "start_date": startDate.toIso8601String(),
-        // "end_date": endDate.toIso8601String(),
+        "start_date": startDate.toIso8601String(),
+        "end_date": endDate.toIso8601String(),
         // "admin_id": adminId,
         // "validity_plans_id": validityPlansId,
         // "agents_no": agentsNo,

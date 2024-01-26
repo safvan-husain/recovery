@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:recovery_app/models/agency_details.dart';
+import 'package:recovery_app/models/search_settings.dart';
 import 'package:recovery_app/models/subscription_details.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/services/home_service.dart';
@@ -63,17 +64,25 @@ class Storage {
     log(sharedPreference.getInt('count').toString());
   }
 
-  static Future<void> setIsTwoColumSearch(bool value) async {
-    await sharedPreference.setBool("twoColumSearch", value);
+  static Future<void> setSearchSettings(SearchSettings value) async {
+    await sharedPreference.setString("settings", value.toJson());
   }
 
-  static Future<bool> getIsTwoColumnSearch() async {
-    bool? isTwo = sharedPreference.getBool('twoColumSearch');
-    if (isTwo == null) {
-      await sharedPreference.setBool("twoColumSearch", true);
-      return true;
+  static Future<SearchSettings> getSearchSettings() async {
+    String? isTwo = sharedPreference.getString('settings');
+    if (isTwo != null) {
+      return SearchSettings.fromJson(isTwo);
     } else {
-      return isTwo;
+      await setSearchSettings(SearchSettings(
+        isOnlineSearch: false,
+        isTwoColumnSearch: true,
+        isSearchOnVehicleNumber: true,
+      ));
+      return SearchSettings(
+        isOnlineSearch: false,
+        isTwoColumnSearch: true,
+        isSearchOnVehicleNumber: true,
+      );
     }
   }
 
