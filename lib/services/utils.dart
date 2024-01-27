@@ -43,12 +43,12 @@ class Utils {
     return (isAllNumbers, lastFour);
   }
 
-  static Future<bool> sendSMS(String message, String status) async {
+  static Future<bool> sendSMS(String message) async {
     final Uri url = Uri(
       scheme: 'sms',
       // path: '+917907320942',
       queryParameters: {
-        'body': "$message \n status: $status",
+        'body': "$message \n",
       },
     );
 
@@ -60,7 +60,7 @@ class Utils {
   }
 
   static Future<bool> sendWhatsapp(
-    String? agencyName,
+    String agencyName,
     Map<String, String> details,
     String status,
     // String message,
@@ -72,7 +72,7 @@ class Utils {
   ]) async {
     // ) async {
     var text =
-        '"Respected Sir, \n \n ${formatMap(details)} ${location != null ? "location : $location" : ""}\n Reporting address : $address \n carries Goods : $load   \n  \n Status : $status \n  \n $agentName : +91 $phone \n \n $agentName';
+        'Respected Sir, \n\n${formatMap(details)}\n \n${location != null ? "location : $location" : ""}\nReporting address : $address \ncarries Goods : $load  \nStatus : $status  \n$agentName : +91 $phone \n\nAgency: $agencyName';
     String url = 'whatsapp://send?&text=$text';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -83,15 +83,16 @@ class Utils {
 
   static String formatMap(Map<String, String> map) {
     List<String> shareableKey = [
+      "customer name",
       "vehical no",
       "chassis no",
-      "model/make",
+      "model",
+      "make",
       "engine no",
-      "agreement no",
-      "customer name"
+      // "agreement no",
     ];
     return map.entries
-        .where((element) => shareableKey.contains(element.key))
+        .where((element) => shareableKey.contains(element.key.toLowerCase()))
         .map((entry) => '${entry.key} : ${entry.value}')
         .join('\n');
   }

@@ -2,8 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:recovery_app/models/user_model.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
-import 'package:sim_card_info/sim_card_info.dart';
-import 'package:sim_card_info/sim_info.dart';
 import 'package:flutter/services.dart';
 
 class DeviceIdServices {

@@ -26,7 +26,8 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
   List<String> titles = [
     "VEHICAL NO",
     "CHASSIS NO",
-    "MODEL/MAKE",
+    "MODEL",
+    "MAKE",
     "ENGINE NO",
     "CUSTOMER NAME",
   ].map((e) => e.toLowerCase()).toList();

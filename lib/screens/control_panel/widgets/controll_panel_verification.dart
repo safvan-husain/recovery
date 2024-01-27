@@ -25,7 +25,8 @@ class _ControlPanelVerificationState extends State<ControlPanelVerification> {
   String? pass;
   @override
   void initState() {
-    password = Storage.getControlPanelPassword();
+    // password = Storage.getControlPanelPassword();
+    password = Future.delayed(Duration.zero, () => "1234");
     super.initState();
   }
 

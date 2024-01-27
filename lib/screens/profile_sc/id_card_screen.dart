@@ -102,11 +102,13 @@ class _IdCardScreenState extends State<IdCardScreen> {
                   const SizedBox(
                     width: 20,
                   ),
-                  Text(
-                    "Starkin Solutions".replaceAll(" ", "\n"),
-                    style: GoogleFonts.kanit(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Flexible(
+                    child: Text(
+                      user.details!.agencyName,
+                      style: GoogleFonts.kanit(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -130,8 +132,8 @@ class _IdCardScreenState extends State<IdCardScreen> {
                 children: {
                   "Name": user.agent_name,
                   "EmployeeId": user.agencyId,
-                  "From Date": "2015-7-22",
-                  "End Date": "2015-7-22",
+                  "From Date": user.subscriptionDetails!.start,
+                  "End Date": user.subscriptionDetails!.end,
                 }
                     .entries
                     .map(
@@ -178,7 +180,7 @@ class _IdCardScreenState extends State<IdCardScreen> {
                 ),
               ),
               Text(
-                "999999999, 88888888",
+                user.details!.contact,
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,

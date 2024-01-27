@@ -24,10 +24,9 @@ class _InitialScreenState extends State<InitialScreen> {
 
   void checkUserExists() async {
     var user = await Storage.getUser();
-    user = null;
 
     if (user != null) {
-      if (!await user.verifyDevice()) {
+      if (await user.verifyDevice()) {
         if (context.mounted) {
           context.read<HomeCubit>().setUser(user);
           Navigator.of(context).pushAndRemoveUntil(

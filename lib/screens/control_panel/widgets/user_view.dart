@@ -182,6 +182,77 @@ class _UserViewState extends State<UserView> {
                     ],
                   ),
                 ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.grey.withOpacity(0.2), // Color of the shadow
+                        spreadRadius: 1, // Spread radius
+                        blurRadius: 4, // Blur radius
+                        // offset: const Offset(0, 1), // Shadow offset
+                      ),
+                    ],
+                  ),
+                  margin: const EdgeInsets.only(top: 15),
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Subscription details",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey,
+                      ),
+                      Text(
+                        "From",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        widget.agent.start.toString(),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey,
+                      ),
+                      Text(
+                        "To",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        widget.agent.end.toString(),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey,
+                      ),
+                    ]
+                        .map((e) => Padding(
+                              padding: e is Text
+                                  ? const EdgeInsets.all(3)
+                                  : const EdgeInsets.all(7),
+                              child: e,
+                            ))
+                        .toList(),
+                  ),
+                )
               ],
             ),
           ),

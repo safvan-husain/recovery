@@ -34,6 +34,7 @@ class CsvFileServices {
       final decoder = utf8.decoder;
       var buffer = '';
       int? vehicleNumberColumIndex;
+      int? chassiNumberColumIndex;
       bool found = false;
       await for (var data in reader) {
         buffer += decoder.convert(data);
@@ -48,18 +49,22 @@ class CsvFileServices {
           if (!found) {
             titles = items.map((e) => e.toLowerCase()).toList();
 
-            for (var title in titleList) {
-              if (titles.contains(title.toLowerCase())) {
-                vehicleNumberColumIndex = titles.indexOf(title.toLowerCase());
-                found = true;
-                break;
-              }
+            if (titles.contains('VEHICAL NO'.toLowerCase())) {
+              vehicleNumberColumIndex =
+                  titles.indexOf('VEHICAL NO'.toLowerCase());
+              found = true;
+              break;
+            } else if (titles.contains('CHASSIS NO'.toLowerCase())) {
+              //only using in if whether find it or not, no use otherwise so random number.
+              chassiNumberColumIndex = 0;
+              found = true;
             }
             if (!found) {
               break;
             }
           } else {
-            if (vehicleNumberColumIndex != null) {
+            if (vehicleNumberColumIndex != null ||
+                chassiNumberColumIndex != null) {
               if (rows.length < 1002) {
                 rows.add(items);
               } else {
@@ -86,7 +91,7 @@ class CsvFileServices {
         await DatabaseHelper.bulkInsertVehicleNumbers(
           rows,
           titles,
-          vehicleNumberColumIndex!,
+          vehicleNumberColumIndex,
         );
         rows.clear();
       }

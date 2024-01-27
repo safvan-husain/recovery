@@ -337,8 +337,8 @@ class _OtpLoginState extends State<OtpLogin> with TickerProviderStateMixin {
               }
               user!.addAgencyDetails(agencyDetails!);
 
-              await Storage.storeUser(user!);
               if (await user!.verifyDevice() && mounted) {
+              await Storage.storeUser(user!); 
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(

@@ -24,8 +24,21 @@ class AuthServices {
     required BuildContext context,
   }) async {
     // dio.options.validateStatus;
-    print("logi n user $phoneNumber $password");
+
     try {
+      dio.interceptors.add(InterceptorsWrapper(
+        onError: (DioException e, s) async {
+          if (e.response?.statusCode == 401) {
+            if (context.mounted) {
+              showSnackbar("Invalid credentials", context, Icons.warning);
+              // throw Error();
+            }
+          } else {
+            // For other errors, rethrow the exception
+            throw e;
+          }
+        },
+      ));
       var response = await dio.post(
         "https://www.recovery.starkinsolutions.com/loginapi.php",
         data: jsonEncode({"phone": phoneNumber, "password": password}),
@@ -41,8 +54,8 @@ class AuthServices {
             return;
           }
           user.addAgencyDetails(agencyDetails!);
-          await Storage.storeUser(user);
           if (await user.verifyDevice() && context.mounted) {
+          await Storage.storeUser(user); 
             context.read<HomeCubit>().setUser(user);
             Navigator.pushAndRemoveUntil(
               context,

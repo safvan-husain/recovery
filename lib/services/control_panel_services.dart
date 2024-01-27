@@ -68,7 +68,7 @@ class ControlPanelService {
   static void switchAdminAccess(bool value, int agentId) async {
     var response = await dio.post(
       "https://www.recovery.starkinsolutions.com/staffactive.php",
-      data: jsonEncode({"id": agentId, "staff": value ? 1 : 0}),
+      data: jsonEncode({"agent_id": agentId, "staff": value ? 1 : 0}),
     );
     print(response.data);
   }
@@ -76,7 +76,7 @@ class ControlPanelService {
   static void switchActiveAccess(bool value, int agentId) async {
     var response = await dio.post(
       "https://www.recovery.starkinsolutions.com/activeagent.php",
-      data: jsonEncode({"id": agentId, "status": value ? 1 : 0}),
+      data: jsonEncode({"agent_id": agentId, "status": value ? 1 : 0}),
     );
     print(response.data);
   }
@@ -94,8 +94,8 @@ class Agent {
   final int agencyId;
   final bool staff;
   final bool status;
-  final DateTime dateAdded;
-  final DateTime dateModified;
+  final DateTime start;
+  final DateTime end;
 
   Agent({
     required this.id,
@@ -109,8 +109,8 @@ class Agent {
     required this.agencyId,
     required this.staff,
     required this.status,
-    required this.dateAdded,
-    required this.dateModified,
+    required this.start,
+    required this.end,
   });
 
   factory Agent.fromJson(Map<String, dynamic> json) {
@@ -126,8 +126,8 @@ class Agent {
       agencyId: int.parse(json['agency_id']),
       staff: int.parse(json['staff']) == 1,
       status: int.parse(json['status']) == 1,
-      dateAdded: DateTime.parse(json['date_added']),
-      dateModified: DateTime.parse(json['date_modified']),
+      start: DateTime.parse(json['start']),
+      end: DateTime.parse(json['end']),
     );
   }
 }

@@ -21,12 +21,12 @@ class UserModel {
   String deviceId;
   AgencyDetails? details;
   String agentId;
-  // SubscriptionDetails subscriptionDetails;
+  SubscriptionDetails subscriptionDetails;
 
   UserModel({
     required this.agent_name,
     required this.agentId,
-    // required this.subscriptionDetails,
+    required this.subscriptionDetails,
     required this.number,
     required this.email,
     required this.address,
@@ -51,6 +51,10 @@ class UserModel {
   factory UserModel.fromServerJson2(Map<String, dynamic> map) {
     log(map['user_data']['device']);
     return UserModel(
+      subscriptionDetails: SubscriptionDetails(
+        start: DateTime.parse(map['Add_data']['start']),
+        end: DateTime.parse(map['Add_data']['end']),
+      ),
       agentId: map['user_data']['id'],
       deviceId: map['user_data']['device'] ?? "",
       agent_name: map['Add_data']['agent_name'] as String,
@@ -67,6 +71,10 @@ class UserModel {
 
   factory UserModel.fromServerJson(Map<String, dynamic> map) {
     return UserModel(
+      subscriptionDetails: SubscriptionDetails(
+        start: DateTime.parse(map['details']['start']),
+        end: DateTime.parse(map['details']['end']),
+      ),
       agentId: map['details']['admin_id'],
       deviceId: map['device'] ?? "",
       agent_name: map['details']['agent_name'] as String,
@@ -96,11 +104,13 @@ class UserModel {
       'details': details!.toJson(),
       'deviceId': deviceId,
       'agentId': agentId,
+      'sub': subscriptionDetails.toMap()
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
+      subscriptionDetails: SubscriptionDetails.fromMap(map['sub']),
       agentId: map['agentId'],
       agent_name: map['agent_name'] as String,
       number: map['number'] as String,

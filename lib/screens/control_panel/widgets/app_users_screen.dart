@@ -54,8 +54,8 @@ class _AppUsersScreenState extends State<AppUsersScreen> {
             List<Agent> agencts = snp.data!;
             agencts = agencts
                 .where((e) =>
-                    e.agentName !=
-                    context.read<HomeCubit>().state.user!.agent_name)
+                    e.id.toString() !=
+                    context.read<HomeCubit>().state.user!.agentId)
                 .toList();
             return ListView.separated(
               shrinkWrap: true,

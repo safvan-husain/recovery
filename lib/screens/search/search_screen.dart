@@ -115,8 +115,8 @@ class SearchScreen1State extends State<SearchScreen1> {
                         SizedBox(
                           width: MediaQuery.of(context).size.width - 150,
                           child: TextField(
-                            keyboardType:
-                                isOnVehicle ? TextInputType.phone : null,
+                            // keyboardType:
+                            //     isOnVehicle ? TextInputType.phone : null,
                             inputFormatters: isOnVehicle
                                 ? [
                                     LengthLimitingTextInputFormatter(4),
@@ -200,8 +200,9 @@ class SearchScreen1State extends State<SearchScreen1> {
                           onChanged: (value) async {
                             if (value.isNotEmpty) {
                               displayItems = items
-                                  .where(
-                                      (element) => element.item.contains(value))
+                                  .where((element) => element.item
+                                      .toUpperCase()
+                                      .contains(value.toUpperCase()))
                                   .toList();
                             }
                             setState(() {});

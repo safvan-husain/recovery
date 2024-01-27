@@ -26,7 +26,7 @@ dependencies:
   camera: ^0.10.5+5
   path_provider:
   flutter_otp_text_field: ^1.1.1
-  permission_handler:
+  permission_handler: ^11.2.0
   geolocator: ^10.1.0
   rename: ^3.0.1
   xml: ^6.3.0
@@ -39,10 +39,6 @@ dependencies:
   sqflite: ^2.3.0
   connectivity_plus: ^5.0.2
   url_launcher: ^6.2.3
-  sim_card_info:
-    git:
-      url: https://github.com/safvan-husain/sim_card_info.git
-      ref: 8e9b6b09beea6da1314be9be84bf921e082dc991
   image_gallery_saver: ^2.0.3
   device_imei: ^0.0.4+2
   toggle_switch: ^2.1.0

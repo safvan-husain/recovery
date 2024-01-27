@@ -37,7 +37,7 @@ class DatabaseHelper {
   static Future<void> bulkInsertVehicleNumbers(
     List<List<String>> rows,
     List<String> titles,
-    int vehicleNumberColumIndex,
+    int? vehicleNumberColumIndex,
   ) async {
     var batch = _database.batch();
     for (var row in rows) {
@@ -54,14 +54,18 @@ class DatabaseHelper {
   static Future<void> _insertRow(
     List<String> row,
     List<String> titles,
-    int vehicleNumberColumIndex,
+    int? vehicleNumberColumIndex,
     Batch batch,
   ) async {
-    var s = Utils.removeHyphens(row.elementAt(vehicleNumberColumIndex));
+    if (vehicleNumberColumIndex != null) {
+      var s = Utils.removeHyphens(row.elementAt(vehicleNumberColumIndex));
 
-    var res = Utils.checkLastFourChars(s);
-    if (res.$1) {
-      await _insertString(res.$2, row, titles, s, true, batch);
+      var res = Utils.checkLastFourChars(s);
+      if (res.$1) {
+        await _insertString(res.$2, row, titles, s, batch);
+      }
+    } else {
+      await _insertString('', row, titles, '', batch);
     }
   }
 
@@ -70,7 +74,6 @@ class DatabaseHelper {
     List<String> row,
     List<String> titles,
     String completeVehicleNumber,
-    bool isStaff,
     Batch batch,
   ) async {
     var details = {};
@@ -87,7 +90,7 @@ class DatabaseHelper {
       {
         last4digitVehicleNumber: word,
         "completeVehicleNumber": completeVehicleNumber,
-        chessiNo: details['CHASSIS NO'] ?? "",
+        chessiNo: details['CHASSIS NO'.toLowerCase()] ?? "",
         'details': jsonEncode(details),
       },
     );
@@ -118,7 +121,7 @@ class DatabaseHelper {
           SearchResultItem(
             item: isVehicle
                 ? element['completeVehicleNumber'] as String
-                : stringDetails["CHASSIS NO"] ?? "chass miss",
+                : element['chessiNo'] as String? ?? "chass miss",
             rows: [stringDetails],
           ),
         );

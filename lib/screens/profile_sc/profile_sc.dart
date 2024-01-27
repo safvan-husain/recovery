@@ -284,7 +284,7 @@ class _ProfileScViewState extends State<ProfileScView>
                   ),
                   margin: const EdgeInsets.all(10),
                   padding: const EdgeInsets.all(10),
-                  child: state.user?.details == null
+                  child: state.user?.subscriptionDetails == null
                       ? Text('No subscription exist')
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,7 +306,7 @@ class _ProfileScViewState extends State<ProfileScView>
                               ),
                             ),
                             Text(
-                              state.user!.details!.startDate.toString(),
+                              state.user!.subscriptionDetails!.start.toString(),
                               style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w400,
                               ),
@@ -322,7 +322,7 @@ class _ProfileScViewState extends State<ProfileScView>
                               ),
                             ),
                             Text(
-                              state.user!.details!.endDate.toString(),
+                              state.user!.subscriptionDetails!.end.toString(),
                               style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w400,
                               ),
@@ -338,7 +338,7 @@ class _ProfileScViewState extends State<ProfileScView>
                               ),
                             ),
                             Text(
-                              "${state.user!.details!.remainingDays}  days",
+                              "${state.user!.subscriptionDetails!.remainingDays}  days",
                               style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w400,
                               ),

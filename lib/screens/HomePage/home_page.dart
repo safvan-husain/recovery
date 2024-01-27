@@ -69,7 +69,8 @@ class _HomePageState extends State<HomePage> {
               BlocConsumer<HomeCubit, HomeState>(
                 listener: (context, state) {
                   getFileCount();
-                  isHaveSubscription = state.data.remainingDays != 0;
+                  isHaveSubscription =
+                      state.user!.subscriptionDetails.remainingDays != 0;
                 },
                 builder: (context, state) {
                   return ConstrainedBox(
@@ -164,7 +165,8 @@ class _HomePageState extends State<HomePage> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text(
-                                              state.data.remainingDays
+                                              state.user!.subscriptionDetails
+                                                  .remainingDays
                                                   .toString(),
                                               textAlign: TextAlign.center,
                                               style: GoogleFonts.poppins(

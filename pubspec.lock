@@ -1040,15 +1040,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
-  sim_card_info:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "8e9b6b09beea6da1314be9be84bf921e082dc991"
-      resolved-ref: "8e9b6b09beea6da1314be9be84bf921e082dc991"
-      url: "https://github.com/safvan-husain/sim_card_info.git"
-    source: git
-    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
