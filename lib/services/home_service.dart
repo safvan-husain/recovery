@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 
 import 'package:recovery_app/models/agency_details.dart';
 import 'package:recovery_app/models/subscription_details.dart';
+import 'package:recovery_app/models/user_model.dart';
+import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
@@ -34,6 +36,35 @@ class HomeServices {
     return false;
   }
 
+  static Future<UserModel?> updateDeviceId(int agencyId) async {
+    final dio = Dio();
+
+    try {
+      Response response = await dio.post(
+        'https://www.recovery.starkinsolutions.com/device.php',
+        data: jsonEncode(
+          {"admin_id": 73},
+        ),
+      );
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.data}');
+      if (response.statusCode == 200) {
+        var user = await Storage.getUser();
+        user!.changeDeviceId(response.data['device']);
+        await Storage.storeUser(user);
+        return user;
+      }
+    } catch (e) {
+      rethrow;
+      if (e is DioException) {
+        // Handle Dio specific errors
+      } else {
+        // Handle all other types of exceptions
+        print("Unexpected error: $e");
+      }
+    }
+  }
+
   static Future<AgencyDetails?> updateAgencyDetails(String agencyId) async {
     final Dio dio = Dio();
     try {
@@ -45,6 +76,7 @@ class HomeServices {
           }),
         );
         if (response.statusCode == 200) {
+          print(response.data);
           AgencyDetails agencyDetails =
               AgencyDetails.fromRawJson(response.data);
           await Storage.storeAgencyDetails(agencyDetails);

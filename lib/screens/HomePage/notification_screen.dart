@@ -40,45 +40,50 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: ListView.builder(
-            itemCount: isThereNew ? 1 : 0,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.all(10),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 4),
+        child: GestureDetector(
+          onTap: () {
+            context.read<HomeCubit>().updateDeviceId();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: ListView.builder(
+              itemCount: isThereNew ? 1 : 0,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: EdgeInsets.all(10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    // contentPadding: EdgeInsets.all(10),
+                    leading: Icon(FontAwesomeIcons.solidBell),
+                    title: Text(
+                      "New Data found on database",
+                      style: GoogleFonts.poppins(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
-                  ],
-                ),
-                child: ListTile(
-                  // contentPadding: EdgeInsets.all(10),
-                  leading: Icon(FontAwesomeIcons.solidBell),
-                  title: Text(
-                    "New Data found on database",
-                    style: GoogleFonts.poppins(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                    subtitle: Text(
+                      "please update to get latest Data",
+                      style: GoogleFonts.poppins(color: Colors.black),
                     ),
                   ),
-                  subtitle: Text(
-                    "please update to get latest Data",
-                    style: GoogleFonts.poppins(color: Colors.black),
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

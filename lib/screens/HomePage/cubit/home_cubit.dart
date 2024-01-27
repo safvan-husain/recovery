@@ -54,6 +54,10 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
+  void updateDeviceId() async {
+    HomeServices.updateDeviceId(int.parse(state.user!.agencyId));
+  }
+
   void updateEstimatedTime(int microSeconds) {
     String timeString;
     int totalSeconds =
