@@ -48,6 +48,10 @@ class UserModel {
     return imei == deviceId;
   }
 
+  void changeDeviceId(String deviceId) {
+    this.deviceId = deviceId;
+  }
+
   factory UserModel.fromServerJson2(Map<String, dynamic> map) {
     log(map['user_data']['device']);
     return UserModel(

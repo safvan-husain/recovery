@@ -528,9 +528,9 @@ class _ProfileScViewState extends State<ProfileScView>
               ],
             ),
           ),
-          const Text(
-            "Cameron Williamson",
-            style: TextStyle(
+          Text(
+            context.read<HomeCubit>().state.user!.agent_name,
+            style: GoogleFonts.poppins(
                 color: Colors.white, fontWeight: FontWeight.w500, fontSize: 15),
           ),
           Padding(

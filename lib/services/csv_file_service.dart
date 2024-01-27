@@ -21,9 +21,10 @@ class CsvFileServices {
     int count = 0;
     streamController.sink.add(null);
     var files = csvFiles ?? await getExcelFiles();
-    int readFileIndex = -1;
+    // int readFileIndex = -1;
     // int readFileIndex = files.length - 2;
-    // int readFileIndex = await Storage.getProcessedFileIndex();
+    int readFileIndex = await Storage.getProcessedFileIndex();
+    if (readFileIndex == 0) readFileIndex = -1;
     //don't want to re process the last file if there is no new data (readFileIndex + 1).
     for (var i = readFileIndex + 1; i < files.length; i++) {
       List<List<String>> rows = [];
@@ -31,11 +32,11 @@ class CsvFileServices {
       streamController.sink.add(
           {"processing": Utils.calculatePercentage(i, files.length).toInt()});
       var file = files[i];
-      if ("01______adani ______anagar_______id193" !=
-          basenameWithoutExtension(file.path)) {
-        continue;
-      }
-      print(basenameWithoutExtension(file.path));
+      // if ("01______adani ______anagar_______id193" !=
+      //     basenameWithoutExtension(file.path)) {
+      //   continue;
+      // }
+      // print(basenameWithoutExtension(file.path));
       // if (basenameWithoutExtension(file.path)
       //     .contains("02______sbisadar______anagar_______")) {
       //   print(basenameWithoutExtension(file.path));
@@ -45,19 +46,17 @@ class CsvFileServices {
 
       late List<String> titles;
       final reader = file.openRead();
-      log("reader open");
       final decoder = utf8.decoder;
       var buffer = '';
       int? vehicleNumberColumIndex;
       int? chassiNumberColumIndex;
       bool found = false;
       await for (var data in reader) {
-        log("reader data");
         buffer += decoder.convert(data);
         while (buffer.contains('\n')) {
           var lineEndIndex = buffer.indexOf('\n');
           var line = buffer.substring(0, lineEndIndex);
-          print(line);
+          // print(line);
 
           var items = _splitStringIgnoringQuotes(line);
           //adding file name which contain info about finance and branch for adding it into the details.
@@ -75,13 +74,10 @@ class CsvFileServices {
               chassiNumberColumIndex = 0;
               found = true;
             }
-            log("found");
             if (!found) {
-              log("not found");
               break;
             }
           } else {
-            print(items);
             items.add(basenameWithoutExtension(file.path));
             if (vehicleNumberColumIndex != null ||
                 chassiNumberColumIndex != null) {
@@ -113,7 +109,6 @@ class CsvFileServices {
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-      log("reader complete");
       if (rows.isNotEmpty && found) {
         await DatabaseHelper.bulkInsertVehicleNumbers(
           rows,

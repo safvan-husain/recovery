@@ -62,7 +62,7 @@ class HomeCubit extends Cubit<HomeState> {
     int hours = totalMinutes ~/ 60;
     int minutes = totalMinutes % 60;
     if (hours > 0) {
-      timeString = "$hours hours and $minutes minutes";
+      timeString = "$hours h $minutes m";
     } else {
       timeString = "$minutes minutes";
     }
@@ -114,7 +114,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> deleteAllData() async {
     emit(state.copyWith(changeType: ChangeType.loading));
-    // await CsvFileServices.deleteAllFilesInVehicleDetails();
+    await CsvFileServices.deleteAllFilesInVehicleDetails();
     await DatabaseHelper.deleteAllData();
     await Storage.addProcessedFileIndex(0);
     await Storage.emptyEntryCount();

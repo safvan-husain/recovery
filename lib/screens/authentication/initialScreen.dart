@@ -4,6 +4,7 @@ import 'package:recovery_app/bottom_navigation/bottom_navigation_page.dart';
 import 'package:recovery_app/screens/HomePage/cubit/home_cubit.dart';
 import 'package:recovery_app/screens/authentication/device_verify_screen.dart';
 import 'package:recovery_app/screens/authentication/otp_login.dart';
+import 'package:recovery_app/services/auth_services.dart';
 import 'package:recovery_app/services/sim_services.dart';
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
@@ -26,6 +27,16 @@ class _InitialScreenState extends State<InitialScreen> {
     var user = await Storage.getUser();
 
     if (user != null) {
+      if (await Utils.isConnected() && mounted) {
+        //for updating deviceId on this device, to ensure after change this app should not work.
+        var result = await AuthServices.verifyPhone(
+            phone: user.number, context: context);
+        if (result.$2 != null) {
+          user.changeDeviceId(result.$2!.deviceId);
+          await Storage.storeUser(user);
+        }
+      }
+
       if (await user.verifyDevice()) {
         if (context.mounted) {
           context.read<HomeCubit>().setUser(user);
