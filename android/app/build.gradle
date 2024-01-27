@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.starkin.recovery_app.recovery_app"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {

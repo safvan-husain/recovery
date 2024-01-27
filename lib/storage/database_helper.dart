@@ -77,9 +77,16 @@ class DatabaseHelper {
     Batch batch,
   ) async {
     var details = {};
-    for (var i = 0; i < titles.length; i++) {
-      details[titles[i]] = row[i];
+    try {
+      for (var i = 0; i < titles.length; i++) {
+        details[titles[i]] = row[i];
+      }
+    } catch (e) {
+      print("error at database helper inseart string titles ${titles.length}");
+      print("rows ${row.length}");
+      // rethrow;
     }
+
     //row.last is the filename given from the server, it contain information about finance and branch.
     List<String> content = row.last.split("______");
     details["file name"] = content[0];

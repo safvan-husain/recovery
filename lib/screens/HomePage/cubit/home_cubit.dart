@@ -39,7 +39,6 @@ class HomeCubit extends Cubit<HomeState> {
       },
       state.user!.agencyId,
     );
-    print(subDetails?.remainingDays);
 
     emit(
       state.copyWith(
@@ -80,16 +79,16 @@ class HomeCubit extends Cubit<HomeState> {
     // await deleteAllData();
     log('downlaing data');
     emit(state.copyWith(changeType: ChangeType.loading));
-    try {
-      await CsvFileServices.updateData(
-        state.user!.agencyId,
-        // "3",
-        state.streamController,
-        this,
-      );
-    } catch (e) {
-      print(e);
-    }
+    // try {
+    await CsvFileServices.updateData(
+      state.user!.agencyId,
+      // "3",
+      state.streamController,
+      this,
+    );
+    // } catch (e) {
+    //   print(e);
+    // }
     emit(
       state.copyWith(
         changeType: ChangeType.vehicleOwnerListUpdated,
@@ -115,7 +114,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> deleteAllData() async {
     emit(state.copyWith(changeType: ChangeType.loading));
-    await CsvFileServices.deleteAllFilesInVehicleDetails();
+    // await CsvFileServices.deleteAllFilesInVehicleDetails();
     await DatabaseHelper.deleteAllData();
     await Storage.addProcessedFileIndex(0);
     await Storage.emptyEntryCount();

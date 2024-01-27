@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,9 +20,10 @@ class CsvFileServices {
   ]) async {
     int count = 0;
     streamController.sink.add(null);
-    List<String> titleList = ['VEHICAL NO']; //supported titles.
     var files = csvFiles ?? await getExcelFiles();
-    int readFileIndex = await Storage.getProcessedFileIndex();
+    int readFileIndex = -1;
+    // int readFileIndex = files.length - 2;
+    // int readFileIndex = await Storage.getProcessedFileIndex();
     //don't want to re process the last file if there is no new data (readFileIndex + 1).
     for (var i = readFileIndex + 1; i < files.length; i++) {
       List<List<String>> rows = [];
@@ -29,40 +31,58 @@ class CsvFileServices {
       streamController.sink.add(
           {"processing": Utils.calculatePercentage(i, files.length).toInt()});
       var file = files[i];
+      if ("01______adani ______anagar_______id193" !=
+          basenameWithoutExtension(file.path)) {
+        continue;
+      }
+      print(basenameWithoutExtension(file.path));
+      // if (basenameWithoutExtension(file.path)
+      //     .contains("02______sbisadar______anagar_______")) {
+      //   print(basenameWithoutExtension(file.path));
+      // }
+      // print(basenameWithoutExtension(file.path));
+      // print('called');
+
       late List<String> titles;
       final reader = file.openRead();
+      log("reader open");
       final decoder = utf8.decoder;
       var buffer = '';
       int? vehicleNumberColumIndex;
       int? chassiNumberColumIndex;
       bool found = false;
       await for (var data in reader) {
+        log("reader data");
         buffer += decoder.convert(data);
         while (buffer.contains('\n')) {
           var lineEndIndex = buffer.indexOf('\n');
           var line = buffer.substring(0, lineEndIndex);
+          print(line);
 
           var items = _splitStringIgnoringQuotes(line);
           //adding file name which contain info about finance and branch for adding it into the details.
-          items.add(basenameWithoutExtension(file.path));
 
           if (!found) {
             titles = items.map((e) => e.toLowerCase()).toList();
 
             if (titles.contains('VEHICAL NO'.toLowerCase())) {
+              // print(basenameWithoutExtension(file.path));
               vehicleNumberColumIndex =
                   titles.indexOf('VEHICAL NO'.toLowerCase());
               found = true;
-              break;
             } else if (titles.contains('CHASSIS NO'.toLowerCase())) {
               //only using in if whether find it or not, no use otherwise so random number.
               chassiNumberColumIndex = 0;
               found = true;
             }
+            log("found");
             if (!found) {
+              log("not found");
               break;
             }
           } else {
+            print(items);
+            items.add(basenameWithoutExtension(file.path));
             if (vehicleNumberColumIndex != null ||
                 chassiNumberColumIndex != null) {
               if (rows.length < 1002) {
@@ -81,12 +101,19 @@ class CsvFileServices {
             } else {
               break;
             }
+            // if (items
+            //     .map((e) => e.toLowerCase())
+            //     .contains("gj-34-t-1421".toLowerCase())) {
+            //   print("found that");
+            //   log(items.toString());
+            // }
           }
 
           // Process your line here
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
+      log("reader complete");
       if (rows.isNotEmpty && found) {
         await DatabaseHelper.bulkInsertVehicleNumbers(
           rows,

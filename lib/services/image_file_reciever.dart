@@ -1,3 +1,4 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -30,9 +31,9 @@ class ImageFile {
                       ),
                       onTap: () async {
                         PermissionStatus status =
-                            await Permission.storage.status;
+                            await Permission.camera.status;
                         if (!status.isGranted) {
-                          status = await Permission.storage.request();
+                          status = await Permission.camera.request();
                         }
                         if (status.isGranted) {
                           var image = await _picker.pickImage(
@@ -62,11 +63,23 @@ class ImageFile {
                         "Gallery",
                       ),
                       onTap: () async {
-                        PermissionStatus status =
-                            await Permission.storage.status;
-                        if (!status.isGranted) {
-                          status = await Permission.storage.request();
+                        late PermissionStatus status;
+                        if (Platform.isAndroid) {
+                          final androidInfo =
+                              await DeviceInfoPlugin().androidInfo;
+                          if (androidInfo.version.sdkInt <= 32) {
+                            status = await Permission.storage.status;
+                            if (!status.isGranted) {
+                              status = await Permission.storage.request();
+                            }
+                          } else {
+                            status = await Permission.photos.status;
+                            if (!status.isGranted) {
+                              status = await Permission.photos.request();
+                            }
+                          }
                         }
+
                         if (status.isGranted) {
                           var image = await _picker.pickImage(
                               source: ImageSource.gallery);

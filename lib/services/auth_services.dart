@@ -12,6 +12,7 @@ import 'package:dio/dio.dart';
 import 'package:recovery_app/screens/authentication/device_verify_screen.dart';
 import 'package:recovery_app/screens/authentication/unapproved_screen.dart';
 import 'package:recovery_app/services/home_service.dart';
+import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/storage/user_storage.dart';
 
 class AuthServices {
@@ -23,77 +24,88 @@ class AuthServices {
     required String password,
     required BuildContext context,
   }) async {
-    // dio.options.validateStatus;
+    if (await Utils.isConnected()) {
+      print("login");
+      // dio.options.validateStatus;
 
-    try {
-      dio.interceptors.add(InterceptorsWrapper(
-        onError: (DioException e, s) async {
-          if (e.response?.statusCode == 401) {
-            if (context.mounted) {
-              showSnackbar("Invalid credentials", context, Icons.warning);
-              // throw Error();
+      try {
+        dio.interceptors.add(InterceptorsWrapper(
+          onError: (DioException e, s) async {
+            if (e.response?.statusCode == 401) {
+              if (context.mounted) {
+                showSnackbar("Invalid credentials", context, Icons.warning);
+                // throw Error();
+              }
+            } else {
+              // For other errors, rethrow the exception
+              throw e;
+            }
+          },
+        ));
+        var response = await dio.post(
+          "https://www.recovery.starkinsolutions.com/loginapi.php",
+          data: jsonEncode({"phone": phoneNumber, "password": password}),
+        );
+        var decoded = jsonDecode(jsonEncode(response.data));
+        if (response.statusCode == 200) {
+          if (decoded['user_data']['status'] == "1") {
+            var user = UserModel.fromServerJson2(response.data);
+            AgencyDetails? agencyDetails =
+                await HomeServices.updateAgencyDetails(user.agencyId);
+            if (agencyDetails == null && context.mounted) {
+              showSnackbar("No agency details", context, Icons.warning);
+              return;
+            }
+            user.addAgencyDetails(agencyDetails!);
+            if (await user.verifyDevice() && context.mounted) {
+              await Storage.storeUser(user);
+              context.read<HomeCubit>().setUser(user);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BottomNavigation(),
+                ),
+                (s) => false,
+              );
+            } else {
+              if (context.mounted) {
+                context.read<HomeCubit>().setUser(user!);
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (c) => const DeviceVerifyScreen()),
+                  (p) => false,
+                );
+              }
             }
           } else {
-            // For other errors, rethrow the exception
-            throw e;
-          }
-        },
-      ));
-      var response = await dio.post(
-        "https://www.recovery.starkinsolutions.com/loginapi.php",
-        data: jsonEncode({"phone": phoneNumber, "password": password}),
-      );
-      var decoded = jsonDecode(jsonEncode(response.data));
-      if (response.statusCode == 200) {
-        if (decoded['user_data']['status'] == "1") {
-          var user = UserModel.fromServerJson2(response.data);
-          AgencyDetails? agencyDetails =
-              await HomeServices.updateAgencyDetails(user.agencyId);
-          if (agencyDetails == null && context.mounted) {
-            showSnackbar("No agency details", context, Icons.warning);
-            return;
-          }
-          user.addAgencyDetails(agencyDetails!);
-          if (await user.verifyDevice() && context.mounted) {
-          await Storage.storeUser(user); 
-            context.read<HomeCubit>().setUser(user);
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const BottomNavigation(),
-              ),
-              (s) => false,
-            );
-          } else {
             if (context.mounted) {
-              context.read<HomeCubit>().setUser(user!);
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (c) => const DeviceVerifyScreen()),
-                (p) => false,
-              );
+              showSnackbar(
+                  "Contact the agency for approval", context, Icons.warning);
+              // throw Error();
             }
           }
         } else {
           if (context.mounted) {
             showSnackbar(
-                "Contact the agency for approval", context, Icons.warning);
-            // throw Error();
+              "Got non-200 status code",
+              context,
+              Icons.warning,
+            );
           }
         }
-      } else {
+      } catch (e) {
+        print(e);
         if (context.mounted) {
           showSnackbar(
-            "Got non-200 status code",
+            "Failed to connect to the server",
             context,
             Icons.warning,
           );
         }
       }
-    } catch (e) {
-      print(e);
+    } else {
       if (context.mounted) {
         showSnackbar(
-          "Failed to connect to the server",
+          "No internet connection",
           context,
           Icons.warning,
         );
