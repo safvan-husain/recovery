@@ -27,24 +27,31 @@ class _InitialScreenState extends State<InitialScreen> {
     var user = await Storage.getUser();
 
     if (user != null) {
-      if (await Utils.isConnected() && mounted) {
-        //for updating deviceId on this device, to ensure after change this app should not work.
-        var result = await AuthServices.verifyPhone(
-            phone: user.number, context: context);
-        if (result.$2 != null) {
-          user.changeDeviceId(result.$2!.deviceId);
-          await Storage.storeUser(user);
-        }
+      // if (await Utils.isConnected() && mounted) {
+      //   //for updating deviceId on this device, to ensure after change this app should not work.
+      //   var result = await AuthServices.verifyPhone(
+      //       phone: user.number, context: context);
+      //   if (result.$2 != null) {
+      //     user.changeDeviceId(result.$2!.deviceId);
+      //     await Storage.storeUser(user);
+      //   }
+      // }
+      if (context.mounted) {
+        context.read<HomeCubit>().setUser(user);
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (c) => const BottomNavigation()),
+          (p) => false,
+        );
       }
-
-      if (await user.verifyDevice()) {
-        if (context.mounted) {
-          context.read<HomeCubit>().setUser(user);
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (c) => const BottomNavigation()),
-            (p) => false,
-          );
-        }
+      if (!await user.verifyDevice()) {
+        //TODO: this should BE big wsnfs.
+        // if (context.mounted) {
+        //   context.read<HomeCubit>().setUser(user);
+        //   Navigator.of(context).pushAndRemoveUntil(
+        //     MaterialPageRoute(builder: (c) => const BottomNavigation()),
+        //     (p) => false,
+        //   );
+        // }
       } else {
         if (context.mounted) {
           context.read<HomeCubit>().setUser(user);

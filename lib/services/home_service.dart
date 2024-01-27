@@ -59,6 +59,27 @@ class HomeServices {
       rethrow;
     }
     return null;
+  } // void mappingnames() {}
+
+  static Future<void> mappingNames(String agencyId) async {
+    final Dio dio = Dio();
+    try {
+      if (await Utils.isConnected()) {
+        var response = await dio.post(
+          'https://www.recovery.starkinsolutions.com/mapdeta.php',
+          data: jsonEncode({
+            "admin_id": int.parse(agencyId),
+          }),
+        );
+        print(response.statusCode);
+        print(response.data);
+        // if (response.statusCode == 200) {}
+      } else {}
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+    return null;
   }
 
   static Future<SubscriptionDetails?> getSubscription(
