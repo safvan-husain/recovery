@@ -8,6 +8,7 @@ import 'package:recovery_app/models/search_settings.dart';
 import 'package:recovery_app/models/subscription_details.dart';
 
 import 'package:recovery_app/models/user_model.dart';
+import 'package:recovery_app/screens/authentication/otp_login.dart';
 import 'package:recovery_app/services/csv_file_service.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -31,6 +32,11 @@ class HomeCubit extends Cubit<HomeState> {
       searchSettings: await Storage.getSearchSettings(),
       entryCount: await Storage.getEntryCount(),
     ));
+    print(await isDeviceChangedOnServer());
+    if (await isDeviceChangedOnServer() && context.mounted) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (c) => const OtpLogin()));
+    }
 
     SubscriptionDetails? subDetails = await HomeServices.getSubscription(
       () {
@@ -54,8 +60,18 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
-  void updateDeviceId() async {
-    HomeServices.updateDeviceId(int.parse(state.user!.agencyId));
+  Future<bool> isDeviceChangedOnServer() async {
+    String? newDeviceId =
+        await HomeServices.updateDeviceId(int.parse(state.user!.agencyId));
+    if (newDeviceId != null) {
+      var user = await Storage.getUser();
+      if (newDeviceId != user?.deviceId) {
+        user!.changeDeviceId(newDeviceId);
+        await Storage.storeUser(user);
+        return true;
+      }
+    }
+    return false;
   }
 
   void updateEstimatedTime(int microSeconds) {

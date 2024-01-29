@@ -10,6 +10,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:device_imei/device_imei.dart';
 import 'package:flutter/services.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:io' show Platform;
 
 class Utils {
   static Future<bool> isConnected() async {
@@ -48,10 +50,10 @@ class Utils {
       scheme: 'sms',
       // path: '+917907320942',
       queryParameters: {
-        'body': "$message \n",
+        'body': "$message",
       },
     );
-
+    // print(message);
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
       return true;
@@ -72,7 +74,7 @@ class Utils {
   ]) async {
     // ) async {
     var text =
-        'Respected Sir, \n\n${formatMap(details)}\n \n${location != null ? "location : $location" : ""}\nReporting address : $address \ncarries Goods : $load  \nStatus : $status  \n$agentName : +91 $phone \n\nAgency: $agencyName';
+        'Respected Sir, \n\n${formatMap(details)} \n${location != null ? "location : $location" : ""} ${address.isNotEmpty ? "\naddress : $address" : ""} ${load != null ? "\ncarries Goods : $load" : ""}  \n\nStatus : $status  \n$agentName - +91$phone \nAgency: $agencyName';
     String url = 'whatsapp://send?&text=$text';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -82,19 +84,22 @@ class Utils {
   }
 
   static String formatMap(Map<String, String> map) {
+    List<String> lines = [];
     List<String> shareableKey = [
       "customer name",
       "vehical no",
       "chassis no",
-      "model",
-      "make",
       "engine no",
       // "agreement no",
     ];
-    return map.entries
-        .where((element) => shareableKey.contains(element.key.toLowerCase()))
-        .map((entry) => '${entry.key} : ${entry.value}')
-        .join('\n');
+    for (var key in shareableKey) {
+      String line =
+          "${key.toUpperCase()} : ${map[key] ?? map[key.toUpperCase()] ?? ""}";
+      lines.add(line);
+    }
+    lines.add(
+        "Model : ${map['make'] ?? map['model'] ?? map['MAKE'] ?? map['MODEL'] ?? ""}");
+    return lines.join('\n');
   }
 
   static double calculatePercentage(int current, int total) {
@@ -128,14 +133,24 @@ class Utils {
     GlobalKey<State<StatefulWidget>> globalKey,
     BuildContext context,
   ) async {
-    PermissionStatus status = await Permission.storage.status;
+    late PermissionStatus status;
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      if (androidInfo.version.sdkInt <= 32) {
+        status = await Permission.storage.status;
+        if (!status.isGranted) {
+          status = await Permission.storage.request();
+        }
+      } else {
+        status = await Permission.manageExternalStorage.status;
+        if (!status.isGranted) {
+          status = await Permission.manageExternalStorage.request();
+        }
+      }
+    }
 
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-
-    if (!status.isGranted) {
-      status = await Permission.storage.request();
-    }
 
     if (status.isGranted) {
       ui.Image image = await boundary.toImage();

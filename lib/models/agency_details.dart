@@ -86,4 +86,22 @@ class AgencyDetails {
         // "date_added": dateAdded.toIso8601String(),
         // "date_modified": dateModified.toIso8601String(),
       };
+  Map<String, dynamic> toDisplayMap() => {
+        // "id": id,
+        "name": agencyName,
+        "address": address,
+        "contact": contact,
+        // "aadhaar_card": aadhaarCard,
+        // "pan_card": panCard,
+        // "shop_act": shopAct,
+        // "gst": gst,
+        // "start_date": startDate.toIso8601String(),
+        // "end_date": endDate.toIso8601String(),
+        // "admin_id": adminId,
+        // "validity_plans_id": validityPlansId,
+        // "agents_no": agentsNo,
+        // "status": status,
+        // "date_added": dateAdded.toIso8601String(),
+        // "date_modified": dateModified.toIso8601String(),
+      };
 }

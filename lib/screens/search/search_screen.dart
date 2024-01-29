@@ -286,6 +286,47 @@ class SearchScreen1State extends State<SearchScreen1> {
                       alignment: Alignment.center,
                       child: const CircularProgressIndicator(),
                     )
+                  else if (!isOnVehicle)
+                    Padding(
+                      padding: EdgeInsets.only(top: 100),
+                      child: Center(
+                        child: InkWell(
+                          onTap: () async {
+                            items = await search(
+                              isOnVehicle
+                                  ? _controller.text
+                                  : _controller.text.toUpperCase(),
+                            );
+                            displayItems = items;
+                            filteredItems = null;
+                            _isSearchComplete = true;
+                            setState(() {});
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey
+                                      .withOpacity(0.5), // Color of the shadow
+                                  spreadRadius: 2, // Spread radius
+                                  blurRadius: 4, // Blur radius
+                                  offset: const Offset(0, 3), // Shadow offset
+                                ),
+                              ],
+                            ),
+                            height: 40,
+                            width: 100,
+                            child: Text(
+                              "Search",
+                              style: GoogleFonts.poppins(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   else
                     const SizedBox(),
                 ],

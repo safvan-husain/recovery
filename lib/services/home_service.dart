@@ -36,37 +36,33 @@ class HomeServices {
     return false;
   }
 
-  static Future<UserModel?> updateDeviceId(int agencyId) async {
+  static Future<String?> updateDeviceId(int agencyId) async {
     final dio = Dio();
 
     try {
       Response response = await dio.post(
         'https://www.recovery.starkinsolutions.com/device.php',
         data: jsonEncode(
-          {"admin_id": 73},
+          {"admin_id": agencyId},
         ),
       );
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.data}');
-      if (response.statusCode == 200) {
-        var user = await Storage.getUser();
-        user!.changeDeviceId(response.data['device']);
-        await Storage.storeUser(user);
-        return user;
+
+      if (response.statusCode == 200 && response.data != null) {
+        if (response.data['device'] != null &&
+            response.data['device'].isNotEmpty) {
+          return response.data['device'];
+        } else {
+          print("at home serive update device failed");
+        }
       }
     } catch (e) {
       rethrow;
-      if (e is DioException) {
-        // Handle Dio specific errors
-      } else {
-        // Handle all other types of exceptions
-        print("Unexpected error: $e");
-      }
     }
   }
 
   static Future<AgencyDetails?> updateAgencyDetails(String agencyId) async {
     final Dio dio = Dio();
+    print(agencyId);
     try {
       if (await Utils.isConnected()) {
         var response = await dio.post(
@@ -81,7 +77,6 @@ class HomeServices {
               AgencyDetails.fromRawJson(response.data);
           await Storage.storeAgencyDetails(agencyDetails);
           return agencyDetails;
-          print(agencyDetails.agencyName);
         }
       } else {
         return Storage.getAgencyDetails();

@@ -77,17 +77,17 @@ class _ControlPanelScreenState extends State<ControlPanelScreen> {
                           );
                         },
                       ),
-                      _buildListTile(
-                        title: "Blacklist",
-                        icon: FontAwesomeIcons.ban,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (c) => const BlockListScreen(),
-                            ),
-                          );
-                        },
-                      ),
+                      // _buildListTile(
+                      //   title: "Blacklist",
+                      //   icon: FontAwesomeIcons.ban,
+                      //   onTap: () {
+                      //     Navigator.of(context).push(
+                      //       MaterialPageRoute(
+                      //         builder: (c) => const BlockListScreen(),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
                     ],
                     Divider(
                       color: Colors.grey[300],

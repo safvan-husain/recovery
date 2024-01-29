@@ -50,7 +50,8 @@ class CsvFileServices {
       var buffer = '';
       int? vehicleNumberColumIndex;
       int? chassiNumberColumIndex;
-      bool found = false;
+      //for choosing whether to add to  .
+      bool foundValidTitle = false;
       await for (var data in reader) {
         buffer += decoder.convert(data);
         while (buffer.contains('\n')) {
@@ -61,42 +62,57 @@ class CsvFileServices {
           var items = _splitStringIgnoringQuotes(line);
           //adding file name which contain info about finance and branch for adding it into the details.
 
-          if (!found) {
+          if (!foundValidTitle) {
+            // count++;
             titles = items.map((e) => e.toLowerCase()).toList();
 
-            if (titles.contains('VEHICAL NO'.toLowerCase())) {
+            if (titles.contains('VEHICAL NO'.toLowerCase()) ||
+                titles.contains('vehicalno')) {
               // print(basenameWithoutExtension(file.path));
               vehicleNumberColumIndex =
                   titles.indexOf('VEHICAL NO'.toLowerCase());
-              found = true;
+              if (vehicleNumberColumIndex == -1) {
+                vehicleNumberColumIndex = titles.indexOf('vehicalno');
+              }
+              foundValidTitle = true;
             } else if (titles.contains('CHASSIS NO'.toLowerCase())) {
               //only using in if whether find it or not, no use otherwise so random number.
               chassiNumberColumIndex = 0;
-              found = true;
+              foundValidTitle = true;
             }
-            if (!found) {
+            if (!foundValidTitle) {
               break;
             }
           } else {
-            items.add(basenameWithoutExtension(file.path));
-            if (vehicleNumberColumIndex != null ||
-                chassiNumberColumIndex != null) {
-              if (rows.length < 1002) {
-                rows.add(items);
-              } else {
-                await DatabaseHelper.bulkInsertVehicleNumbers(
-                  rows,
-                  titles,
-                  vehicleNumberColumIndex,
-                );
-                rows.clear();
-                rows.add(items);
+            if (foundValidTitle &&
+                items.where((element) => element.isNotEmpty).isNotEmpty) {
+              if (items.length < titles.length) {
+                while (items.length == titles.length) {
+                  items.add("");
+                }
               }
-
-              count++;
-            } else {
-              break;
+              items.add(basenameWithoutExtension(file.path));
+              if (vehicleNumberColumIndex != null ||
+                  chassiNumberColumIndex != null) {
+                if (rows.length < 1002) {
+                  rows.add(items);
+                } else {
+                  await DatabaseHelper.bulkInsertVehicleNumbers(
+                    rows,
+                    titles,
+                    vehicleNumberColumIndex,
+                  );
+                  rows.clear();
+                  rows.add(items);
+                }
+              } else {
+                break;
+              }
             }
+            if (items.where((element) => element.isNotEmpty).isNotEmpty) {
+              count++;
+            }
+
             // if (items
             //     .map((e) => e.toLowerCase())
             //     .contains("gj-34-t-1421".toLowerCase())) {
@@ -109,7 +125,7 @@ class CsvFileServices {
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-      if (rows.isNotEmpty && found) {
+      if (rows.isNotEmpty && foundValidTitle) {
         await DatabaseHelper.bulkInsertVehicleNumbers(
           rows,
           titles,

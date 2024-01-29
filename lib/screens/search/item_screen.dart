@@ -39,6 +39,7 @@ class _ItemScreenState extends State<ItemScreen> {
       show();
     }
     currentDetails = widget.detailsList[0];
+    print(currentDetails);
     super.initState();
   }
 
@@ -71,45 +72,62 @@ class _ItemScreenState extends State<ItemScreen> {
               ),
             );
           }
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Found in Branches",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.blue,
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Found in Branches",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blue,
+                    ),
                   ),
                 ),
-              ),
-              ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
-                        currentDetails = widget.detailsList.elementAt(index);
-                      });
-                      Navigator.of(context).pop();
-                    },
-                    child: ListTile(
-                      trailing: Text(nullebleBranches[index].fileName),
-                      title: Text(
-                        nullebleBranches[index].bank,
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          currentDetails = widget.detailsList.elementAt(index);
+                        });
+                        print(currentDetails);
+                        Navigator.of(context).pop();
+                      },
+                      child: ListTile(
+                        trailing: Container(
+                          alignment: Alignment.centerRight,
+                          width: MediaQuery.of(context).size.width / 3,
+                          child: Text(
+                            nullebleBranches[index].fileName,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        title: Text(
+                          nullebleBranches[index].bank,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          nullebleBranches[index].branch,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      subtitle: Text(nullebleBranches[index].branch),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
-                itemCount: nullebleBranches.length,
-              ),
-            ],
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Divider();
+                  },
+                  itemCount: nullebleBranches.length,
+                ),
+              ],
+            ),
           );
         },
       );

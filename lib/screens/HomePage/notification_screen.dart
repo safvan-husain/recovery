@@ -42,7 +42,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: SafeArea(
         child: GestureDetector(
           onTap: () {
-            context.read<HomeCubit>().updateDeviceId();
+            context.read<HomeCubit>().isDeviceChangedOnServer();
           },
           child: Padding(
             padding: const EdgeInsets.all(10),
