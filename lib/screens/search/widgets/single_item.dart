@@ -45,25 +45,25 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<MapEntry<dynamic, dynamic>> data = [];
+    Map<String, String> data = {};
     if (isStaff) {
-      data = widget.details.entries.toList();
+      data = widget.details;
     } else {
-      data = titles.map<MapEntry>((e) {
-        return MapEntry(
-            e, widget.details[e.toUpperCase()] ?? widget.details[e] ?? "");
-      }).toList();
+      data = titles.fold<Map<String, String>>(data, (previousValue, element) {
+        data[element] = widget.details[element] ??
+            widget.details[element.replaceAll(" ", "")] ??
+            "";
+        return data;
+      });
+      if (data["VEHICAL NO"] == "") {
+        data["VEHICAL NO"] = widget.details["vehicleno"] ??
+            widget.details["vehicle no"] ??
+            widget.details["vehicalno"] ??
+            "";
+      }
     }
     List<MapEntry<String, dynamic>> agencyDetails = [];
     if (context.read<HomeCubit>().state.data.agencyDetails != null) {
-      // print(context
-      //     .read<HomeCubit>()
-      //     .state
-      //     .data
-      //     .agencyDetails!
-      //     .toJson()
-      //     .entries
-      //     .toList());
       agencyDetails = context
           .read<HomeCubit>()
           .state
@@ -72,11 +72,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
           .toDisplayMap()
           .entries
           .toList();
-      // for (var i = 0; i < agencyDetails.length; i++) {
-      //   data.add(MapEntry<String, String>(
-      //       agencyDetails[i].key, agencyDetails[i].value.toString()));
-      // }
-      data = data.where((e) => e.key.isNotEmpty || e.value.isNotEmpty).toList();
+      data.remove("");
     }
 
     return Scaffold(
@@ -97,7 +93,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                       children: [
                         Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: data
+                          children: data.entries
                               .map((e) => Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Row(
@@ -132,7 +128,6 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                                   ))
                               .toList(),
                         ),
-                        // const SizedBox(height: 10),
                         const Divider(),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -206,13 +201,7 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
                             onTap: () {
                               takeActionForSpecificButton(
                                 e.key,
-                                data.fold(
-                                  {},
-                                  (map, e) {
-                                    map[e.key] = e.value;
-                                    return map;
-                                  },
-                                ),
+                                data,
                               );
                             },
                             child: Column(

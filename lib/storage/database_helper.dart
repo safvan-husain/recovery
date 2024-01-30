@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:path/path.dart';
+import 'package:recovery_app/storage/user_storage.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'package:recovery_app/services/utils.dart';
@@ -23,7 +24,8 @@ class DatabaseHelper {
   $last4digitVehicleNumber TEXT,
   completeVehicleNumber TEXT,
   $chessiNo TEXT,
-  details TEXT
+  details TEXT,
+  fileName TEXT
 )''');
       },
       version: 1,
@@ -99,6 +101,7 @@ class DatabaseHelper {
         "completeVehicleNumber": completeVehicleNumber,
         chessiNo: details['CHASSIS NO'.toLowerCase()] ?? "",
         'details': jsonEncode(details),
+        "fileName": content[0],
       },
     );
   }
@@ -155,6 +158,30 @@ class DatabaseHelper {
     }
     // return [];
     return branches;
+  }
+
+  ///delete sqlite data that have these file names and return deleted count.
+  static Future<int> deleteDataInTheFiles(
+    List<String> fileNameWithExtensionAndBankBranchNames,
+  ) async {
+    var batch = _database.batch();
+
+    for (var file in fileNameWithExtensionAndBankBranchNames) {
+      String fileName = file.split("______").first;
+      batch.delete(
+        tableVehicleInfo,
+        where: "fileName = ?",
+        whereArgs: [fileName],
+      );
+    }
+    await batch.commit();
+    return await getTotalEntries();
+  }
+
+  static Future<int> getTotalEntries() async {
+    var result =
+        await _database.rawQuery('SELECT COUNT(*) FROM $tableVehicleInfo');
+    return result.first['COUNT(*)'] as int;
   }
 }
 

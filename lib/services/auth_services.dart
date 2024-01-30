@@ -48,41 +48,50 @@ class AuthServices {
         );
         var decoded = jsonDecode(jsonEncode(response.data));
         if (response.statusCode == 200) {
-          if (decoded['user_data']['status'] == "1") {
-            var user = UserModel.fromServerJson2(response.data);
-            AgencyDetails? agencyDetails =
-                await HomeServices.updateAgencyDetails(user.agencyId);
-            if (agencyDetails == null && context.mounted) {
-              showSnackbar("No agency details", context, Icons.warning);
-              return;
-            }
-            user.addAgencyDetails(agencyDetails!);
-            if (await user.verifyDevice() && context.mounted) {
-              await Storage.storeUser(user);
-              context.read<HomeCubit>().setUser(user);
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BottomNavigation(),
-                ),
-                (s) => false,
-              );
+          if (decoded['user_data'] != null) {
+            if (decoded['user_data']['status'] == "1") {
+              var user = UserModel.fromServerJson2(response.data);
+              AgencyDetails? agencyDetails =
+                  await HomeServices.updateAgencyDetails(user.agencyId);
+              if (agencyDetails == null && context.mounted) {
+                showSnackbar("No agency details", context, Icons.warning);
+                return;
+              }
+              user.addAgencyDetails(agencyDetails!);
+              if (await user.verifyDevice() && context.mounted) {
+                await Storage.storeUser(user);
+                context.read<HomeCubit>().setUser(user);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BottomNavigation(),
+                  ),
+                  (s) => false,
+                );
+              } else {
+                if (context.mounted) {
+                  context.read<HomeCubit>().setUser(user!);
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (c) => const DeviceVerifyScreen()),
+                    (p) => false,
+                  );
+                }
+              }
             } else {
               if (context.mounted) {
-                context.read<HomeCubit>().setUser(user!);
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (c) => const DeviceVerifyScreen()),
-                  (p) => false,
-                );
+                showSnackbar(
+                    "Contact the agency for approval", context, Icons.warning);
+                // throw Error();
               }
             }
           } else {
             if (context.mounted) {
               showSnackbar(
-                  "Contact the agency for approval", context, Icons.warning);
+                  "Your account is not fully created", context, Icons.warning);
               // throw Error();
             }
-          }
+          } //TODO: handle no date error.
         } else {
           if (context.mounted) {
             showSnackbar(

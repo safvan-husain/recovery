@@ -51,6 +51,13 @@ class Storage {
     }
   }
 
+  static Future<void> reduceEntryCount(int count) async {
+    int? currentCunt = sharedPreference.getInt('count');
+    if (currentCunt != null) {
+      await sharedPreference.setInt("count", currentCunt - count);
+    }
+  }
+
   static Future<void> addProcessedFileIndex(int count) async {
     await sharedPreference.setInt("file", count);
   }

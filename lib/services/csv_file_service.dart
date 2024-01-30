@@ -32,17 +32,6 @@ class CsvFileServices {
       streamController.sink.add(
           {"processing": Utils.calculatePercentage(i, files.length).toInt()});
       var file = files[i];
-      // if ("01______adani ______anagar_______id193" !=
-      //     basenameWithoutExtension(file.path)) {
-      //   continue;
-      // }
-      // print(basenameWithoutExtension(file.path));
-      // if (basenameWithoutExtension(file.path)
-      //     .contains("02______sbisadar______anagar_______")) {
-      //   print(basenameWithoutExtension(file.path));
-      // }
-      // print(basenameWithoutExtension(file.path));
-      // print('called');
 
       late List<String> titles;
       final reader = file.openRead();
@@ -67,13 +56,21 @@ class CsvFileServices {
             titles = items.map((e) => e.toLowerCase()).toList();
 
             if (titles.contains('VEHICAL NO'.toLowerCase()) ||
-                titles.contains('vehicalno')) {
-              // print(basenameWithoutExtension(file.path));
+                titles.contains('vehicalno') ||
+                titles.contains('vehicleno') ||
+                titles.contains('vehicle no')) {
               vehicleNumberColumIndex =
                   titles.indexOf('VEHICAL NO'.toLowerCase());
               if (vehicleNumberColumIndex == -1) {
                 vehicleNumberColumIndex = titles.indexOf('vehicalno');
               }
+              if (vehicleNumberColumIndex == -1) {
+                vehicleNumberColumIndex = titles.indexOf('vehicleno');
+              }
+              if (vehicleNumberColumIndex == -1) {
+                vehicleNumberColumIndex = titles.indexOf('vehicle no');
+              }
+
               foundValidTitle = true;
             } else if (titles.contains('CHASSIS NO'.toLowerCase())) {
               //only using in if whether find it or not, no use otherwise so random number.
@@ -86,10 +83,8 @@ class CsvFileServices {
           } else {
             if (foundValidTitle &&
                 items.where((element) => element.isNotEmpty).isNotEmpty) {
-              if (items.length < titles.length) {
-                while (items.length == titles.length) {
-                  items.add("");
-                }
+              while (items.length < titles.length) {
+                items.add("");
               }
               items.add(basenameWithoutExtension(file.path));
               if (vehicleNumberColumIndex != null ||
@@ -167,7 +162,8 @@ class CsvFileServices {
 
   static Future<void> _fetchDownloadLinksAndNames(
     String agencyId,
-    StreamController<Map<String, int>?> streamController, [
+    StreamController<Map<String, int>?> streamController,
+    HomeCubit homeCubit, [
     List<String> fileNames = const [],
   ]) async {
     streamController.sink.add(null);
@@ -184,6 +180,17 @@ class CsvFileServices {
         String fileName = uri.pathSegments.last;
         downloadLinksAndNames[fileName] = link;
       });
+//getting deleted filenames from node server, then performing delete.
+      List<String> deletedFiles = [];
+      response.data['deleted'].forEach((fileName) {
+        deletedFiles.add(fileName);
+      });
+      await deleteFiles(deletedFiles);
+
+      homeCubit.reduceEntryCount(
+        await DatabaseHelper.deleteDataInTheFiles(deletedFiles),
+      );
+
       for (var i = 0; i < downloadLinksAndNames.entries.length; i++) {
         var map = downloadLinksAndNames.entries.toList().elementAt(i);
         await _downloadFile(
@@ -215,7 +222,12 @@ class CsvFileServices {
     // getAndStoreTitles("2");
     List<String> fileNames =
         files.map((e) => basenameWithoutExtension(e.path)).toList();
-    await _fetchDownloadLinksAndNames(agencyId, streamController, fileNames);
+    await _fetchDownloadLinksAndNames(
+      agencyId,
+      streamController,
+      homeCubit,
+      fileNames,
+    );
 
     files = await getExcelFiles();
     await _processFiles(
@@ -287,6 +299,23 @@ class CsvFileServices {
     } else {
       print("No excel files found");
       return [];
+    }
+  }
+
+  static Future<void> deleteFiles(List<String> filenames) async {
+    final path = await _localPath;
+    final directory = Directory('$path/vehicle details');
+    if (await directory.exists()) {
+      final files = directory.listSync();
+      for (var file in files) {
+        var filenameWithoutExtension =
+            file.path.split('/').last.split('.').first;
+        if (filenames.contains(filenameWithoutExtension)) {
+          await file.delete();
+        }
+      }
+    } else {
+      print("Directory does not exist");
     }
   }
 }

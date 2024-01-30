@@ -95,6 +95,12 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(entryCount: await Storage.getEntryCount()));
   }
 
+  void reduceEntryCount(int count) async {
+    await Storage.reduceEntryCount(count);
+
+    emit(state.copyWith(entryCount: await Storage.getEntryCount()));
+  }
+
   Future<void> downloadData() async {
     // await deleteAllData();
     log('downlaing data');
