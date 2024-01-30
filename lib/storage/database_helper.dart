@@ -161,7 +161,7 @@ class DatabaseHelper {
   }
 
   ///delete sqlite data that have these file names and return deleted count.
-  static Future<int> deleteDataInTheFiles(
+  static Future<void> deleteDataInTheFiles(
     List<String> fileNameWithExtensionAndBankBranchNames,
   ) async {
     var batch = _database.batch();
@@ -175,7 +175,6 @@ class DatabaseHelper {
       );
     }
     await batch.commit();
-    return await getTotalEntries();
   }
 
   static Future<int> getTotalEntries() async {

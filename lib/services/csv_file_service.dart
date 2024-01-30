@@ -21,8 +21,7 @@ class CsvFileServices {
     int count = 0;
     streamController.sink.add(null);
     var files = csvFiles ?? await getExcelFiles();
-    // int readFileIndex = -1;
-    // int readFileIndex = files.length - 2;
+
     int readFileIndex = await Storage.getProcessedFileIndex();
     if (readFileIndex == 0) readFileIndex = -1;
     //don't want to re process the last file if there is no new data (readFileIndex + 1).
@@ -52,9 +51,10 @@ class CsvFileServices {
           //adding file name which contain info about finance and branch for adding it into the details.
 
           if (!foundValidTitle) {
+            log("on not found title : ${basenameWithoutExtension(file.path)}");
             // count++;
             titles = items.map((e) => e.toLowerCase()).toList();
-
+            foundValidTitle = true;
             if (titles.contains('VEHICAL NO'.toLowerCase()) ||
                 titles.contains('vehicalno') ||
                 titles.contains('vehicleno') ||
@@ -70,49 +70,31 @@ class CsvFileServices {
               if (vehicleNumberColumIndex == -1) {
                 vehicleNumberColumIndex = titles.indexOf('vehicle no');
               }
-
-              foundValidTitle = true;
             } else if (titles.contains('CHASSIS NO'.toLowerCase())) {
               //only using in if whether find it or not, no use otherwise so random number.
               chassiNumberColumIndex = 0;
-              foundValidTitle = true;
             }
-            if (!foundValidTitle) {
-              break;
-            }
+            // if (!foundValidTitle) {
+            //   break;
+            // }
           } else {
-            if (foundValidTitle &&
-                items.where((element) => element.isNotEmpty).isNotEmpty) {
-              while (items.length < titles.length) {
-                items.add("");
-              }
-              items.add(basenameWithoutExtension(file.path));
-              if (vehicleNumberColumIndex != null ||
-                  chassiNumberColumIndex != null) {
-                if (rows.length < 1002) {
-                  rows.add(items);
-                } else {
-                  await DatabaseHelper.bulkInsertVehicleNumbers(
-                    rows,
-                    titles,
-                    vehicleNumberColumIndex,
-                  );
-                  rows.clear();
-                  rows.add(items);
-                }
-              } else {
-                break;
-              }
+            count++;
+            // if (items.where((element) => element.isNotEmpty).isNotEmpty) {
+            while (items.length < titles.length) {
+              items.add("");
             }
-            if (items.where((element) => element.isNotEmpty).isNotEmpty) {
-              count++;
+            items.add(basenameWithoutExtension(file.path));
+            if (rows.length < 1002) {
+              rows.add(items);
+            } else {
+              await DatabaseHelper.bulkInsertVehicleNumbers(
+                rows,
+                titles,
+                vehicleNumberColumIndex,
+              );
+              rows.clear();
+              rows.add(items);
             }
-
-            // if (items
-            //     .map((e) => e.toLowerCase())
-            //     .contains("gj-34-t-1421".toLowerCase())) {
-            //   print("found that");
-            //   log(items.toString());
             // }
           }
 
@@ -128,14 +110,14 @@ class CsvFileServices {
         );
         rows.clear();
       }
-      homeCubit.updateDataCount(count);
-      count = 0;
       await Storage.addProcessedFileIndex(i);
       var endTime = DateTime.now();
       var duration = endTime.difference(startTime);
       homeCubit
           .updateEstimatedTime(duration.inMicroseconds * (files.length - i));
     }
+    print("lines $count");
+    homeCubit.updateDataCount();
     streamController.sink.add(null);
   }
 
@@ -186,10 +168,9 @@ class CsvFileServices {
         deletedFiles.add(fileName);
       });
       await deleteFiles(deletedFiles);
-
-      homeCubit.reduceEntryCount(
-        await DatabaseHelper.deleteDataInTheFiles(deletedFiles),
-      );
+      print(deletedFiles);
+      await DatabaseHelper.deleteDataInTheFiles(deletedFiles);
+      homeCubit.updateDataCount();
 
       for (var i = 0; i < downloadLinksAndNames.entries.length; i++) {
         var map = downloadLinksAndNames.entries.toList().elementAt(i);

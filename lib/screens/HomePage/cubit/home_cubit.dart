@@ -30,7 +30,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(
       changeType: ChangeType.vehicleOwnerListUpdated,
       searchSettings: await Storage.getSearchSettings(),
-      entryCount: await Storage.getEntryCount(),
+      entryCount: await DatabaseHelper.getTotalEntries(),
     ));
     print(await isDeviceChangedOnServer());
     if (await isDeviceChangedOnServer() && context.mounted) {
@@ -89,16 +89,18 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(estimatedTime: timeString));
   }
 
-  void updateDataCount(int count) async {
-    await Storage.addEntryCount(count);
-
-    emit(state.copyWith(entryCount: await Storage.getEntryCount()));
+  void updateDataCount() async {
+    // await Storage.addEntryCount(count);
+    log("caling update entry count");
+    print(await DatabaseHelper.getTotalEntries());
+    emit(state.copyWith(entryCount: await DatabaseHelper.getTotalEntries()));
   }
 
   void reduceEntryCount(int count) async {
-    await Storage.reduceEntryCount(count);
+    // log("caling reduce entry count");
+    // await Storage.reduceEntryCount(count);
 
-    emit(state.copyWith(entryCount: await Storage.getEntryCount()));
+    // emit(state.copyWith(entryCount: await Storage.getEntryCount()));
   }
 
   Future<void> downloadData() async {
@@ -118,7 +120,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(
       state.copyWith(
         changeType: ChangeType.vehicleOwnerListUpdated,
-        entryCount: await Storage.getEntryCount(),
+        entryCount: await DatabaseHelper.getTotalEntries(),
         data: state.data.copyWith(
           isThereNewData:
               await HomeServices.isThereNewData(state.user!.agencyId),
