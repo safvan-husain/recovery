@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class AuthServices {
         );
         var decoded = jsonDecode(jsonEncode(response.data));
         if (response.statusCode == 200) {
-          if (decoded['user_data'] != null) {
+          if (decoded['Add_data'] != null && decoded['user_data'] != null) {
             if (decoded['user_data']['status'] == "1") {
               var user = UserModel.fromServerJson2(response.data);
               AgencyDetails? agencyDetails =
@@ -88,7 +89,7 @@ class AuthServices {
           } else {
             if (context.mounted) {
               showSnackbar(
-                  "Your account is not fully created", context, Icons.warning);
+                  "You don't have a subscription", context, Icons.warning);
               // throw Error();
             }
           } //TODO: handle no date error.
@@ -171,6 +172,11 @@ class AuthServices {
                 // throw Error();
               }
             }
+          } else if (result.containsKey("message")) {
+            if (context.mounted) {
+              showSnackbar(result["message"], context, Icons.warning);
+              // throw Error();
+            }
           }
           return ("${result["otp"]}", null);
         } else {
@@ -227,13 +233,14 @@ class AuthServices {
     required String pinCode,
     required String deviceId,
   }) async {
+    log("sign up called");
     try {
       var response = await dio.post(
         "https://www.recovery.starkinsolutions.com/registerapi.php",
-        data: {
+        data: jsonEncode({
           "phone_number": phone,
           "name": userName,
-          "email": "msh@sssm.com",
+          "email": email,
           "password": password,
           "address": address,
           "agencyid": int.parse(agencyId),
@@ -242,7 +249,7 @@ class AuthServices {
           'village': village,
           'pincode': pinCode,
           'device': deviceId,
-        },
+        }),
       );
       print(response.data);
       if (response.statusCode == 200) {

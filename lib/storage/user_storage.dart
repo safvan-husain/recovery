@@ -42,28 +42,12 @@ class Storage {
     return null;
   }
 
-  // static Future<void> addEntryCount(int count) async {
-  //   int? currentCunt = sharedPreference.getInt('count');
-  //   if (currentCunt != null) {
-  //     await sharedPreference.setInt("count", currentCunt + count);
-  //   } else {
-  //     await sharedPreference.setInt("count", count);
-  //   }
-  // }
-
-  // static Future<void> reduceEntryCount(int count) async {
-  //   int? currentCunt = sharedPreference.getInt('count');
-  //   if (currentCunt != null) {
-  //     await sharedPreference.setInt("count", currentCunt - count);
-  //   }
-  // }
-
-  static Future<void> addProcessedFileIndex(int count) async {
+  static Future<void> setProcessedFileIndex(int count) async {
     await sharedPreference.setInt("file", count);
   }
 
   static Future<int> getProcessedFileIndex() async {
-    return sharedPreference.getInt("file") ?? 0;
+    return sharedPreference.getInt("file") ?? -1;
   }
 
   static Future<void> emptyEntryCount() async {
@@ -92,11 +76,6 @@ class Storage {
       );
     }
   }
-
-  // static Future<int> getEntryCount() async {
-  //   int? currentCunt = sharedPreference.getInt('count');
-  //   return currentCunt ?? 0;
-  // }
 
   static Future<void> storeTitleMapsss(List<String> titles) async {
     await sharedPreference.setString('titles', jsonEncode(titles));

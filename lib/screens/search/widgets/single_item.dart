@@ -26,10 +26,9 @@ class SingleItemScreen extends StatefulWidget {
 class _SingleItemScreenState extends State<SingleItemScreen> {
   late bool isStaff;
   List<String> titles = [
-    "VEHICAL NO",
+    "VEHICLE NO",
     "CHASSIS NO",
     "MODEL",
-    "MAKE",
     "ENGINE NO",
     "CUSTOMER NAME",
   ].map((e) => e.toLowerCase()).toList();
@@ -53,12 +52,16 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
         data[element] = widget.details[element] ??
             widget.details[element.replaceAll(" ", "")] ??
             "";
+        if (element == "model" && data[element]!.isEmpty) {
+          data[element] = data["make"] ?? "";
+        }
         return data;
       });
-      if (data["VEHICAL NO"] == "") {
-        data["VEHICAL NO"] = widget.details["vehicleno"] ??
+      if (data["VEHICLE NO".toLowerCase()] == "") {
+        data["VEHICLE NO".toLowerCase()] = widget.details["vehicleno"] ??
             widget.details["vehicle no"] ??
             widget.details["vehicalno"] ??
+            widget.details["vehical no"] ??
             "";
       }
     }

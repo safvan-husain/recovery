@@ -90,33 +90,25 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void updateDataCount() async {
-    // await Storage.addEntryCount(count);
-    log("caling update entry count");
-    print(await DatabaseHelper.getTotalEntries());
-    emit(state.copyWith(entryCount: await DatabaseHelper.getTotalEntries()));
-  }
-
-  void reduceEntryCount(int count) async {
-    // log("caling reduce entry count");
-    // await Storage.reduceEntryCount(count);
-
-    // emit(state.copyWith(entryCount: await Storage.getEntryCount()));
+    int totalEntries = await DatabaseHelper.getTotalEntries();
+    print("totalEntries : $totalEntries");
+    emit(state.copyWith(entryCount: totalEntries));
   }
 
   Future<void> downloadData() async {
-    // await deleteAllData();
-    log('downlaing data');
     emit(state.copyWith(changeType: ChangeType.loading));
-    // try {
-    await CsvFileServices.updateData(
-      state.user!.agencyId,
-      // "3",
-      state.streamController,
-      this,
-    );
-    // } catch (e) {
-    //   print(e);
-    // }
+    try {
+      log("before download");
+      await CsvFileServices.updateData(
+        state.user!.agencyId,
+        // "3",
+        state.streamController,
+        this,
+      );
+      log("after download");
+    } catch (e) {
+      print(e);
+    }
     emit(
       state.copyWith(
         changeType: ChangeType.vehicleOwnerListUpdated,
@@ -144,7 +136,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(changeType: ChangeType.loading));
     await CsvFileServices.deleteAllFilesInVehicleDetails();
     await DatabaseHelper.deleteAllData();
-    await Storage.addProcessedFileIndex(0);
+    await Storage.setProcessedFileIndex(-1);
     await Storage.emptyEntryCount();
 
     emit(state.copyWith(

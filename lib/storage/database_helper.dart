@@ -3,13 +3,14 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:path/path.dart';
-import 'package:recovery_app/storage/user_storage.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'package:recovery_app/services/utils.dart';
 import 'package:recovery_app/models/search_item_model.dart';
 
 class DatabaseHelper {
+  static int count = 0;
+  static int sCount = 0;
   static late final Database _database;
   static var tableVehicleInfo = 'trie';
   static var last4digitVehicleNumber = 'Number';
@@ -33,6 +34,8 @@ class DatabaseHelper {
   }
 
   static Future<void> deleteAllData() async {
+    count = 0;
+    sCount = 0;
     await _database.delete(tableVehicleInfo);
   }
 
@@ -50,7 +53,11 @@ class DatabaseHelper {
         batch,
       );
     }
-    await batch.commit();
+    try {
+      await batch.commit();
+    } catch (e) {
+      print(e);
+    }
   }
 
   static Future<void> _insertRow(
@@ -65,6 +72,8 @@ class DatabaseHelper {
       var res = Utils.checkLastFourChars(s);
       if (res.$1) {
         await _insertString(res.$2, row, titles, s, batch);
+      } else {
+        await _insertString(s, row, titles, s, batch);
       }
     } else {
       await _insertString('', row, titles, '', batch);
@@ -85,8 +94,6 @@ class DatabaseHelper {
       }
     } catch (e) {
       print("error at database helper inseart string titles ${titles.length}");
-      print("rows ${row.length}");
-      // rethrow;
     }
 
     //row.last is the filename given from the server, it contain information about finance and branch.
@@ -101,7 +108,7 @@ class DatabaseHelper {
         "completeVehicleNumber": completeVehicleNumber,
         chessiNo: details['CHASSIS NO'.toLowerCase()] ?? "",
         'details': jsonEncode(details),
-        "fileName": content[0],
+        "fileName": row.last,
       },
     );
   }
@@ -113,11 +120,10 @@ class DatabaseHelper {
     List<SearchResultItem> list = [];
     var results = await _database.query(
       tableVehicleInfo,
-      where: isVehicle ? '$last4digitVehicleNumber = ?' : '$chessiNo = ?',
-      whereArgs: [isVehicle ? number : number.toUpperCase()],
+      where: isVehicle ? '$last4digitVehicleNumber = ?' : '$chessiNo LIKE ?',
+      whereArgs: [isVehicle ? number : '%${number.toUpperCase()}%'],
     );
-    print(number);
-    print(results);
+
     if (results.isNotEmpty) {
       for (var element in results) {
         var details = jsonDecode(element['details'] as String);
@@ -156,7 +162,6 @@ class DatabaseHelper {
         print(e);
       }
     }
-    // return [];
     return branches;
   }
 
@@ -167,11 +172,11 @@ class DatabaseHelper {
     var batch = _database.batch();
 
     for (var file in fileNameWithExtensionAndBankBranchNames) {
-      String fileName = file.split("______").first;
+      // String fileName = file.split("______").first;
       batch.delete(
         tableVehicleInfo,
         where: "fileName = ?",
-        whereArgs: [fileName],
+        whereArgs: [file],
       );
     }
     await batch.commit();

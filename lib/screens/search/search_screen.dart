@@ -49,7 +49,7 @@ class SearchScreen1State extends State<SearchScreen1> {
   bool isOnVehicle = true;
   bool isOnline = false;
   Future<List<SearchResultItem>> search(String searchTerm) async {
-    print("search started");
+    log("search started");
     if (isOnline) {
       return await RemoteSqlServices.searchVehicles(
         searchTerm,

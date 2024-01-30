@@ -15,16 +15,17 @@ import 'package:recovery_app/storage/user_storage.dart';
 class CsvFileServices {
   static Future<void> _processFiles(
     StreamController<Map<String, int>?> streamController,
-    HomeCubit homeCubit, [
-    List<File>? csvFiles,
-  ]) async {
+    HomeCubit homeCubit,
+    // List<File> csvFiles,
+  ) async {
     int count = 0;
     streamController.sink.add(null);
-    var files = csvFiles ?? await getExcelFiles();
+    var files = await getExcelFiles();
 
     int readFileIndex = await Storage.getProcessedFileIndex();
-    if (readFileIndex == 0) readFileIndex = -1;
+    // if (readFileIndex == 0) readFileIndex = -1;
     //don't want to re process the last file if there is no new data (readFileIndex + 1).
+    print("starting with ${readFileIndex + 1} of ${files.length}");
     for (var i = readFileIndex + 1; i < files.length; i++) {
       List<List<String>> rows = [];
       var startTime = DateTime.now();
@@ -37,7 +38,6 @@ class CsvFileServices {
       final decoder = utf8.decoder;
       var buffer = '';
       int? vehicleNumberColumIndex;
-      int? chassiNumberColumIndex;
       //for choosing whether to add to  .
       bool foundValidTitle = false;
       await for (var data in reader) {
@@ -49,11 +49,13 @@ class CsvFileServices {
 
           var items = _splitStringIgnoringQuotes(line);
           //adding file name which contain info about finance and branch for adding it into the details.
-
+          // log(items.toString());
           if (!foundValidTitle) {
             log("on not found title : ${basenameWithoutExtension(file.path)}");
             // count++;
-            titles = items.map((e) => e.toLowerCase()).toList();
+            titles = items;
+            titles = items.map((e) => e.replaceAll(".", "")).toList();
+            log(titles.toString());
             foundValidTitle = true;
             if (titles.contains('VEHICAL NO'.toLowerCase()) ||
                 titles.contains('vehicalno') ||
@@ -70,31 +72,26 @@ class CsvFileServices {
               if (vehicleNumberColumIndex == -1) {
                 vehicleNumberColumIndex = titles.indexOf('vehicle no');
               }
-            } else if (titles.contains('CHASSIS NO'.toLowerCase())) {
-              //only using in if whether find it or not, no use otherwise so random number.
-              chassiNumberColumIndex = 0;
             }
-            // if (!foundValidTitle) {
-            //   break;
-            // }
           } else {
-            count++;
+            // count++;
             // if (items.where((element) => element.isNotEmpty).isNotEmpty) {
             while (items.length < titles.length) {
               items.add("");
             }
+            print(basenameWithoutExtension(file.path));
             items.add(basenameWithoutExtension(file.path));
-            if (rows.length < 1002) {
-              rows.add(items);
-            } else {
-              await DatabaseHelper.bulkInsertVehicleNumbers(
-                rows,
-                titles,
-                vehicleNumberColumIndex,
-              );
-              rows.clear();
-              rows.add(items);
-            }
+            rows.add(items);
+            // if (rows.length < 1052) {
+            // } else {
+            //   rows.add(items);
+            //   await DatabaseHelper.bulkInsertVehicleNumbers(
+            //     rows,
+            //     titles,
+            //     vehicleNumberColumIndex,
+            //   );
+            //   rows.clear();
+            // }
             // }
           }
 
@@ -102,7 +99,8 @@ class CsvFileServices {
           buffer = buffer.substring(lineEndIndex + 1);
         }
       }
-      if (rows.isNotEmpty && foundValidTitle) {
+      if (rows.isNotEmpty) {
+        count += rows.length;
         await DatabaseHelper.bulkInsertVehicleNumbers(
           rows,
           titles,
@@ -110,7 +108,7 @@ class CsvFileServices {
         );
         rows.clear();
       }
-      await Storage.addProcessedFileIndex(i);
+      await Storage.setProcessedFileIndex(i);
       var endTime = DateTime.now();
       var duration = endTime.difference(startTime);
       homeCubit
@@ -121,7 +119,7 @@ class CsvFileServices {
     streamController.sink.add(null);
   }
 
-  static Future<void> _downloadFile(
+  static Future<String> _downloadFile(
     String url,
     String fileName,
     void Function(int, int)? onReceiveProgress,
@@ -140,20 +138,22 @@ class CsvFileServices {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String savePath = '${appDocDir.path}/vehicle details/$fileName';
     await dio.download(url, savePath, onReceiveProgress: (i, x) {});
+    return savePath;
   }
 
-  static Future<void> _fetchDownloadLinksAndNames(
+  static Future<List<String>> _fetchDownloadLinksAndNames(
     String agencyId,
     StreamController<Map<String, int>?> streamController,
     HomeCubit homeCubit, [
     List<String> fileNames = const [],
   ]) async {
+    List<String> downloadedPaths = [];
     streamController.sink.add(null);
     String url = "https://converter.starkinsolutions.com/data";
     final dio = Dio();
     final response = await dio
         .post(url, data: {"filenames": fileNames, "agencyId": agencyId});
-
+    print(response.data);
     if (response.statusCode == 200) {
       Map<String, String> downloadLinksAndNames = {};
 
@@ -168,19 +168,22 @@ class CsvFileServices {
         deletedFiles.add(fileName);
       });
       await deleteFiles(deletedFiles);
+      await Storage.setProcessedFileIndex(
+          await Storage.getProcessedFileIndex() - deletedFiles.length);
       print(deletedFiles);
       await DatabaseHelper.deleteDataInTheFiles(deletedFiles);
       homeCubit.updateDataCount();
 
       for (var i = 0; i < downloadLinksAndNames.entries.length; i++) {
         var map = downloadLinksAndNames.entries.toList().elementAt(i);
-        await _downloadFile(
+        String downloadedPath = await _downloadFile(
             map.value.replaceAll('/home/starkina/', 'https://www.'), map.key,
             (received, total) {
           if (total != -1) {
             // print('${(received / total * 100).toStringAsFixed(0)}%');
           }
         });
+        downloadedPaths.add(downloadedPath);
         streamController.sink.add({
           "Downloading": Utils.calculatePercentage(
                   i + 1, downloadLinksAndNames.entries.length)
@@ -192,6 +195,7 @@ class CsvFileServices {
       print('Failed to load download links');
       // throw Exception('Failed to load download links');
     }
+    return downloadedPaths;
   }
 
   static Future<void> updateData(
@@ -199,22 +203,23 @@ class CsvFileServices {
     StreamController<Map<String, int>?> streamController,
     HomeCubit homeCubit,
   ) async {
+    print("updateData called");
     var files = await getExcelFiles();
-    // getAndStoreTitles("2");
+    print("file length : ${files.length}");
     List<String> fileNames =
         files.map((e) => basenameWithoutExtension(e.path)).toList();
-    await _fetchDownloadLinksAndNames(
+    var downloadedPaths = await _fetchDownloadLinksAndNames(
       agencyId,
       streamController,
       homeCubit,
       fileNames,
     );
 
-    files = await getExcelFiles();
+    // files = await getExcelFiles();
     await _processFiles(
       streamController,
       homeCubit,
-      files,
+      // downloadedPaths.map((e) => File(e)).toList(),
     );
   }
 
@@ -276,7 +281,10 @@ class CsvFileServices {
           .where((file) => file.path.endsWith('.csv'))
           .toList()
           .whereType<File>()
-          .toList();
+          .toList()
+        //sorting to get the last added file at the last of the array.
+        ..sort(
+            (a, b) => a.statSync().modified.compareTo(b.statSync().modified));
     } else {
       print("No excel files found");
       return [];
