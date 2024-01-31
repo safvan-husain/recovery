@@ -32,7 +32,6 @@ class HomeCubit extends Cubit<HomeState> {
       searchSettings: await Storage.getSearchSettings(),
       entryCount: await DatabaseHelper.getTotalEntries(),
     ));
-    print(await isDeviceChangedOnServer());
     if (await isDeviceChangedOnServer() && context.mounted) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (c) => const OtpLogin()));
@@ -108,6 +107,7 @@ class HomeCubit extends Cubit<HomeState> {
       log("after download");
     } catch (e) {
       print(e);
+      // rethrow;
     }
     emit(
       state.copyWith(

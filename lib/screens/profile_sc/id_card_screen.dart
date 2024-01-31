@@ -132,8 +132,8 @@ class _IdCardScreenState extends State<IdCardScreen> {
                 children: {
                   "Name": user.agent_name,
                   "EmployeeId": user.agencyId,
-                  "From Date": user.subscriptionDetails!.start,
-                  "End Date": user.subscriptionDetails!.end,
+                  "From Date": formatDate(user.subscriptionDetails!.start),
+                  "End Date": formatDate(user.subscriptionDetails!.end),
                 }
                     .entries
                     .map(
@@ -192,4 +192,10 @@ class _IdCardScreenState extends State<IdCardScreen> {
       ),
     );
   }
+}
+
+String formatDate(DateTime dateTime) {
+  final String formattedDate =
+      "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+  return formattedDate;
 }

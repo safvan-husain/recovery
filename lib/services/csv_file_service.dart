@@ -22,6 +22,7 @@ class CsvFileServices {
     streamController.sink.add(null);
     var files = await getExcelFiles();
 
+    // int readFileIndex = 0 try;
     int readFileIndex = await Storage.getProcessedFileIndex();
     // if (readFileIndex == 0) readFileIndex = -1;
     //don't want to re process the last file if there is no new data (readFileIndex + 1).
@@ -151,9 +152,18 @@ class CsvFileServices {
     streamController.sink.add(null);
     String url = "https://converter.starkinsolutions.com/data";
     final dio = Dio();
-    final response = await dio
-        .post(url, data: {"filenames": fileNames, "agencyId": agencyId});
-    print(response.data);
+    final response = await dio.post(url,
+        data: jsonEncode({
+          "filenames": fileNames
+              .map((e) {
+                var array = e.split("______");
+                return [array[0], array[1], array[2]].join("______");
+              })
+              .toSet()
+              .toList(),
+          "agencyId": agencyId,
+        }));
+    print(response);
     if (response.statusCode == 200) {
       Map<String, String> downloadLinksAndNames = {};
 
@@ -168,8 +178,7 @@ class CsvFileServices {
         deletedFiles.add(fileName);
       });
       await deleteFiles(deletedFiles);
-      await Storage.setProcessedFileIndex(
-          await Storage.getProcessedFileIndex() - deletedFiles.length);
+
       print(deletedFiles);
       await DatabaseHelper.deleteDataInTheFiles(deletedFiles);
       homeCubit.updateDataCount();
@@ -292,15 +301,28 @@ class CsvFileServices {
   }
 
   static Future<void> deleteFiles(List<String> filenames) async {
+    print(filenames);
     final path = await _localPath;
     final directory = Directory('$path/vehicle details');
+    int deletingFileCount = 0;
     if (await directory.exists()) {
       final files = directory.listSync();
       for (var file in files) {
-        var filenameWithoutExtension =
-            file.path.split('/').last.split('.').first;
+        var fileNamwBankBranch =
+            file.path.split('/').last.split('.').first.split("______");
+        var filenameWithoutExtension = [
+          fileNamwBankBranch[0],
+          fileNamwBankBranch[1],
+          fileNamwBankBranch[2]
+        ].join("______");
+        print(filenameWithoutExtension);
         if (filenames.contains(filenameWithoutExtension)) {
           await file.delete();
+          deletingFileCount++;
+          int currentCount =
+              await Storage.getProcessedFileIndex() - deletingFileCount;
+          await Storage.setProcessedFileIndex(
+              currentCount < 0 ? -1 : currentCount);
         }
       }
     } else {

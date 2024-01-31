@@ -83,180 +83,171 @@ class _SingleItemScreenState extends State<SingleItemScreen> {
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: data.entries
-                              .map((e) => Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            Utils.formatString(e.key),
-                                            style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          " :    ",
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Card(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: data.entries
+                            .map((e) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          Utils.formatString(e.key),
                                           style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        Expanded(
-                                            flex: 2,
-                                            child: Text(
-                                              e.value.toString(),
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            )),
-                                      ],
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                        const Divider(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text(
-                                "AGENCY ",
-                                style:
-                                    GoogleFonts.poppins(color: Colors.black87),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: agencyDetails
-                              .map((e) => Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            Utils.formatString(e.key),
-                                            style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
+                                      ),
+                                      Text(
+                                        " :    ",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        Text(
-                                          " :    ",
+                                      ),
+                                      Expanded(
+                                          flex: 2,
+                                          child: Text(
+                                            e.value.toString().toUpperCase(),
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          )),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                      const Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              "AGENCY ",
+                              style: GoogleFonts.poppins(color: Colors.black87),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: agencyDetails
+                            .map((e) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          Utils.formatString(e.key),
                                           style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        Expanded(
-                                            flex: 2,
-                                            child: Text(
-                                              e.value.toString(),
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            )),
-                                      ],
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                      ],
-                    ),
+                                      ),
+                                      Text(
+                                        " :    ",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Expanded(
+                                          flex: 2,
+                                          child: Text(
+                                            e.value.toString(),
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          )),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            if (!_isReporting)
-              if (context.read<HomeCubit>().state.user!.isStaff)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: {
-                    "Confirm": Icons.done_outline_rounded,
-                    "Whatsapp": Icons.message,
-                    "Ok Repo": Icons.chair,
-                    "Cancel": Icons.cancel,
-                    "Copy": Icons.copy
-                  }
-                      .entries
-                      .map((e) => InkWell(
-                            onTap: () {
-                              takeActionForSpecificButton(
-                                e.key,
-                                data,
-                              );
-                            },
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(e.value),
-                                Text(e.key),
-                              ],
-                            ),
-                          ))
-                      .toList(),
-                )
-              else
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _isReporting = true;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 40)),
-                    child: Text(
-                      "Report",
-                      style: GoogleFonts.poppins(color: Colors.white),
-                    )),
-            if (_isReporting) ...[
-              ReportInputs(
-                titles.fold(
-                  {},
-                  (map, e) {
-                    map[e] = widget.details[e] ?? "";
-                    return map;
-                  },
-                ),
-                'Please confirm this vehicle.',
-              ),
               const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _isReporting = false;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 40)),
-                child: Text(
-                  "Cancel",
-                  style: GoogleFonts.poppins(color: Colors.white),
+              if (!_isReporting)
+                if (context.read<HomeCubit>().state.user!.isStaff)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: {
+                      "Confirm": Icons.done_outline_rounded,
+                      "Whatsapp": Icons.message,
+                      "Ok Repo": Icons.chair,
+                      "Cancel": Icons.cancel,
+                      "Copy": Icons.copy
+                    }
+                        .entries
+                        .map((e) => InkWell(
+                              onTap: () {
+                                takeActionForSpecificButton(
+                                  e.key,
+                                  data,
+                                );
+                              },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(e.value),
+                                  Text(e.key),
+                                ],
+                              ),
+                            ))
+                        .toList(),
+                  )
+                else
+                  ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isReporting = true;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 40)),
+                      child: Text(
+                        "Report",
+                        style: GoogleFonts.poppins(color: Colors.white),
+                      )),
+              if (_isReporting) ...[
+                ReportInputs(
+                  data,
+                  'Please confirm this vehicle.',
                 ),
-              )
-            ]
-          ],
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isReporting = false;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 40)),
+                  child: Text(
+                    "Cancel",
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                )
+              ]
+            ],
+          ),
         ),
       )),
     );

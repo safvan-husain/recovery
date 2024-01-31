@@ -43,11 +43,14 @@ class Storage {
   }
 
   static Future<void> setProcessedFileIndex(int count) async {
+    log("setting processed file index to $count");
     await sharedPreference.setInt("file", count);
   }
 
   static Future<int> getProcessedFileIndex() async {
-    return sharedPreference.getInt("file") ?? -1;
+    var index = sharedPreference.getInt("file") ?? -1;
+    log("processed file index $index");
+    return index;
   }
 
   static Future<void> emptyEntryCount() async {

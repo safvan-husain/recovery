@@ -87,11 +87,12 @@ class Utils {
     List<String> lines = [];
     List<String> shareableKey = [
       "customer name",
-      "vehical no",
       "chassis no",
       "engine no",
       // "agreement no",
     ];
+    lines.add(
+        "Vehicle Number : ${map["vehicle no"] ?? map["vehicleno"] ?? map["vehical no"] ?? map["vehicalno"] ?? ""}");
     for (var key in shareableKey) {
       String line =
           "${key.toUpperCase()} : ${map[key] ?? map[key.toUpperCase()] ?? ""}";
@@ -99,7 +100,7 @@ class Utils {
     }
     lines.add(
         "Model : ${map['make'] ?? map['model'] ?? map['MAKE'] ?? map['MODEL'] ?? ""}");
-    return lines.join('\n');
+    return lines.map((e) => e.toUpperCase()).join('\n');
   }
 
   static double calculatePercentage(int current, int total) {

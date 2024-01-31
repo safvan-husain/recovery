@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -108,7 +109,7 @@ class DatabaseHelper {
         "completeVehicleNumber": completeVehicleNumber,
         chessiNo: details['CHASSIS NO'.toLowerCase()] ?? "",
         'details': jsonEncode(details),
-        "fileName": row.last,
+        "fileName": [content[0], content[1], content[2]].join("______"),
       },
     );
   }
@@ -117,6 +118,7 @@ class DatabaseHelper {
     String number, [
     bool isVehicle = true,
   ]) async {
+    log("calling a query");
     List<SearchResultItem> list = [];
     var results = await _database.query(
       tableVehicleInfo,
@@ -169,6 +171,7 @@ class DatabaseHelper {
   static Future<void> deleteDataInTheFiles(
     List<String> fileNameWithExtensionAndBankBranchNames,
   ) async {
+    log("calling a query");
     var batch = _database.batch();
 
     for (var file in fileNameWithExtensionAndBankBranchNames) {
@@ -183,6 +186,7 @@ class DatabaseHelper {
   }
 
   static Future<int> getTotalEntries() async {
+    log("calling a query");
     var result =
         await _database.rawQuery('SELECT COUNT(*) FROM $tableVehicleInfo');
     return result.first['COUNT(*)'] as int;
