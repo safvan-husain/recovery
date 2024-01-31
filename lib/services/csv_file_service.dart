@@ -80,25 +80,14 @@ class CsvFileServices {
             while (items.length < titles.length) {
               items.add("");
             }
-            print(basenameWithoutExtension(file.path));
             items.add(basenameWithoutExtension(file.path));
             rows.add(items);
-            // if (rows.length < 1052) {
-            // } else {
-            //   rows.add(items);
-            //   await DatabaseHelper.bulkInsertVehicleNumbers(
-            //     rows,
-            //     titles,
-            //     vehicleNumberColumIndex,
-            //   );
-            //   rows.clear();
-            // }
-            // }
           }
 
           // Process your line here
           buffer = buffer.substring(lineEndIndex + 1);
         }
+        homeCubit.updateDataCount();
       }
       if (rows.isNotEmpty) {
         count += rows.length;
@@ -154,13 +143,7 @@ class CsvFileServices {
     final dio = Dio();
     final response = await dio.post(url,
         data: jsonEncode({
-          "filenames": fileNames
-              .map((e) {
-                var array = e.split("______");
-                return [array[0], array[1], array[2]].join("______");
-              })
-              .toSet()
-              .toList(),
+          "filenames": generateFileNameIdMap(fileNames),
           "agencyId": agencyId,
         }));
     print(response);
@@ -179,11 +162,11 @@ class CsvFileServices {
       });
       await deleteFiles(deletedFiles);
 
-      print(deletedFiles);
       await DatabaseHelper.deleteDataInTheFiles(deletedFiles);
       homeCubit.updateDataCount();
 
       for (var i = 0; i < downloadLinksAndNames.entries.length; i++) {
+        homeCubit.updateDataCount();
         var map = downloadLinksAndNames.entries.toList().elementAt(i);
         String downloadedPath = await _downloadFile(
             map.value.replaceAll('/home/starkina/', 'https://www.'), map.key,
@@ -212,12 +195,10 @@ class CsvFileServices {
     StreamController<Map<String, int>?> streamController,
     HomeCubit homeCubit,
   ) async {
-    print("updateData called");
     var files = await getExcelFiles();
-    print("file length : ${files.length}");
     List<String> fileNames =
         files.map((e) => basenameWithoutExtension(e.path)).toList();
-    var downloadedPaths = await _fetchDownloadLinksAndNames(
+    await _fetchDownloadLinksAndNames(
       agencyId,
       streamController,
       homeCubit,
@@ -285,8 +266,9 @@ class CsvFileServices {
     final directory = Directory('$path/vehicle details');
     if (await directory.exists()) {
       final files = directory.listSync();
-      print("file length : ${files.length}");
-      return files
+      log("file length : ${files.length}");
+      print(await Storage.getProcessedFileIndex());
+      var filesInOrder = files
           .where((file) => file.path.endsWith('.csv'))
           .toList()
           .whereType<File>()
@@ -294,6 +276,9 @@ class CsvFileServices {
         //sorting to get the last added file at the last of the array.
         ..sort(
             (a, b) => a.statSync().modified.compareTo(b.statSync().modified));
+      generateFileNameIdMap(
+          filesInOrder.map((e) => basenameWithoutExtension(e.path)).toList());
+      return filesInOrder;
     } else {
       print("No excel files found");
       return [];
@@ -301,10 +286,8 @@ class CsvFileServices {
   }
 
   static Future<void> deleteFiles(List<String> filenames) async {
-    print(filenames);
     final path = await _localPath;
     final directory = Directory('$path/vehicle details');
-    int deletingFileCount = 0;
     if (await directory.exists()) {
       final files = directory.listSync();
       for (var file in files) {
@@ -315,12 +298,9 @@ class CsvFileServices {
           fileNamwBankBranch[1],
           fileNamwBankBranch[2]
         ].join("______");
-        print(filenameWithoutExtension);
         if (filenames.contains(filenameWithoutExtension)) {
           await file.delete();
-          deletingFileCount++;
-          int currentCount =
-              await Storage.getProcessedFileIndex() - deletingFileCount;
+          int currentCount = await Storage.getProcessedFileIndex() - 1;
           await Storage.setProcessedFileIndex(
               currentCount < 0 ? -1 : currentCount);
         }
@@ -329,4 +309,26 @@ class CsvFileServices {
       print("Directory does not exist");
     }
   }
+}
+
+///[files] should be in a order where the last should be the bigger.
+Map<String, int> generateFileNameIdMap(List<String> filesNames) {
+  Map<String, int> map = {};
+  for (var fileName in filesNames) {
+    String id = fileName.split("id").last;
+    int lastIndex = fileName.lastIndexOf("______id$id");
+    fileName = fileName;
+    if (lastIndex != -1) {
+      fileName = fileName.substring(0, lastIndex);
+    }
+    if (map.containsKey(fileName)) {
+      if (int.parse(id) > map[fileName]!) {
+        map[fileName] = int.parse(id);
+      }
+    } else {
+      map[fileName] = int.parse(id);
+    }
+  }
+  print(map);
+  return map;
 }

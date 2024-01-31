@@ -91,7 +91,10 @@ class HomeCubit extends Cubit<HomeState> {
   void updateDataCount() async {
     int totalEntries = await DatabaseHelper.getTotalEntries();
     print("totalEntries : $totalEntries");
-    emit(state.copyWith(entryCount: totalEntries));
+    emit(state.copyWith(
+      entryCount: totalEntries,
+      changeType: ChangeType.loading,
+    ));
   }
 
   Future<void> downloadData() async {
@@ -107,7 +110,7 @@ class HomeCubit extends Cubit<HomeState> {
       log("after download");
     } catch (e) {
       print(e);
-      // rethrow;
+      rethrow;
     }
     emit(
       state.copyWith(
